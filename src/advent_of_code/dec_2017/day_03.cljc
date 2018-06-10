@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2017.day-03
-  (:require [ysera.test :refer [deftest is=]]
-            [clojure.string :as string]))
+  (:require [ysera.test :refer [deftest is=]]))
 
 
 (defn get-level
