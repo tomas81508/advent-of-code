@@ -77,7 +77,7 @@
 
 (deftest answer-3a (is= (steps 277678) 475))
 
-;; Alternative
+;; Alternative solution for puzzle a
 
 (defn abs [x] (if (pos? x) x (- x)))
 
@@ -88,6 +88,7 @@
 
 
 (defn get-direction
+  "Tells you where to go given a coordinate."
   {:test (fn []
            (is= (get-direction [0 0]) east)
            (is= (get-direction [1 0]) north)
@@ -116,19 +117,25 @@
         (and (pos? x) (< (abs y) x)) north
         (< (abs y) (- x)) south))
 
+(defn next-coordinate
+  [coordinate]
+  (map + coordinate (get-direction coordinate)))
+
 (defn get-coordinate
+  "Tells you at what coordinate you are for a given number."
   {:test (fn []
            (is= (get-coordinate 2)
                 [1 0]))}
   [n]
   (reduce (fn [coordinate _]
-            (doall (map + coordinate (get-direction coordinate))))
+            (doall (next-coordinate coordinate)))
           [0 0]
           (range 1 n)))
 
 (defn taxi-distance
   {:test (fn []
-           (is= (taxi-distance [1 3] [4 4]) 4))}
+           (is= (taxi-distance [1 3] [4 4])
+                4))}
   [c1 c2]
   (->> (map - c1 c2)
        (map abs)
@@ -145,5 +152,89 @@
               31)
          (is= (taxi-distance (get-coordinate 277678) [0 0])
               475))
+
+;; puzzle b
+
+(def directions (for [x [-1 0 1]
+                      y [-1 0 1]
+                      :when (not= [x y] [0 0])]
+                  [x y]))
+
+(defn get-neighbours
+  {:test (fn []
+           (is= (get-neighbours {[0 0] :a
+                                 [1 0] :b
+                                 [1 1] :c
+                                 [0 1] :d}
+                                [-1 1])
+                {[0 0] :a
+                 [0 1] :d}))}
+  [coordinates coordinate]
+  (->> directions
+       (map (fn [d] (map + d coordinate)))
+       (reduce (fn [a neighbour-coordinate]
+                 (if-let [c (get coordinates neighbour-coordinate)]
+                   (assoc a neighbour-coordinate c)
+                   a))
+               {})))
+
+(defn create-grid-until-number
+  {:test (fn []
+           (is= (create-grid-until-number 9)
+                {:last-coordinate (list -1 0)
+                 (list 0 0)       1
+                 (list 1 0)       1
+                 (list 1 1)       2
+                 (list 0 1)       4
+                 (list -1 1)      5
+                 (list -1 0)      10}))}
+  [n]
+  (reduce (fn [a _]
+            (let [coordinate (next-coordinate (:last-coordinate a))
+                  neighbours (get-neighbours a coordinate)
+                  number (apply + (vals neighbours))
+                  a (assoc a :last-coordinate coordinate
+                             coordinate number)]
+              (if (> number n)
+                (reduced a)
+                a)))
+          {:last-coordinate [0 0]
+           (list 0 0)       1}
+          (range)))
+
+(comment (create-grid-until-number 58))
+
+(defn solve-b
+  {:test (fn []
+           (is= (solve-b 10)
+                11)
+           (is= (solve-b 58)
+                59))}
+  [n]
+  (let [grid (create-grid-until-number n)]
+    (get grid (:last-coordinate grid))))
+
+(deftest puzzle-b
+         (is= (solve-b 277678)
+              279138))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
