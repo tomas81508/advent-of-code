@@ -42,9 +42,9 @@
             (range bank))))
 
 
-(defn get-number-of-cycles-fot-next-redistribution
+(defn get-number-of-cycles-for-next-redistribution
   {:test (fn []
-           (is= (get-number-of-cycles-fot-next-redistribution [0 2 7 0])
+           (is= (get-number-of-cycles-for-next-redistribution [0 2 7 0])
                 {:redistributions 5
                  :first {:banks [2 4 1 2]
                          :index 1}}))}
@@ -66,12 +66,12 @@
                    (update :redistributions inc)))))))
 
 (deftest puzzle-a
-         (is= (time (:redistributions (get-number-of-cycles-fot-next-redistribution puzzle-input)))
+         (is= (time (:redistributions (get-number-of-cycles-for-next-redistribution puzzle-input)))
               ; "Elapsed time: 14616.61325 msecs"
               14029))
 
 (deftest puzzle-b
-         (is= (time (let [result (get-number-of-cycles-fot-next-redistribution puzzle-input)]
+         (is= (time (let [result (get-number-of-cycles-for-next-redistribution puzzle-input)]
                       (- (:redistributions result) (get-in result [:first :index]))))
               ; "Elapsed time: 14616.61325 msecs"
               2765))
