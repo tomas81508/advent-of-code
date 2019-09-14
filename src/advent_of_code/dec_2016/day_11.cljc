@@ -1,4 +1,4 @@
-(ns advent-of-code.dec-2016.santa-11a
+(ns advent-of-code.dec-2016.day-11
   (:require [ysera.test :refer [deftest is= is is-not]]
             [ysera.collections :refer [seq-contains?]]
             [clojure.string :refer [split]]
@@ -379,8 +379,8 @@
          (is= (time (compute3 (create-state "F4 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  "
                                             "F3 .  .  TM .  .  .  .  .  .  .  .  .  .  .  .  "
                                             "F2 .  TG .  RG RM CG CM .  .  .  .  .  .  .  .  "
-                                            "F1 E  .  .  .  .  .  .  SG SM PG PM EG EM DG DM "))
-                    61)))
+                                            "F1 E  .  .  .  .  .  .  SG SM PG PM EG EM DG DM ")))
+              61))
 (comment "The first floor contains a strontium generator, a strontium-compatible microchip, a plutonium generator, and a plutonium-compatible microchip.
   The second floor contains a thulium generator, a ruthenium generator, a ruthenium-compatible microchip, a curium generator, and a curium-compatible microchip.
   The third floor contains a thulium-compatible microchip.
