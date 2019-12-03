@@ -184,7 +184,8 @@
           samples))
 
 
-(def samples (->> (get-puzzle-input)
+(def samples (->> (-> (slurp "src/advent_of_code/dec_2018/day_16a.txt")
+                      (clojure.string/split-lines))
                   (remove (fn [l] (= l "")))
                   (partition 3)
                   (map get-sample)
