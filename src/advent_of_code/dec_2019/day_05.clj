@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2019.day-05
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [advent-of-code.dec-2019.day-02 :refer [get-value-at-position]]))
+  (:require [ysera.test :refer [is is-not is= deftest]]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_05.txt") $
