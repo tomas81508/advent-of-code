@@ -64,11 +64,10 @@
 
 (defmethod run-instruction 3
   [program index args]
-  (let [[i0 i1] (subvec program index (+ 2 index))
-        modes (get-modes i0)]
+  (let [[_ i1] (subvec program index (+ 2 index))]
     [(update-program program i1 (:input args))
      (+ index 2)
-     nil]))
+     {}]))
 
 (defmethod run-instruction 4
   [program index args]
