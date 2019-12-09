@@ -30,10 +30,9 @@
 
 (defn get-value
   [int-code modes parameter i]
-  (if (and (zero? (get modes parameter))
-           (not= parameter :3))
-    (nth int-code i)
-    i))
+  (case (get modes parameter)
+    0 (nth int-code i)
+    1 i))
 
 (defn update-int-code
   [int-code position value]
