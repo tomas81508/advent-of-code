@@ -182,6 +182,14 @@
   [program]
   (assoc program :halted true))
 
+(defn create-program
+  [int-code inputs]
+  {:int-code      int-code
+   :index         0
+   :relative-base 0
+   :inputs        inputs
+   :outputs       []})
+
 (defn run
   {:test (fn []
            (is= (run [3 9 8 9 10 9 4 9 99 -1 8] [7])
@@ -219,11 +227,7 @@
   ([program inputs]
    (loop [program (if (map? program)
                     program
-                    {:int-code      program
-                     :index         0
-                     :relative-base 0
-                     :inputs        inputs
-                     :outputs       []})]
+                    (create-program program inputs))]
      (let [program (run-instruction program)]
        (if (or (contains? program :halted)
                (contains? program :awaiting-input))

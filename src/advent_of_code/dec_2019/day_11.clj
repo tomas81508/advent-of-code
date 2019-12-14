@@ -69,7 +69,7 @@
                                          (paint-all $ white))]
                       (->> (range 6)
                            (map (fn [y]
-                                  (->> (range 40)
+                                  (->> (range 1 40)
                                        (map (fn [x]
                                               (if (= 1 (get painting [x y]))
                                                 "#"
