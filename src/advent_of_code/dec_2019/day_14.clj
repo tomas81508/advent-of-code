@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-14
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [ysera.test :refer [is is-not is= deftest]]
+            [ysera.math :refer [floor]]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_14.txt") $
@@ -278,10 +279,39 @@
                   1000000000000
                   (calculate-ore state 82892754)))))
 
+(defn find-max-fuel
+  {:test (fn []
+           (let [state (create-state ["157 ORE => 5 NZVS"
+                                      "165 ORE => 6 DCFZ"
+                                      "44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL"
+                                      "12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ"
+                                      "179 ORE => 7 PSHF"
+                                      "177 ORE => 5 HKGWZ"
+                                      "7 DCFZ, 7 PSHF => 2 XJWVT"
+                                      "165 ORE => 2 GPVTF"
+                                      "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT"])]
+             (is= (find-max-fuel state 1000000000000)
+                  82892753)))}
+  [state ore]
+  (let [first-guess (loop [i 100] (if (< (calculate-ore state i) ore)
+                                    (recur (* i 10))
+                                    i))]
+    (loop [min-guess 0
+           max-guess first-guess]
+      (let [guess (floor (/ (+ max-guess min-guess) 2))
+            needed-ore (calculate-ore state guess)]
+        (cond (> needed-ore ore)
+              (recur min-guess guess)
+
+              (< (- guess min-guess) 1)
+              guess
+
+              :else
+              (recur guess max-guess))))))
+
 (deftest puzzle-b
          ; This can easily be solved by binary search
-         (let [state (create-state (get-puzzle-input))]
-           (is= (calculate-ore state 2509120)
-                999999564112N)
-           (is= (calculate-ore state 2509121)
-                1000000084167N)))
+         (is= (time (let [state (create-state (get-puzzle-input))]
+                      (find-max-fuel state 1000000000000)))
+              ; "Elapsed time: 1650.927267 msecs"
+              2509120))

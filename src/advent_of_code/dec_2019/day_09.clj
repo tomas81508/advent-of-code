@@ -191,6 +191,7 @@
    :outputs       []})
 
 (defn run
+  "Runs a program until it halts or require input."
   {:test (fn []
            (is= (run [3 9 8 9 10 9 4 9 99 -1 8] [7])
                 {:int-code [3 9 8 9 10 9 4 9 99 0 8] :relative-base 0 :index 8 :inputs [] :outputs [0] :halted true})
@@ -226,7 +227,7 @@
   ([program] (run program nil))
   ([program inputs]
    (loop [program (if (map? program)
-                    program
+                    (assoc program :inputs inputs)
                     (create-program program inputs))]
      (let [program (run-instruction program)]
        (if (or (contains? program :halted)
