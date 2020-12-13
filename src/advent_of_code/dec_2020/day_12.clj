@@ -1,7 +1,7 @@
 (ns advent-of-code.dec-2020.day-12
   (:require [ysera.test :refer [is is-not is= deftest]]))
 
-; Matrix lib
+; Matrix lib (very inefficient but fun)
 
 (defn scalar-product
   "The scalar product of two vectors"
