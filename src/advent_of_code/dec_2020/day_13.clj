@@ -71,7 +71,7 @@
         d1 (- (second l1) (first l1))
         n2 (if (neg? (first l2)) (second l2) (first l2))
         d2 (- (second l2) (first l2))
-        algoritm (fn [large large-d small small-d]
+        algorithm (fn [large large-d small small-d]
                    (let [x (- large small)]
                      (loop [m 1]
                        (let [r (+ x (* m large-d))]
@@ -79,8 +79,8 @@
                            (+ (* large-d m) large)
                            (recur (inc m)))))))]
     (if (> n1 n2)
-      (algoritm n1 d1 n2 d2)
-      (algoritm n2 d2 n1 d1))))
+      (algorithm n1 d1 n2 d2)
+      (algorithm n2 d2 n1 d1))))
 
 (defn create-sequence
   [index step]
