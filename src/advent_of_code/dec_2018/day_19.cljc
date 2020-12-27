@@ -70,7 +70,7 @@
 
 (defn read-program
   [src]
-  (let [lines (->> (slurp "src/advent_of_code/dec_2018/day_19.txt")
+  (let [lines (->> (slurp "src/advent_of_code/dec_2018/day_19_messages.txt")
                    (clojure.string/split-lines))
         instructions (->> lines
                           (drop 1)
@@ -89,7 +89,7 @@
 
 (defn solve-puzzle-a []
   (time (let [{ip-bound :ip-bound instructions :instructions}
-              (read-program "src/advent_of_code/dec_2018/day_19.txt")]
+              (read-program "src/advent_of_code/dec_2018/day_19_messages.txt")]
           (run-program instructions ip-bound [0 0 0 0 0 0]))))
 
 ; "Elapsed time: 7460.002189 msecs"

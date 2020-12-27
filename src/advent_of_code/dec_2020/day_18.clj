@@ -1,7 +1,7 @@
 (ns advent-of-code.dec-2020.day-18
   (:require [ysera.test :refer [is is-not is= deftest]]
             [ysera.collections :refer [seq-contains?]]
-            [clojure.string :refer [ends-with? replace split starts-with?]]))
+            [clojure.string :refer [ends-with? split starts-with?]]))
 
 (defn get-puzzle-input []
   (-> (slurp "src/advent_of_code/dec_2020/day_18.txt")
@@ -15,8 +15,8 @@
                 ["(" "7" "*" "8" ")"]))}
   [expression]
   (-> expression
-      (replace "(" "( ")
-      (replace ")" " )")
+      (clojure.string/replace "(" "( ")
+      (clojure.string/replace ")" " )")
       (split #" ")))
 
 
