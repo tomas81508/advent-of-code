@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2020.day-19
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [clojure.spec.alpha :as s]))
+  (:require [ysera.test :refer [is is-not is= deftest]]))
 
 (defn get-puzzle-input-rules []
   (-> (slurp "src/advent_of_code/dec_2020/day_19_rules.txt")

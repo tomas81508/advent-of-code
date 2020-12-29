@@ -61,10 +61,7 @@
         (subs s (count rule)))
       (->> rule
            (map (fn [rs]
-                  (reduce (fn [s r]
-                            ;(println "Testing: " s r (when s (match-rule rules s r)))
-                            (when s
-                              (match-rule rules s r)))
+                  (reduce (fn [s r] (when s (match-rule rules s r)))
                           s
                           rs)))
            (remove nil?)
