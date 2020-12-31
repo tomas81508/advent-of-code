@@ -16,17 +16,15 @@
   (let [[c1 & r1] (:player1 state)
         [c2 & r2] (:player2 state)]
     (if (> c1 c2)
-      (-> state
-          (assoc :player1 (concat r1 [c1 c2]))
-          (assoc :player2 (or r2 [])))
-      (-> state
-          (assoc :player1 (or r1 []))
-          (assoc :player2 (concat r2 [c2 c1]))))))
+      {:player1 (concat r1 [c1 c2])
+       :player2 (or r2 [])}
+      {:player1 (or r1 [])
+       :player2 (concat r2 [c2 c1])})))
 
-(defn get-winner?
+(defn get-winner
   {:test (fn []
-           (is= (get-winner? {:player1 [2 6 3 1 9 5 8 4 7 10]
-                              :player2 []})
+           (is= (get-winner {:player1 [2 6 3 1 9 5 8 4 7 10]
+                             :player2 []})
                 :player1))}
   [state]
   (->> (seq state)
@@ -39,7 +37,7 @@
                 {:player1 []
                  :player2 [3 2 10 6 8 5 9 4 7 1]}))}
   [state]
-  (if (get-winner? state)
+  (if (get-winner state)
     state
     (recur (play-a-round state))))
 
@@ -63,4 +61,67 @@
               32413))
 
 
+;(defn play-a-round-2
+;  {:test (fn []
+;           (is= (play-a-round-2 test-state)
+;                {:player1 [2 6 3 1 9 5]
+;                 :player2 [8 4 7 10]})
+;           (is= (play-a-round-2 {:player1 [4 9 8 5 2]
+;                                 :player2 [3 10 1 7 6]})
+;                {:player1 [9 8 5 2]
+;                 :player2 [10 1 7 6 3 4]}))}
+;  [state]
+;  (let [[c1 & r1] (:player1 state)
+;        [c2 & r2] (:player2 state)
+;        sub-game-winner (and (<= c1 (count r1))
+;                             (<= c2 (count r2))
+;                             (-> (play-to-the-end-2 {:player1 r1 :player2 r2})
+;                                 (get-winner)))]
+;    (if (or (= sub-game-winner :player1)
+;            (and (not sub-game-winner)
+;                 (> c1 c2)))
+;      {:player1 (concat r1 [c1 c2])
+;       :player2 (or r2 [])}
+;      {:player1 (or r1 [])
+;       :player2 (concat r2 [c2 c1])})))
 
+(defn play-to-the-end-2
+  {:test (fn []
+           (is= (play-to-the-end-2 {:player1 [43 19]
+                                    :player2 [2 29 14]})
+                {:player1 [:winner]
+                 :player2 []})
+           (is= (play-to-the-end-2 test-state)
+                {:player1 []
+                 :player2 [7 5 6 2 4 1 10 8 9 3]}))}
+  [state]
+  (loop [state state
+         history #{}]
+    (cond (get-winner state)
+          state
+
+          (contains? history state)
+          {:player1 [:winner] :player2 []}
+
+          :else
+          (let [[c1 & r1] (:player1 state)
+                [c2 & r2] (:player2 state)
+                sub-game-winner (and (<= c1 (count r1))
+                                     (<= c2 (count r2))
+                                     (-> (play-to-the-end-2 {:player1 (take c1 r1) :player2 (take c2 r2)})
+                                         (get-winner)))
+                next-state (if (or (= sub-game-winner :player1)
+                              (and (not sub-game-winner)
+                                   (> c1 c2)))
+                        {:player1 (concat r1 [c1 c2])
+                         :player2 (or r2 [])}
+                        {:player1 (or r1 [])
+                         :player2 (concat r2 [c2 c1])})]
+            (recur next-state (conj history state))))))
+
+(deftest puzzle-b
+         (is= (time (-> state
+                        (play-to-the-end-2)
+                        (score)))
+              ; "Elapsed time: 3468.471383 msecs"
+              31596))
