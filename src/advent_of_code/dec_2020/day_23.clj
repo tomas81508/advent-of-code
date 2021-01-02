@@ -6,12 +6,9 @@
 
 (def test-input "389125467")
 
-(defn get-index-of
+(defn index-of
   [coll v]
-  (->> coll
-       (map-indexed (fn [index n] [index n]))
-       (filter (fn [[_ n]] (= n v)))
-       (ffirst)))
+  (.indexOf coll v))
 
 (defn create-state
   {:test (fn []
@@ -20,8 +17,7 @@
                  :current 3}))}
   [input]
   {:circle  (->> input
-                 (map (fn [n] (read-string (str n))))
-                 (vec))
+                 (map (fn [n] (read-string (str n)))))
    :current (read-string (str (first input)))})
 
 (defn pick-up-three-cups-after-current
@@ -34,23 +30,29 @@
                     (pick-up-three-cups-after-current))
                 [[8 9 1 2 5 4] [6 7 3]]))}
   [state]
-  (let [circle (:circle state)]
-    (let [current-index (get-index-of (:circle state) (:current state))
-          double-circle (vec (apply concat (repeat 2 circle)))
-          the-three-cups (subvec double-circle (inc current-index) (+ current-index 4))
-          the-three-cups-set (set the-three-cups)]
-      [(->> (concat (subvec double-circle 0 (inc current-index))
-                    (subvec double-circle (+ current-index 4)))
-            (remove (fn [x] (contains? the-three-cups-set x)))
-            (take 6))
-       the-three-cups])))
+  (let [circle (:circle state)
+        current-index (index-of (:circle state) (:current state))
+        extended-circle (take 3 circle)
+        [before-cups pick-up-cups-and-after-cups] (split-at (inc current-index) circle)
+        [naive-pick-up-cups after-cups] (split-at 3 pick-up-cups-and-after-cups)
+        naive-pick-up-cups-count (count naive-pick-up-cups)
+        pick-up-cups (if (< naive-pick-up-cups-count 3)
+                       (take 3 (concat naive-pick-up-cups extended-circle))
+                       naive-pick-up-cups)]
+    [(concat (if (< naive-pick-up-cups-count 3)
+               (drop (- 3 naive-pick-up-cups-count) before-cups)
+               before-cups)
+             after-cups)
+     pick-up-cups]))
 
 (defn get-destination-cup
   {:test (fn []
            (is= (get-destination-cup [8 9 1 7 5 4] 3) 1)
            (is= (get-destination-cup [8 9 6 7 5 4] 3) 9))}
   [cups current-cup]
-  (let [maybe-destination-cup (if (= current-cup 1) 9 (dec current-cup))]
+  (let [maybe-destination-cup (if (= current-cup 1)
+                                (+ (count cups) 3)
+                                (dec current-cup))]
     (if (seq-contains? cups maybe-destination-cup)
       maybe-destination-cup
       (recur cups maybe-destination-cup))))
@@ -60,7 +62,7 @@
            (is= (place-cups [3 2 5 4 6 7] [8 9 1] 2)
                 [3 2 8 9 1 5 4 6 7]))}
   [rest-of-cups pick-up-cups destination-cup]
-  (let [destination-index (get-index-of rest-of-cups destination-cup)
+  (let [destination-index (index-of rest-of-cups destination-cup)
         [before after] (split-at (inc destination-index) rest-of-cups)]
     (concat before pick-up-cups after)))
 
@@ -71,8 +73,8 @@
            (is= (update-current [3 2 8 9 1 5 4 6 7] 7)
                 3))}
   [cups current]
-  (let [current-index (get-index-of cups current)]
-    (nth cups (if (= current-index 8) 0 (inc current-index)))))
+  (let [current-index (index-of cups current)]
+    (nth cups (if (= current-index (dec (count cups))) 0 (inc current-index)))))
 
 (defn move
   {:test (fn []
@@ -102,7 +104,7 @@
            (is= (collect-cup-labels [5 8 3 7 4 1 9 2 6])
                 "92658374"))}
   [cups]
-  (let [index (get-index-of cups 1)
+  (let [index (index-of cups 1)
         [before after] (split-at (inc index) cups)]
     (->> (concat after (drop-last before))
          (clojure.string/join))))
@@ -119,5 +121,5 @@
                           ((apply comp (repeat 100 move)) $)
                           (:circle $)
                           (collect-cup-labels $)))
-              ; "Elapsed time: 4.054698 msecs"
+              ; "Elapsed time: 1.133103 msecs"
               "58427369"))
