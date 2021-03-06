@@ -120,4 +120,4 @@
                                 (do-instructions)
                                 (:output))]
                 (* (get output 0) (get output 1) (get output 2)))
-              12))
+              1209))
