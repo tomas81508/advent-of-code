@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2019.day-17
   (:require [advent-of-code.dec-2019.day-09 :refer [run
-                                                    run-instruction
                                                     create-program]]))
 
 (defn get-puzzle-input []
@@ -94,7 +93,5 @@
 (def inputs (->> (str main a b c "n\n")
                  (map string->ascii)))
 
-(reduce (fn [a input]
-          (run a [input]))
-        clean-robot-program
-        inputs)
+(last (:outputs (run clean-robot-program inputs)))
+; => 895965

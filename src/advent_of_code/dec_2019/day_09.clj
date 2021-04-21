@@ -227,7 +227,9 @@
   ([program] (run program nil))
   ([program inputs]
    (loop [program (if (map? program)
-                    (assoc program :inputs inputs)
+                    (if inputs
+                      (assoc program :inputs inputs)
+                      program)
                     (create-program program inputs))]
      (let [program (run-instruction program)]
        (if (or (contains? program :halted)
