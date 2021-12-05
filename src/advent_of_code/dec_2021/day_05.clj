@@ -42,21 +42,6 @@
                                  (reduce (fn [a c]
                                            (update a c (fn [v] (if v (inc v) 1))))
                                          a))))
-                        ; (let [max-x (max x1 x2)
-                        ;                                min-x (min x1 x2)
-                        ;                                max-y (max y1 y2)
-                        ;                                min-y (min y1 y2)]
-                        ;                            (->> (loop [cells []
-                        ;                                        x min-x
-                        ;                                        y min-y]
-                        ;                                   (if (and (= x max-x) (= y max-y))
-                        ;                                     (conj cells [x y])
-                        ;                                     (recur (conj cells [x y])
-                        ;                                            (if (= x max-x) x (inc x))
-                        ;                                            (if (= y max-y) y (inc y)))))
-                        ;                                 (reduce (fn [a c]
-                        ;                                           (update a c (fn [v] (if v (inc v) 1))))
-                        ;                                         a))))
                         {})
                 )})
 
@@ -125,5 +110,4 @@
                         (create-state (constantly true))
                         (number-of-overlaps)))
               ; "Elapsed time: 136.253558 msecs"
-              20012)
-         )
+              20012))
