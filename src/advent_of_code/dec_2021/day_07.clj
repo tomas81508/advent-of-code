@@ -6,12 +6,12 @@
 (def puzzle-input (slurp "src/advent_of_code/dec_2021/day_07_input.txt"))
 
 (defn distance-fn
-  [x y]
+  [^long x ^long y]
   (Math/abs (- x y)))
 
 (defn calculate-fuel
   [d]
-  (reduce + (range 1 (inc d))))
+  (/ (* d (+ d 1)) 2))
 
 (def calculate-fuel (memoize calculate-fuel))
 
@@ -52,6 +52,6 @@
 (comment
   (is= (time (align-positions puzzle-input distance-2-fn))
        ; "Elapsed time: 3386.525335 msecs" without memoize
-       ; "Elapsed time: 1323.227414 msecs" with memoize
+       ; "Elapsed time: 151.147587 msecs"
        [489 101268110]))
 
