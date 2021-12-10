@@ -28,7 +28,10 @@
 (defn create-state
   {:test (fn []
            (is= (create-state test-input)
-                {3 2 4 1 1 1 2 1}))}
+                {3 2
+                 4 1
+                 1 1
+                 2 1}))}
   [input]
   (->> (clojure.string/split input #",")
        (map read-string)
