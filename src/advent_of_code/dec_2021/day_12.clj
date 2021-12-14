@@ -78,7 +78,8 @@
                                    :else
                                    (update a :active (fn [active] (set (conj active (conj active-path c)))))))
                            a))))
-          {:paths paths}
+          {:active #{}
+           :paths paths}
           active))
 
 
