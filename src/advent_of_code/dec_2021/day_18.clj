@@ -42,8 +42,7 @@
                     (snail-explode))
                 (lists->depths [[3 [2 [8 0]]] [9 [5 [7 0]]]]))
            (is= (snail-explode [[0 3] [7 3] [4 2] [7 3] [8 3] [0 3] [6 4] [7 4] [1 1] [1 1]])
-                [[0 3] [7 3] [4 2] [7 3] [8 3] [6 3] [0 3] [8 1] [1 1]])
-           )}
+                [[0 3] [7 3] [4 2] [7 3] [8 3] [6 3] [0 3] [8 1] [1 1]]))}
   [vds]
   (let [l (count vds)
         index (->> vds
@@ -141,8 +140,7 @@
            (is= (depths->lists [[7 0] [6 1] [5 2] [4 3] [3 4] [2 4]])
                 [7 [6 [5 [4 [3 2]]]]])
            (is= (depths->lists [[8 3] [7 3] [7 3] [7 3] [8 3] [6 3] [7 3] [7 3] [0 3] [7 3] [6 3] [6 3] [8 2] [7 2]])
-                [[[[8 7] [7 7]] [[8 6] [7 7]]] [[[0 7] [6 6]] [8 7]]])
-           )}
+                [[[[8 7] [7 7]] [[8 6] [7 7]]] [[[0 7] [6 6]] [8 7]]]))}
   [vds]
   (loop [vds vds
          level 4]
@@ -171,15 +169,12 @@
            (is= (calculate-magnitude [[[[1 1] [2 2]] [3 3]] [4 4]]) 445)
            (is= (calculate-magnitude [[[[3 0] [5 3]] [4 4]] [5 5]]) 791)
            (is= (calculate-magnitude [[[[5 0] [7 4]] [5 5]] [6 6]]) 1137)
-           (is= (calculate-magnitude [[[[8 7] [7 7]] [[8 6] [7 7]]] [[[0 7] [6 6]] [8 7]]]) 3488)
-
-           )}
+           (is= (calculate-magnitude [[[[8 7] [7 7]] [[8 6] [7 7]]] [[[0 7] [6 6]] [8 7]]]) 3488))}
   [[l r]]
   (+ (* 3 (if (number? l) l (calculate-magnitude l)))
      (* 2 (if (number? r) r (calculate-magnitude r)))))
 
-(defn solver-a
-  []
+(defn solver-a []
   (->> puzzle-input
        (clojure.string/split-lines)
        (map read-string)
@@ -191,8 +186,7 @@
 (comment
   (time (solver-a))
   ; "Elapsed time: 104.189017 msecs"
-  4173
-  )
+  4173)
 
 (defn largest-magnitude-duo
   {:test (fn []
@@ -210,16 +204,14 @@
                      (largest-magnitude-duo))
                 3993))}
   [vdss]
-  (let [combs (combinations vdss 2)]
-    (reduce (fn [a vds]
-              (max a
-                   (calculate-magnitude (depths->lists (snail-add vds)))
-                   (calculate-magnitude (depths->lists (snail-add (reverse vds))))))
-            0
-            combs)))
+  (reduce (fn [a vds]
+            (max a
+                 (calculate-magnitude (depths->lists (snail-add vds)))
+                 (calculate-magnitude (depths->lists (snail-add (reverse vds))))))
+          0
+          (combinations vdss 2)))
 
-(defn solver-b
-  []
+(defn solver-b []
   (->> puzzle-input
        (clojure.string/split-lines)
        (map read-string)
@@ -229,5 +221,4 @@
 (comment
   (time (solver-b))
   ; "Elapsed time: 1046.621118 msecs"
-  4706
-  )
+  4706)
