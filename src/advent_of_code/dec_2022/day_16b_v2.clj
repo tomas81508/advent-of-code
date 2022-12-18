@@ -1,103 +1,144 @@
 (ns advent-of-code.dec-2022.day-16b-v2
   (:require [ysera.test :refer [is is-not is= deftest]]
             [advent-of-code.dec-2022.day-16a-v2 :refer [distance-test-map
-                                                        distance-map]]))
+                                                        distance-map]]
+            [clojure.math.combinatorics]))
 
 
-(def start-state {:current-visits #{{:valves         [{:id :AA :minutes 26}
-                                                      {:id :AA :minutes 26}]
-                                     :open-valves    #{}
-                                     :total-pressure 0}}
-                  :visits         {}})
+(def start-state {:minutes            26
+                  :current-states     #{{:players        [{:id :AA :done 26}
+                                                          {:id :AA :done 26}]
+                                         :open-valves    #{}
+                                         :total-pressure 0}}
+                  :max-total-pressure 0
+                  :visits {}})
 
-(defn do-one-action
+
+(defn dead-end?
   {:test (fn []
-           (is= (do-one-action distance-test-map start-state)
-                {:current-visits #{{:valves      #{{:id :JJ :minutes 23}
-                                                   {:id :AA :minutes 26}}
-                                    :open-valves #{:JJ} :total-pressure 567}
-                                   {:valves      #{{:id :HH :minutes 20}
-                                                   {:id :AA :minutes 26}}
-                                    :open-valves #{:HH} :total-pressure 528}
-                                   {:valves      #{{:id :BB :minutes 24}
-                                                   {:id :AA :minutes 26}}
-                                    :open-valves #{:HH} :total-pressure 364}
-                                   {:valves      #{{:id :DD :minutes 24}
-                                                   {:id :AA :minutes 26}}
-                                    :open-valves #{:DD} :total-pressure 560}
-                                   {:valves      #{{:id :EE :minutes 23}
-                                                   {:id :AA :minutes 26}}
-                                    :open-valves #{:EE} :total-pressure 81}
-                                   {:valves      #{{:id :CC :minutes 23}
-                                                   {:id :AA :minutes 26}}
-                                    :open-valves #{:CC} :total-pressure 54}}
-                 :visits         {:CC {#{:CC} [{:total-pressure 54 :minutes 27}]}
-                                  :HH {#{:HH} [{:total-pressure 528 :minutes 24}]}
-                                  :BB {#{:BB} [{:total-pressure 364 :minutes 28}]}
-                                  :EE {#{:EE} [{:total-pressure 81 :minutes 27}]}
-                                  :DD {#{:DD} [{:total-pressure 560 :minutes 28}]}
-                                  :JJ {#{:JJ} [{:total-pressure 567 :minutes 27}]}}}))}
+           (is (dead-end? [{:total-pressure 1603
+                            :players        #{{:id :HH, :done 12} {:id :EE, :done 12}}}]
+                          {:players        #{{:id :HH, :done 12} {:id :EE, :done 12}}
+                           :total-pressure 1400}))
+           (is (dead-end? [{:total-pressure 1603
+                            :players        #{{:id :HH, :done 12} {:id :EE, :done 12}}}]
+                          {:players        #{{:id :HH, :done 5} {:id :EE, :done 12}}
+                           :total-pressure 1603}))
+           (is-not (dead-end? [{:total-pressure 1603
+                                :players        #{{:id :HH, :done 12} {:id :EE, :done 12}}}]
+                              {:players        #{{:id :HH, :done 15} {:id :EE, :done 12}}
+                               :total-pressure 1303})))}
+  [visits state]
+  (->> visits
+       (some (fn [{tp :total-pressure ps :players}]
+               (and (>= tp (:total-pressure state))
+                    (let [first-player-state (first (:players state))
+                          second-player-state (second (:players state))]
+                      (and (some (fn [{id :id d :done}]
+                                   (and (= (:id first-player-state) id)
+                                        (>= d (:done first-player-state))))
+                                 ps)
+                           (some (fn [{id :id d :done}]
+                                   (and (= (:id second-player-state) id)
+                                        (>= d (:done second-player-state))))
+                                 ps))))))))
+
+
+(defn player->player-states
+  [distance-map player minutes open-valves]
+  (if (not= (:done player) minutes)
+    #{player}
+    (->> (distance-map (:id player))
+         (:walks)
+         (keep (fn [[id distance]] (when-not (contains? open-valves id)
+                                     {:id id :done (- minutes distance 1)}))))))
+
+
+(defn get-new-current-state-positions
+  [distance-map players open-valves minutes]
+  (let [player1 (first players)
+        player2 (second players)
+        player1-states (player->player-states distance-map player1 minutes open-valves)
+        player2-states (player->player-states distance-map player2 minutes open-valves)]
+    (if-not (and (not (empty? player1-states))
+                 (not (empty? player2-states)))
+      #{}
+      (->> (clojure.math.combinatorics/cartesian-product player1-states player2-states)
+           (map set)
+           (remove (fn [positions] (= (count positions) 1)))
+           (into #{})))))
+
+
+(defn do-one-minute
+  {:test (fn [])}
   [distance-map state]
-  (reduce (fn [state current-visit]
-            (let [destinations (distance-map (:id current-visit))]
-              ; destinations = {:flow-rate 0, :walks {:CC 2, :HH 5, :BB 1, :EE 2, :DD 1, :JJ 2}}
-              (reduce-kv (fn [state destination distance]
-                           (cond (contains? (:open-valves current-visit) destination)
-                                 state
-
-                                 (< distance (:minutes current-visit))
-                                 (let [new-minutes (- (:minutes current-visit) distance 1)
-                                       new-flow-rate (:flow-rate (distance-map destination))
-                                       new-visit (-> current-visit
-                                                     (assoc :id destination
-                                                            :minutes new-minutes)
-                                                     (update :open-valves conj destination)
-                                                     (update :total-pressure + (* new-minutes new-flow-rate)))]
-                                   (if (been-here-before? new-visit
-                                                          (get-in state [:visits destination (:open-valves new-visit)]))
-                                     state
-                                     (-> state
-                                         (update :current-visits conj new-visit)
-                                         (update-in [:visits destination (:open-valves new-visit)]
-                                                    conj {:total-pressure (:total-pressure new-visit)
-                                                          :minutes        (:minutes new-visit)}))))
-
-                                 :else state))
-                         state
-                         (:walks destinations))))
-          (-> state
-              (assoc :current-visits #{}))
-          (:current-visits state)))
+  (let [minutes (:minutes state)
+        ; Filtering out when actions needed
+        {new-action-visits true old-action-visits nil}
+        (->> (:current-states state)
+             (group-by (fn [{players :players}]
+                         (some (fn [{done :done}] (= done minutes))
+                               players))))]
+    (reduce (fn [state current-state]
+              (let [done-valve-ids (->> current-state
+                                        (:players)
+                                        (filter (fn [{done :done}] (= done minutes)))
+                                        (map :id)
+                                        (remove (fn [id] (contains? (:open-valves current-state) id))))]
+                (if (empty? done-valve-ids)
+                  state
+                  (let [done-valve-ids (remove (fn [id] (= id :AA)) done-valve-ids)
+                        total-pressure-gained (* (->> done-valve-ids
+                                                      (map (fn [id] (:flow-rate (distance-map id))))
+                                                      (apply +))
+                                                 (inc (:minutes state)))
+                        new-total-pressure (+ (:total-pressure current-state) total-pressure-gained)
+                        new-state-positions (get-new-current-state-positions distance-map
+                                                                             (:players current-state)
+                                                                             (:open-valves current-state)
+                                                                             minutes)
+                        new-states (->> new-state-positions
+                                        (map (fn [positions]
+                                               {:players        positions
+                                                :open-valves    (reduce conj (:open-valves current-state) done-valve-ids)
+                                                :total-pressure new-total-pressure}))
+                                        (remove (fn [s]
+                                                  (let [visits (get-in state [:visits
+                                                                              (:open-valves s)
+                                                                              (->> (:players s)
+                                                                                   (map :id)
+                                                                                   (into #{}))])]
+                                                    (dead-end? visits s)))))]
+                    (-> (if (> new-total-pressure (:max-total-pressure state))
+                          (assoc state :max-total-pressure new-total-pressure)
+                          state)
+                        (update :current-states (fn [states] (reduce conj states new-states)))
+                        (update :visits
+                                (fn [visits]
+                                  (reduce (fn [visits state]
+                                            (update-in visits
+                                                       [(:open-valves state)
+                                                        (->> (:players state)
+                                                             (map :id)
+                                                             (into #{}))]
+                                                       conj (select-keys state [:players
+                                                                                :total-pressure])))
+                                          visits
+                                          new-states))))))))
+            (-> state
+                (update :minutes dec)
+                (assoc :current-states (into #{} old-action-visits)))
+            new-action-visits)))
 
 
 (comment
-
-  (time (->> (loop [state start-state]
-               (if (empty? (:current-visits state))
-                 state
-                 (recur (do-one-action distance-test-map state))))
-             (:visits)
-             (vals)
-             (map vals)
-             (flatten)
-             (map :total-pressure)
-             (reduce max)))
-  ; "Elapsed time: 5.65798 msecs"
-  ; => 1651
-
-  (time (->> (loop [state start-state]
-               (if (empty? (:current-visits state))
-                 state
-                 (recur (do-one-action distance-map state))))
-             (:visits)
-             (vals)
-             (map vals)
-             (flatten)
-             (map :total-pressure)
-             (reduce max)))
-  ; "Elapsed time: 680.057434 msecs"
-  ; => 1673
-
+  (loop [state start-state]
+    (println (:minutes state))
+    (println (count (:current-states state)))
+    (if (= (:minutes state) 0)
+      (:max-total-pressure state)
+      (recur (time (do-one-minute distance-map state)))))
+  ; This algorithm took a long time ...
   )
 
 

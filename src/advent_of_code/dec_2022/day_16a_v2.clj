@@ -170,8 +170,14 @@
                                      (-> state
                                          (update :current-visits conj new-visit)
                                          (update-in [:visits destination (:open-valves new-visit)]
-                                                    conj {:total-pressure (:total-pressure new-visit)
-                                                          :minutes        (:minutes new-visit)}))))
+                                                    (fn [stored-values]
+                                                      (let [new-total-pressure (:total-pressure new-visit)]
+                                                        (conj (->> stored-values
+                                                                   (remove (fn [{m :minutes tp :total-pressure}]
+                                                                             (and (<= m new-minutes)
+                                                                                  (<= tp new-total-pressure)))))
+                                                              {:total-pressure new-total-pressure
+                                                               :minutes        new-minutes})))))))
 
                                  :else state))
                          state
@@ -197,6 +203,7 @@
   ; => 1651
 
   (time (->> (loop [state start-state]
+               (println (count (:current-visits state)))
                (if (empty? (:current-visits state))
                  state
                  (recur (do-one-action distance-map state))))
