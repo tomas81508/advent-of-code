@@ -1,49 +1,12 @@
 (ns advent-of-code.dec-2022.day-05
   (:require [ysera.test :refer [is is-not is= deftest]]))
 
-; Done by my ten-year-old son Emil
-
 (def input-data (->> (slurp "src/advent_of_code/dec_2022/day_05_input.txt")
                      (clojure.string/split-lines)
                      (map (fn [l]
                             (->> (re-find #"move (\d+) from (\d) to (\d)" l)
                                  (drop 1)
                                  (map read-string))))))
-
-
-(def person {:name "Lime"
-             :age  9})
-
-(get person :name)
-
-(assoc person :name "Emil")
-(update person :age
-        (fn [x] (inc x)))
-
-(-> person
-    (assoc :name "lime")
-    (update :age inc)
-    (update :name reverse))
-
-
-(def l (seq "NFDGH"))
-
-(drop 1 l)
-
-(conj l \X)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ;    [V] [G]             [H]
 ;[Z] [H] [Z]         [T] [S]
@@ -130,10 +93,12 @@
                  (move state n from to))
                state)))
 
-(reduce (fn [a v]
-          (str a (get-top-crate end-positions v)))
-        ""
-        (range 1 10))
+(comment
+  (reduce (fn [a v]
+            (str a (get-top-crate end-positions v)))
+          ""
+          (range 1 10))
+  )
 
 (def end-positions-2
   (->> input-data
@@ -141,9 +106,11 @@
                  (move-n state n from to))
                state)))
 
-(reduce (fn [a v]
-          (str a (get-top-crate end-positions-2 v)))
-        ""
-        (range 1 10))
+(comment
+  (reduce (fn [a v]
+            (str a (get-top-crate end-positions-2 v)))
+          ""
+          (range 1 10))
+  )
 
 
