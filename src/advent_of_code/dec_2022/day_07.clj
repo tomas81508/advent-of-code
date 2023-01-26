@@ -170,8 +170,7 @@
   (->> (seq directories-size)
        (keep (fn [[_ size]] (when (<= size 100000) size)))
        (apply +))
-  ; 249695773 too high
-
+  ; => 1642503
   )
 
 (def total-disc-space 70000000)
@@ -192,6 +191,8 @@
                    size
                    a))
                total-disc-space))
+  ; => 6999588
   )
 
+(/ 1 0)
 

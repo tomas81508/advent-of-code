@@ -1,18 +1,10 @@
 (ns advent-of-code.dec-2022.day-03
   (:require [ysera.test :refer [is= deftest]]))
 
-; Done by my ten-year-old son Emil
-
 (def input-data (->> (slurp "src/advent_of_code/dec_2022/day_03_input.txt")
                      (clojure.string/split-lines)))
 
 (def things "vJrwpWtwJgWrhcsFMMfFFhFp")
-
-(comment
-  (count things)
-  (subs things 0 12)
-  (subs things 12)
-  )
 
 (defn split-in-half
   [rucksack]

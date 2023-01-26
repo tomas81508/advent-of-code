@@ -1,19 +1,10 @@
 (ns advent-of-code.dec-2022.day-04
   (:require [ysera.test :refer [is is-not is= deftest]]))
 
-; Done by my ten-year-old son Emil
-
 (def input-data (->> (slurp "src/advent_of_code/dec_2022/day_04_input.txt")
                      (clojure.string/split-lines)))
 
-(def work "3-87,4-4")
-
 (def pattern #"(\d+)-(\d+),(\d+)-(\d+)")
-
-(re-find pattern work)
-
-(def work2 "28-96,28-28")
-(def work3 "28-30,25-40")
 
 (defn compare?
   [work]
@@ -24,9 +15,6 @@
              (>= x2 y2))
         (and (<= y1 x1)
              (>= y2 x2)))))
-
-(compare? work2)
-(compare? work3)
 
 (->> input-data
      (map compare?)
