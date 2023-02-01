@@ -76,5 +76,57 @@
   ; => 3374
   )
 
+(defn get-closure-rectangle
+  {:test (fn []
+           (is= (get-closure-rectangle test-state)
+                [4 4 7]))}
+  [state]
+  (->> (keys state)
+       (reduce (fn [a v]
+                 (map max a v))
+               [0 0 0])
+       (map inc)))
+
+(def directions [[1 0 0] [-1 0 0] [0 1 0] [0 -1 0] [0 0 1] [0 0 -1]])
+
+(defn outside?
+  [[mx my mz] [x y z]]
+  (not (and (<= -1 x (inc mx)) (<= -1 y (inc my)) (<= -1 z (inc mz)))))
+
+(defn get-outside-area
+  [state]
+  (let [max-xyz (get-closure-rectangle state)]
+    (loop [water #{[0 0 0]}
+           boundary water
+           area 0]
+      (if (empty? boundary)
+        area
+        (let [; neighbours including higher multiplicity
+              neighbours (->> boundary
+                              (map (fn [b]
+                                     (->> directions
+                                          (keep (fn [d]
+                                                  (let [nw (map + d b)]
+                                                    (when (and (not (contains? water nw))
+                                                               (not (outside? max-xyz nw)))
+                                                      nw)))))))
+                              (apply concat))
+              inside-state (->> neighbours
+                                (filter (fn [n] (contains? state n))))
+              new-water (clojure.set/difference (set neighbours) (set inside-state))]
+          (recur (clojure.set/union water new-water)
+                 new-water
+                 (+ area (count inside-state))))))))
+
+(comment
+  (get-outside-area test-state)
+
+  (time (get-outside-area state))
+  ; "Elapsed time: 94.131054 msecs"
+  ; => 2010
+
+  )
+
+
 
 
