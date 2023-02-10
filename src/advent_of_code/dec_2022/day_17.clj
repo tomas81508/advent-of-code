@@ -150,5 +150,66 @@
         (get-height)))
   ; "Elapsed time: 1730.162056 msecs"
   ; => 3117
+  )
+
+(defn move-a-stream
+  [state stream]
+  (loop [state state
+         [stream-part & stream] stream]
+    (if-not stream-part
+      state
+      (let [next-state (-> (maybe-add-falling-rock state)
+                           ;((fn [state]
+                           ;   ;(println state)
+                           ;   (println stream-part)
+                           ;   (println (print-chamber state))
+                           ;   state))
+                           (move-a-step stream-part))]
+        (recur next-state stream)))))
+
+; Ugly solution of part b
+
+(comment
+
+  (def results
+    (loop [state state
+           heights []
+           rocks []
+           i 0]
+      (let [state (move-a-stream state stream)
+            heights (conj heights (get-height state))
+            rocks (conj rocks (:number-of-rocks state))]
+        (println i)
+        (if (= i 3)
+          {:heights heights :rocks rocks}
+          (recur state heights rocks (inc i))))))
+
+  ; => {:heights [2706 5401 8096 10791], :rocks [1741 3476 5211 6946]}
+
+  (def height-difference (->> (:heights results)
+                              (partition 2 1)
+                              (map (fn [[h1 h2]] (- h2 h1)))))
+
+  (def rocks-difference (->> (:rocks results)
+                             (partition 2 1)
+                             (map (fn [[h1 h2]] (- h2 h1)))))
+
+  (def h-diff 2695)
+  (def r-diff 1735)
+
+  (def one-stream-state (move-a-stream state stream))
+  (def done-rocks (:number-of-rocks one-stream-state)) ;1741
+  (def all-rocks 1000000000000)
+  (def left-rocks (- all-rocks done-rocks))
+  (def quot-rocks (quot left-rocks r-diff))
+  (def rem-rocks (rem left-rocks r-diff))
+
+  (+ (-> one-stream-state
+         (assoc :number-of-rocks 0)
+         (move (cycle stream) rem-rocks)
+         (get-height))
+     (* h-diff quot-rocks))
+
+  ; 1553314121019
 
   )
