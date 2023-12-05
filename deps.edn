@@ -1,0 +1,4 @@
+{:deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/math.combinatorics {:mvn/version "0.1.6"}
+        digest/digest {:mvn/version "1.4.10"}
+        ysera/ysera {:mvn/version "2.0.2"}}}
