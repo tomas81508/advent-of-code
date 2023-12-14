@@ -47,9 +47,9 @@
 
 (defn create-extended-state
   {:test (fn []
-           (is= (create-extended-state test-input)
+           (is= (create-extended-state test-input 2)
                 #{[4 0] [9 1] [0 2] [8 5] [1 6] [12 7] [9 10] [5 11] [0 11]}))}
-  [input]
+  [input factor]
   (let [ngr (no-galaxy-rows input)
         ngc (no-galaxy-columns input)
         size-x (count (first input))
@@ -57,8 +57,8 @@
     (reduce (fn [a y]
               (reduce (fn [a x]
                         (if (= (get-in input [y x]) \#)
-                          (let [mod-x (+ x (count (filter (fn [p] (< p x)) ngc)))
-                                mod-y (+ y (count (filter (fn [p] (< p y)) ngr)))]
+                          (let [mod-x (+ x (* (dec factor) (count (filter (fn [p] (< p x)) ngc))))
+                                mod-y (+ y (* (dec factor) (count (filter (fn [p] (< p y)) ngr))))]
                             (conj a [mod-x mod-y]))
                           a))
                       a
@@ -76,17 +76,37 @@
 
 (defn calculate-distances
   {:test (fn []
-           (is= (calculate-distances test-input) 374))}
-  [input]
-  (as-> (create-extended-state input) $
+           (is= (calculate-distances test-input 2) 374))}
+  [input factor]
+  (as-> (create-extended-state input factor) $
         (combinatorics/combinations $ 2)
         (map (fn [coordinates] (apply manhattan-distance coordinates)) $)
         (reduce + $)))
 
 (deftest puzzle-a
-  (is= (time (calculate-distances input))
+  (is= (time (calculate-distances input 2))
        ; "Elapsed time: 122.110425 msecs"
        10173804))
+
+(deftest example-10-times
+  (is= (calculate-distances test-input 10)
+       1030))
+
+(deftest puzzle-b
+  (is= (time (calculate-distances input 1000000))
+       ; "Elapsed time: 126.994404 msecs"
+       634324905172))
+
+
+
+
+
+
+
+
+
+
+
 
 
 
