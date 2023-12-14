@@ -50,41 +50,54 @@
   {:test (fn []
            (is= (move-rocks {:stable     #{}
                              :non-stable #{[0 1]}
-                             :cubes      #{[0 0]}})
+                             :cubes      #{[0 0]}}
+                            2
+                            2
+                            [0 -1])
                 {:stable     #{[0 1]}
                  :non-stable #{}
                  :cubes      #{[0 0]}})
            (is= (move-rocks {:stable     #{[0 0]}
                              :non-stable #{[0 1]}
-                             :cubes      #{}})
+                             :cubes      #{}}
+                            2
+                            2
+                            [0 -1])
                 {:stable     #{[0 0] [0 1]}
                  :non-stable #{}
                  :cubes      #{}})
            (is= (move-rocks {:stable     #{}
                              :non-stable #{[0 2]}
-                             :cubes      #{}})
+                             :cubes      #{}}
+                            2
+                            2
+                            [0 -1])
                 {:stable     #{[0 0]}
                  :non-stable #{}
                  :cubes      #{}})
            (is= (move-rocks {:stable     #{}
                              :non-stable #{[0 2] [0 1]}
-                             :cubes      #{}})
+                             :cubes      #{}}
+                            2
+                            2
+                            [0 -1])
                 {:stable     #{[0 0] [0 1]}
                  :non-stable #{}
                  :cubes      #{}})
-           (is= (->> ["#" "O" "." "O"]
-                     (create-state)
-                     (move-rocks)
-                     (:stable))
+           (is= (-> ["#" "O" "." "O"]
+                    (create-state)
+                    (move-rocks 4 4 [0 -1])
+                    (:stable))
                 #{[0 1] [0 2]}))}
-  [state]
+  [state max-x max-y direction]
   (reduce (fn [state rock]
             (-> (loop [coordinate rock
                        best-coordinate rock]
-                  (let [next-coordinate (map + coordinate [0 -1])]
+                  (let [next-coordinate (map + coordinate direction)]
                     (cond (or (cube? state next-coordinate)
                               (stable-rock? state next-coordinate)
-                              (neg? (second next-coordinate)))
+                              (not (<= 0 (first next-coordinate) (dec max-x)))
+                              (not (<= 0 (second next-coordinate) (dec max-y))))
                           (update state :stable conj best-coordinate)
 
                           (non-stable-rock? state next-coordinate)
@@ -99,25 +112,72 @@
 
 (deftest test-puzzle
   (is= (time (let [state (create-state test-input)
-                   y-max (get-in state [:size :y])]
-               (->> state
-                    (move-rocks)
+                   max-x (get-in state [:size :x])
+                   max-y (get-in state [:size :y])]
+               (->> (move-rocks state max-x max-y [0 -1])
                     (:stable)
-                    (map (fn [[_ y]] (- y-max y)))
+                    (map (fn [[_ y]] (- max-y y)))
                     (reduce +))))
        136))
 
 
 (deftest puzzle-a
   (is= (time (let [state (create-state input)
-                   y-max (get-in state [:size :y])]
-               (->> state
-                    (move-rocks)
+                   max-x (get-in state [:size :x])
+                   max-y (get-in state [:size :y])]
+               (->> (move-rocks state max-x max-y [0 -1])
                     (:stable)
-                    (map (fn [[_ y]] (- y-max y)))
+                    (map (fn [[_ y]] (- max-y y)))
                     (reduce +))))
        ; "Elapsed time: 16.928976 msecs"
        108792))
+
+;; part 2
+
+(deftest puzzle-b
+  (is= (time (let [state (create-state input)
+                   max-x (get-in state [:size :x])
+                   max-y (get-in state [:size :y])]
+               (loop [state state
+                      i 0
+                      configurations {(hash state) i}]
+                 (let [state (->> [[0 -1] [-1 0] [0 1] [1 0]]
+                                  (reduce (fn [state d]
+                                            (let [result (move-rocks state max-x max-y d)]
+                                              (-> state
+                                                  (assoc :stable #{})
+                                                  (assoc :non-stable (:stable result)))))
+                                          state))
+                       state-hash (hash state)]
+                   (if (not (contains? configurations state-hash))
+                     (recur state (+ i 4) (assoc configurations state-hash i))
+                     (let [previous-i (get configurations state-hash)
+                           loop-size (- i previous-i)
+                           r (rem (- 1000000000 previous-i) loop-size)]
+                       (->> (cycle [[0 -1] [-1 0] [0 1] [1 0]])
+                            (take r)
+                            (reduce (fn [state d]
+                                      (let [result (move-rocks state max-x max-y d)]
+                                        (-> state
+                                            (assoc :stable #{})
+                                            (assoc :non-stable (:stable result)))))
+                                    state)
+                            (:non-stable)
+                            (map (fn [[_ y]] (- max-y y)))
+                            (reduce +))))))))
+       ; "Elapsed time: 6775.730689 msecs"
+       99118)
+  )
+
+
+
+
+
+
+
+
+
+
 
 
 
