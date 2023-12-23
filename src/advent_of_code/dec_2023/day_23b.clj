@@ -153,7 +153,8 @@
 
 (comment
   (time (longest-unique-walk prod-map))
-  ; too low 5850
+  6710
+  ; "Elapsed time: 56421.421438 msecs"
   )
 
 
