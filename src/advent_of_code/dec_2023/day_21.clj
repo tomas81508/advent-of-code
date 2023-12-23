@@ -83,3 +83,76 @@
                  (:current)
                  (count)))
        3788))
+
+; part 2
+
+(def steps 26501365)
+
+(defn count-walk
+  [garden-map start-position steps]
+  (-> (walk-n-steps garden-map {:current #{start-position}} steps)
+      (:current)
+      (count)))
+
+(defn solve-b
+  [garden-map steps]
+  (let [size (:size garden-map)
+        middle-position (/ (dec size) 2)
+        max-position (dec size)
+        full-garden-maps (quot steps size)
+        reminder (rem steps size)]
+    {:west-corner  (count-walk garden-map [max-position middle-position] size)
+     :north-corner (count-walk garden-map [middle-position max-position] size)
+     :east-corner  (count-walk garden-map [0 middle-position] size)
+     :south-corner (count-walk garden-map [middle-position 0] size)
+     :full-garden  (count-walk garden-map [middle-position middle-position] (+ (* 2 size)
+                                                                               (if (odd? steps) 1 0)))}
+    ))
+
+(comment
+  (solve-b garden-map steps)
+
+  (def size (:size garden-map))
+  (def full-garden-maps (quot steps size))
+  (def the-rest (rem steps size))
+
+  (def west-corner (count-walk garden-map [130 65] 130))
+  (def north-corner (count-walk garden-map [65 130] 130))
+  (def east-corner (count-walk garden-map [0 65] 130))
+  (def south-corner (count-walk garden-map [65 0] 130))
+
+  (def full-garden-even (count-walk garden-map [65 65] 150))
+  (def full-garden-odd (count-walk garden-map [65 65] 151))
+  (def number-of-even-full-gardens (* full-garden-maps full-garden-maps))
+  (def number-of-odd-full-gardens (* (dec full-garden-maps)
+                                     (dec full-garden-maps)))
+
+  (def large-north-west (count-walk garden-map [130 130] 195))
+  (def large-north-east (count-walk garden-map [0 130] 195))
+  (def large-south-west (count-walk garden-map [130 0] 195))
+  (def large-south-east (count-walk garden-map [0 0] 195))
+
+  (def small-north-west (count-walk garden-map [130 130] 64))
+  (def small-north-east (count-walk garden-map [0 130] 64))
+  (def small-south-west (count-walk garden-map [130 0] 64))
+  (def small-south-east (count-walk garden-map [0 0] 64))
+
+  (def solution
+    (+ (* number-of-even-full-gardens full-garden-even)
+       (* number-of-odd-full-gardens full-garden-odd)
+       west-corner north-corner east-corner south-corner
+       (* (dec full-garden-maps) (+ large-north-east
+                                    large-north-west
+                                    large-south-east
+                                    large-south-west))
+       (* full-garden-maps (+ small-north-east
+                              small-north-west
+                              small-south-east
+                              small-south-west))))
+;      solution 631357596621921
+  )
+
+
+
+
+

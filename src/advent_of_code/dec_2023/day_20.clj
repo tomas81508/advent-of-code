@@ -54,31 +54,35 @@
 (defn create-state
   {:test (fn []
            (is= (create-state test-configuration)
-                {:components  {:a   :off
-                               :inv {:a :low}
-                               :b   :off
-                               :con {:a :low :b :low}}
-                 :signals     [[:button :low :broadcaster]]
-                 :pulses      {:high 0 :low 0}
-                 :test-output {:high 0 :low 0}}))}
+                {:components     {:a   :off
+                                  :inv {:a :low}
+                                  :b   :off
+                                  :con {:a :low :b :low}}
+                 :signals        [[:button :low :broadcaster]]
+                 :pulses         {:high 0 :low 0}
+                 :ll-high        {}
+                 :button-pressed 0
+                 :test-output    {:high 0 :low 0}}))}
   [configuration]
-  {:components  (reduce-kv (fn [a k v]
-                             (case (:type v)
-                               :flip-flop (assoc a k :off)
-                               :conjunction
-                               (assoc a k (reduce-kv
-                                            (fn [a id {destinations :destinations}]
-                                              (if (seq-contains? destinations k)
-                                                (assoc a id :low)
-                                                a))
-                                            {}
-                                            configuration))
-                               a))
-                           {}
-                           configuration)
-   :signals     [[:button :low :broadcaster]]
-   :pulses      {:high 0 :low 0}
-   :test-output {:high 0 :low 0}})
+  {:components     (reduce-kv (fn [a k v]
+                                (case (:type v)
+                                  :flip-flop (assoc a k :off)
+                                  :conjunction
+                                  (assoc a k (reduce-kv
+                                               (fn [a id {destinations :destinations}]
+                                                 (if (seq-contains? destinations k)
+                                                   (assoc a id :low)
+                                                   a))
+                                               {}
+                                               configuration))
+                                  a))
+                              {}
+                              configuration)
+   :signals        [[:button :low :broadcaster]]
+   :pulses         {:high 0 :low 0}
+   :ll-high        {}
+   :button-pressed 0
+   :test-output    {:high 0 :low 0}})
 
 (def state (create-state configuration))
 (def test-state (create-state test-configuration))
@@ -94,31 +98,14 @@
        :high
        :low)]))
 
-(defn get-input-ids-to-conjunction
-  {:test (fn []
-           (is= (get-input-ids-to-conjunction test-configuration :inv)
-                [:a])
-           (is= (get-input-ids-to-conjunction test-configuration :con)
-                [:a :b]))}
-  [configuration id]
-  (reduce-kv (fn [a k v]
-               (if (->> (:destinations v)
-                        (some (fn [d] (= d id))))
-                 (conj a k)
-                 a))
-             []
-             configuration))
-
-(defn all-inputs-on?
-  [state ids]
-  (->> ids
-       (map (fn [id] (get-in state [:components id])))
-       (every? (fn [v] (= v :on)))))
-
 (defn perform-conjunction
   [state id from pulse]
-  (let [state (assoc-in state [:components id from] pulse)]
-    [state (if (->> (get-in state [:components id]) (vals) (every? #{:high})) :low :high)]))
+  (let [state (assoc-in state [:components id from] pulse)
+        new-pulse (if (->> (get-in state [:components id]) (vals) (every? #{:high})) :low :high)]
+    [(if (and (= pulse :high) (= id :ll))
+       (update-in state [:ll-high from] conj (:button-pressed state))
+       state)
+     new-pulse]))
 
 (defn send-all-signals
   {:test (fn []
@@ -129,6 +116,7 @@
                                :con {:a :low :b :low}}
                  :signals     [[:broadcaster :low :a]]
                  :pulses      {:high 0 :low 1}
+                 :ll-high     {}
                  :test-output {:high 0 :low 0}})
            (is= (send-all-signals test-configuration
                                   {:components  {:a   :off
@@ -137,6 +125,7 @@
                                                  :con {:a :low :b :low}}
                                    :signals     [[:broadcaster :low :a]]
                                    :pulses      {:high 0 :low 1}
+                                   :ll-high     {}
                                    :test-output {:high 0 :low 0}})
                 {:components  {:a   :on
                                :inv {:a :low}
@@ -144,6 +133,7 @@
                                :con {:a :low :b :low}}
                  :signals     [[:a :high :inv] [:a :high :con]]
                  :pulses      {:high 0 :low 2}
+                 :ll-high     {}
                  :test-output {:high 0 :low 0}})
            (is= (send-all-signals test-configuration
                                   {:components  {:a   :on
@@ -152,6 +142,7 @@
                                                  :con {:a :low :b :low}}
                                    :signals     [[:a :high :inv] [:a :high :con]]
                                    :pulses      {:high 0 :low 2}
+                                   :ll-high     {}
                                    :test-output {:high 0 :low 0}})
                 {:components  {:a   :on
                                :inv {:a :high}
@@ -159,6 +150,7 @@
                                :con {:a :high :b :low}}
                  :signals     [[:inv :low :b] [:con :high :output]]
                  :pulses      {:high 2 :low 2}
+                 :ll-high     {}
                  :test-output {:high 0 :low 0}})
            (is= (send-all-signals test-configuration
                                   {:components  {:a   :on
@@ -167,6 +159,7 @@
                                                  :con {:a :high :b :low}}
                                    :signals     [[:inv :low :b] [:con :high :output]]
                                    :pulses      {:high 2 :low 2}
+                                   :ll-high     {}
                                    :test-output {:high 0 :low 0}})
                 {:components  {:a   :on
                                :inv {:a :high}
@@ -174,6 +167,7 @@
                                :con {:a :high :b :low}}
                  :signals     [[:b :high :con]]
                  :pulses      {:high 3 :low 3}
+                 :ll-high     {}
                  :test-output {:high 1 :low 0}}))}
   [configuration state]
   (let [[state signals]
@@ -198,12 +192,16 @@
 (defn push-button
   {:test (fn []
            (is= (push-button test-configuration-2 test-state-2)
-                {:components  {:a :off :b :off :c :off :inv {:c :low}}
-                 :signals     []
-                 :pulses      {:high 4 :low 8}
-                 :test-output {:high 0 :low 0}}))}
+                {:components     {:a :off :b :off :c :off :inv {:c :low}}
+                 :signals        []
+                 :pulses         {:high 4 :low 8}
+                 :button-pressed 0
+                 :ll-high        {}
+                 :test-output    {:high 0 :low 0}}))}
   [configuration state]
-  (loop [state (assoc state :signals [[:button :low :broadcaster]])]
+  (loop [state (-> state
+                   (assoc :signals [[:button :low :broadcaster]])
+                   (update :button-pressed inc))]
     (if (empty? (:signals state))
       state
       (recur (send-all-signals configuration state)))))
@@ -214,21 +212,25 @@
                 {:components  {:a :on, :inv {:a :high}, :b :on, :con {:a :high, :b :high}}
                  :signals     []
                  :pulses      {:high 4 :low 4}
+                 :ll-high     {}
                  :test-output {:high 1 :low 1}})
            (is= (push-button-n-times test-configuration test-state 2)
                 {:components  {:a :off, :inv {:a :low}, :b :on, :con {:a :low, :b :high}}
                  :signals     []
                  :pulses      {:high 6 :low 8}
+                 :ll-high     {}
                  :test-output {:high 2, :low 1}})
            (is= (push-button-n-times test-configuration test-state 3)
                 {:components  {:a :on, :inv {:a :high}, :b :off, :con {:a :high, :b :low}}
                  :signals     []
                  :pulses      {:high 9 :low 13}
+                 :ll-high     {}
                  :test-output {:high 3, :low 2}})
            (is= (push-button-n-times test-configuration test-state 4)
                 {:components  {:a :off, :inv {:a :low}, :b :off, :con {:a :low, :b :low}}
                  :signals     []
                  :pulses      {:high 11 :low 17}
+                 :ll-high     {}
                  :test-output {:high 4, :low 2}}))}
   [configuration state n]
   (reduce (fn [state _]
@@ -257,7 +259,9 @@
        743090292))
 
 ; :high signal to :rx comes from :ll
+
 ; :high signal to :ll conjunction from :kl :kv :vm :vb
+
 ; :high signal to :kl comes from :ff
 ; :high signal to :ff comes from :ld :mb :rs
 
@@ -266,15 +270,19 @@
 ; ALL :kl, :kv, :vm, :vb must send :high
 
 (comment
-  (loop [state state
-         i 1]
-    (let [state (push-button configuration state)]
-      (when (->> (get-in state [:components :vm])
-                 (every? (fn [[_ v]] (= v :low))))
-        (println i (get-in state [:components :vm])))
-      (if (< i 10000)
-        (recur state (inc i))
-        i)))
+  ; Solved with help from Daniel Gullberg
+
+  (def state-10000 (loop [state state
+                          i 1]
+                     (let [state (push-button configuration state)]
+                       (if (< i 10000)
+                         (recur state (inc i))
+                         state))))
+  (->> state-10000
+       (:ll-high)
+       (vals)
+       (map (partial apply -))
+       (reduce *))
   )
 
 
