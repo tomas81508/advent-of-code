@@ -110,7 +110,7 @@
                    next-position))))
   )
 
-(defn move-until-the-end-and-count-visited
+(defn move-until-the-end
   [atlas state]
   (loop [state state]
     (let [state (move-until-obstacle-and-turn atlas state)]
@@ -119,21 +119,27 @@
         (recur state)))))
 
 (comment
-  (move-until-the-end-and-count-visited test-atlas test-state)
-  (time (move-until-the-end-and-count-visited atlas state))
+  (move-until-the-end test-atlas test-state)
+  (time (move-until-the-end atlas state))
   )
 
-(->> (for [x (range (:size test-atlas))
-      y (range (:size test-atlas))]
-  [x y])
-     (map (fn [p] (let [modified-atlas (update test-atlas :obstacles conj p)]
-                    ; TODO: not when guard at p or already obstacle
-                    
-                    ))))
+(defn count-number-of-loops
+  {:test (fn []
+           (is= (count-number-of-loops test-atlas test-state) 6))}
+  [atlas state]
+  (->> (for [x (range (:size atlas))
+             y (range (:size atlas))]
+         [x y])
+       (remove (fn [p] (or (contains? (:obstacles atlas) p)
+                           (= (:position state) p))))
+       (pmap (fn [p] (let [atlas (update atlas :obstacles conj p)]
+                       (move-until-the-end atlas state))))
+       (filter (fn [x] (= x :loop)))
+       (count)))
 
-
-
-; part A
+(comment
+  (time (count-number-of-loops atlas state))
+  )
 
 
 
