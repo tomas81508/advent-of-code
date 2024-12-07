@@ -64,7 +64,8 @@
    [-1 0] [0 -1]
    [0 -1] [1 0]})
 
-(defn out-of-bound? [{size :size} [x y]]
+(defn out-of-bound?
+  [{size :size} [x y]]
   (or (< x 0)
       (> x (dec size))
       (< y 0)
@@ -84,25 +85,32 @@
   [atlas state]
   (loop [walk #{}
          current (:position state)]
-    (let [next-position (map + current (:direction state))]
-      ;(println next-position)
+    (let [direction (:direction state)
+          next-position (map + current direction)]
       (cond (contains? (:obstacles atlas) next-position)
-            (do                                             ;(println "Hit an obstacle")
-              (-> state
-                  (assoc :position current)
-                  (assoc :direction (turn-right (:direction state)))
-                  (update :visited (fn [visited]
-                                     (reduce (fn [visited position]
-                                               (if-not (contains? visited position)
-                                                 (assoc visited position #{(:direction state)})
-                                                 (update visited conj #{(:direction state)})))
-                                             visited
-                                             walk)))))
+            (-> state
+                (assoc :position current)
+                (assoc :direction (turn-right direction))
+                (update :visited (fn [visited]
+                                   (reduce (fn [visited position]
+                                             (if-not (contains? visited position)
+                                               (assoc visited position #{direction})
+                                               (update visited position conj direction)))
+                                           visited
+                                           walk))))
 
             (out-of-bound? atlas next-position)
-            :escaped
+            (-> state
+                (assoc :position :out-of-bound)
+                (update :visited (fn [visited]
+                                   (reduce (fn [visited position]
+                                             (if-not (contains? visited position)
+                                               (assoc visited position #{direction})
+                                               (update visited position conj direction)))
+                                           visited
+                                           walk))))
 
-            (deja-vu? state next-position (:direction state))
+            (deja-vu? state next-position direction)
             :loop
 
             :else
@@ -114,31 +122,38 @@
   [atlas state]
   (loop [state state]
     (let [state (move-until-obstacle-and-turn atlas state)]
-      (if (keyword? state)
-        state
-        (recur state)))))
+      (cond (= (:position state) :out-of-bound)
+            state
+
+            (= state :loop)
+            :loop
+
+            :else
+            (recur state)))))
 
 (comment
-  (move-until-the-end test-atlas test-state)
-  (time (move-until-the-end atlas state))
+  (is= (time (-> (move-until-the-end atlas state)
+                 (:visited)
+                 (keys)
+                 (count)))
+       5153)
   )
 
 (defn count-number-of-loops
   {:test (fn []
            (is= (count-number-of-loops test-atlas test-state) 6))}
   [atlas state]
-  (->> (for [x (range (:size atlas))
-             y (range (:size atlas))]
-         [x y])
-       (remove (fn [p] (or (contains? (:obstacles atlas) p)
-                           (= (:position state) p))))
+  (->> (move-until-the-end atlas state)
+       (:visited)
+       (keys)
        (pmap (fn [p] (let [atlas (update atlas :obstacles conj p)]
-                       (move-until-the-end atlas state))))
+                      (move-until-the-end atlas state))))
        (filter (fn [x] (= x :loop)))
        (count)))
 
 (comment
-  (time (count-number-of-loops atlas state))
+  (is= (time (count-number-of-loops atlas state))
+       1711)
   )
 
 
