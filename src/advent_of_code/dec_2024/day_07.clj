@@ -80,7 +80,7 @@
 (comment
   (time (total-calibration-result equations operators-1))
   ; "Elapsed time: 5578.216645 msecs"
-  ; => 8401132154762
+  ;   => 8401132154762
   (time (total-calibration-result equations operators-2))
   ; "Elapsed time: 288355.003395 msecs"
   ; => 95297119227552
