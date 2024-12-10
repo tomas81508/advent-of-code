@@ -115,10 +115,61 @@
 
 ; part two
 
-; idea
-(def state {:hikes {[2 0] 1
-                    [1 1] 2}
-            :steps 2})
+(defn create-state2
+  {:test (fn []
+           (is= (create-state2 test-atlas-small)
+                {:hikes {[0 0] 1}
+                 :steps 0}))}
+  [atlas]
+  (let [start-positions (get-start-positions atlas)]
+    {:hikes (reduce (fn [a sp] (assoc a sp 1))
+                    {}
+                    start-positions)
+     :steps 0}))
+
+(defn move-a-step2
+  {:test (fn []
+           (is= (move-a-step2 test-atlas-small (create-state2 test-atlas-small))
+                {:hikes {[1 0] 1
+                         [0 1] 1}
+                 :steps 1})
+           (is= (move-a-step2 test-atlas-small
+                              (move-a-step2 test-atlas-small
+                                            (create-state2 test-atlas-small)))
+                {:hikes {[1 1] 2
+                         [2 0] 1}
+                 :steps 2}))}
+  [atlas state]
+  (-> state
+      (update :steps inc)
+      (update :hikes (fn [hikes]
+                       (reduce-kv (fn [a position n]
+                                    (let [next-positions (next-positions-by-position atlas
+                                                                                     position
+                                                                                     (inc (:steps state)))]
+                                      (reduce (fn [a np]
+                                                (update a np
+                                                        (fn [m] (+ n (or m 0)))))
+                                              a
+                                              next-positions)))
+                                  {}
+                                  hikes)))))
+
+(defn walk2
+  {:test (fn []
+           (is= (walk2 test-atlas-large) 81))}
+  [atlas]
+  (loop [state (create-state2 atlas)]
+    (let [state (move-a-step2 atlas state)]
+      (if (= (:steps state) 9)
+        (->> (:hikes state)
+             (vals)
+             (reduce +))
+        (recur state)))))
+
+(comment
+  (time (walk2 atlas))
+  )
 
 
 
