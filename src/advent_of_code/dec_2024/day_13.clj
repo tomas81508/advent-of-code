@@ -30,9 +30,7 @@
 (def test-equation-2 (create-equation-data test-input2))
 
 (defn gcd [a b]
-  (if (zero? b)
-    a
-    (recur b (mod a b))))
+  (if (zero? b) a (recur b (mod a b))))
 
 (defn should-we-even-try?
   {:test (fn []
@@ -48,63 +46,46 @@
                     (map create-equation-data)
                     (filter should-we-even-try?)))
 
-(defn check-equation
+(defn solve-with-elimination
   {:test (fn []
-           (is= (check-equation test-equation-1 80 40) :solution)
-           (is= (check-equation test-equation-1 20 40) :too-low)
-           (is= (check-equation test-equation-1 90 40) :too-high))}
-  [{ax :ax bx :bx ay :ay by :by rx :rx ry :ry} a b]
-  (let [actual-x (+ (* a ax) (* b bx))
-        actual-y (+ (* a ay) (* b by))]
-    (cond (or (> actual-x rx) (> actual-y ry))
-          :too-high
+           (is= (solve-with-elimination {:ax 3 :bx 4 :ay 5 :by 6 :rx 10 :ry 14})
+                [-2 4])
+           (is= (solve-with-elimination (create-equation-data test-input1))
+                [80 40]))}
+  [{ax :ax bx :bx ay :ay by :by rx :rx ry :ry}]
+  (let [a (/ (- (* rx by) (* ry bx))
+             (- (* ax by) (* ay bx)))
+        b (/ (- rx (* a ax)) bx)]
+    [a b]))
 
-          (or (< actual-x rx) (< actual-y ry))
-          :too-low
+(defn linearly-dependant?
+  [{ax :ax bx :bx ay :ay by :by}]
+  (= (/ ax bx)
+     (/ ay by)))
 
-          :else :solution)))
-
-(defn find-solutions
-  {:test (fn []
-           (is= (find-solutions test-equation-1)
-                [{:a 80 :b 40}]))}
-  [equation]
-  (loop [[b & rbs] (range 101)
-         solutions []]
-    (if-not b
-      solutions
-      (let [result (loop [[a & ras] (range 101)]
-                     (if-not a
-                       :too-low
-                       (let [result (check-equation equation a b)]
-                         (case result
-                           :too-low (recur ras)
-                           :solution a
-                           :too-high :too-high))))]
-        (if (number? result)
-          (recur rbs (conj solutions {:a result :b b}))
-          (recur rbs solutions))))))
-
-(defn find-cheapest-solution-cost
-  {:test (fn []
-           (is= (find-cheapest-solution-cost [{:a 80 :b 40}
-                                              {:a 60 :b 90}])
-                270))}
-  [solutions]
-  (->> solutions
-       (map (fn [s] (+ (* 3 (:a s)) (:b s))))
-       (apply min)))
+(def big-number 10000000000000)
+(def equations-2 (->> input
+                      (map create-equation-data)
+                      (map (fn [equation] (-> equation
+                                              (update :rx + big-number)
+                                              (update :ry + big-number))))
+                      (filter should-we-even-try?)))
 
 (comment
+  ;part 1
   (time (->> equations
-             (map find-solutions)
-             (remove empty?)
-             (map find-cheapest-solution-cost)
+             (map solve-with-elimination)
+             (filter (fn [[a b]] (and (integer? a) (pos? a) (integer? b) (pos? b))))
+             (map (fn [[a b]] (+ (* 3 a) b)))
              (reduce +)))
-  ; 36571
+
+  ; part 2
+  (time (->> equations-2
+             (map solve-with-elimination)
+             (filter (fn [[a b]] (and (integer? a) (pos? a) (integer? b) (pos? b))))
+             (map (fn [[a b]] (+ (* 3 a) b)))
+             (reduce +)))
+
   )
-
-; part two
-
 
 
