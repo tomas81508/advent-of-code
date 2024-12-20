@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2024.day-19
-  (:require [advent-of-code.test :refer [is is-not is=]]
+  (:require [advent-of-code.test :refer [is is=]]
             [clojure.string :as string])
   (:import (java.util.regex Pattern)))
 

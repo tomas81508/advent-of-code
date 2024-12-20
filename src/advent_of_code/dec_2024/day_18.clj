@@ -1,10 +1,8 @@
 (ns advent-of-code.dec-2024.day-18
-  (:require [advent-of-code.test :refer [is is-not is=]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def input (slurp "src/advent_of_code/dec_2024/day_18_input.txt"))
 (def test-input "5,4\n4,2\n4,5\n3,0\n2,1\n6,3\n2,4\n1,5\n0,6\n3,3\n2,6\n5,1\n1,2\n5,5\n2,5\n6,5\n1,4\n0,4\n6,4\n1,1\n6,1\n1,0\n0,5\n1,6\n2,0")
-
-; test size 6, real size 70 (start at 0,0).Test simulate 12 bytes fall, real 1024
 
 (defn get-obstacles
   {:test (fn []
@@ -80,12 +78,6 @@
 
         :else
         (recur (walk-a-step state))))))
-
-(defn part-1
-  {:test (fn []
-           (is= (part-1 test-input) 42))}
-  [input]
-  42)
 
 (defn part-2
   {:test (fn []

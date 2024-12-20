@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2024.day-20
-  (:require [advent-of-code.test :refer [is is-not is=]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.string :as string]))
 
 (def test-input
@@ -52,10 +52,6 @@
 (def start-position (find-character-coordinates input \S))
 (def end-position (find-character-coordinates input \E))
 
-
-
-; 1. Beräkna avstånd från alla punkter till målet.
-
 (def directions [[-1 0] [1 0] [0 1] [0 -1]])
 
 (defn walk-a-step
@@ -87,8 +83,6 @@
                          (clojure.set/union next-positions visited)
                          (inc steps))))))
 
-(def non-cheating-race-length (distance-to-end track end-position start-position))
-
 (defn distances-from-end
   {:test (fn []
            (is= (get (distances-from-end test-track test-end-position) test-start-position) 84))}
@@ -112,8 +106,6 @@
 
 (def test-distances-to-end (distances-from-end test-track test-end-position))
 (def distances-to-end (distances-from-end track end-position))
-
-; 1 Givet en punkt finn alla punkter [2 0] [0 2] [-2 0] [0 -2] är värdet på någon av dessa 100 mindre?
 
 (def cheat-moves-2 [[2 0] [0 2] [-2 0] [0 -2]])
 

@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2024.day-11
-  (:require [advent-of-code.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def input "6571 0 5851763 526746 23 69822 9 989")
 (def test-input "125 17")

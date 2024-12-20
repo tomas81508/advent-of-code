@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2024.day-12
-  (:require [advent-of-code.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 ; Clojure meetup with Daniel Gullberg and Peter PEZ Strömberg
 

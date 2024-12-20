@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2024.day-05
-  (:require [clojure.test :refer [deftest]]
-            [advent-of-code.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is= is is-not]]))
 
 (def input-rules (->> (slurp "src/advent_of_code/dec_2024/day_05_input-rules.txt")
                       (clojure.string/split-lines)))

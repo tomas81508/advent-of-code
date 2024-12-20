@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2024.day-14
-  (:require [advent-of-code.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def input (slurp "src/advent_of_code/dec_2024/day_14_input.txt"))
 
