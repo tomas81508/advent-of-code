@@ -1,18 +1,19 @@
 (ns advent-of-code.dec-2015.day-12
-  (:require [ysera.test :refer [deftest is=]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
             [clojure.data.json :refer [read-str]]))
 
 
 (deftest puzzle-a
-         (is= (time (let [pattern #"([-|\d]+)(.*)"]
-                      (loop [s (slurp "src/advent_of_code/dec_2015/day_12_input.txt")
-                             sum 0]
-                        (let [[_ n r] (re-find pattern s)]
-                          (if (nil? n)
-                            sum
-                            (recur r (+ sum (read-string n))))))))
-              ; "Elapsed time: 308.499628 msecs"
-              156366))
+  (is= (time (let [pattern #"([-|\d]+)(.*)"]
+               (loop [s (slurp "src/advent_of_code/dec_2015/day_12_input.txt")
+                      sum 0]
+                 (let [[_ n r] (re-find pattern s)]
+                   (if (nil? n)
+                     sum
+                     (recur r (+ sum (read-string n))))))))
+       ; "Elapsed time: 308.499628 msecs"
+       156366))
 
 
 (defn find-sum
@@ -35,9 +36,9 @@
         (reduce + (map find-sum (vals entity)))))
 
 (deftest puzzle-a-alt-2
-         (is= (time (find-sum (read-str (slurp "src/advent_of_code/dec_2015/day_12_input.txt"))))
-              ; "Elapsed time: 5.216753 msecs"
-              156366))
+  (is= (time (find-sum (read-str (slurp "src/advent_of_code/dec_2015/day_12_input.txt"))))
+       ; "Elapsed time: 5.216753 msecs"
+       156366))
 
 
 (defn find-sum-without-red
@@ -62,6 +63,6 @@
           (reduce + (map find-sum-without-red (vals entity))))))
 
 (deftest puzzle-b
-         (is= (time (find-sum-without-red (read-str (slurp "src/advent_of_code/dec_2015/day_12_input.txt"))))
-              ; "Elapsed time: 4.860071 msecs"
-              96852))
+  (is= (time (find-sum-without-red (read-str (slurp "src/advent_of_code/dec_2015/day_12_input.txt"))))
+       ; "Elapsed time: 4.860071 msecs"
+       96852))

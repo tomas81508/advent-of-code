@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2016.day-04
-  (:require [ysera.test :refer [deftest is is-not is=]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]))
 
 ; --- Day 4: Security Through Obscurity ---
@@ -97,8 +98,8 @@
 
 
 (deftest puzzle-a
-         (is= (sum-sector-ids input-data)
-              173787))
+  (is= (sum-sector-ids input-data)
+       173787))
 
 
 ; --- Part Two ---
@@ -153,15 +154,15 @@
 
 
 (deftest puzzle-b
-         (is= (->> input-data
-                   (filter (fn [code]
-                             (and (a-real-room? code)
-                                  (string/includes? (reveal-name code) "north")
-                                  (string/includes? (reveal-name code) "pole"))))
-                   (first)
-                   (get-letters-sector-id-and-checksum)
-                   (second))
-              "548"))
+  (is= (->> input-data
+            (filter (fn [code]
+                      (and (a-real-room? code)
+                           (string/includes? (reveal-name code) "north")
+                           (string/includes? (reveal-name code) "pole"))))
+            (first)
+            (get-letters-sector-id-and-checksum)
+            (second))
+       "548"))
 
 
 

@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2021.day-12
-  (:require [ysera.test :refer [is= is is-not]]
-            [ysera.collections :refer [seq-contains?]]))
+  (:require [advent-of-code.test :refer [is= is is-not]]
+            [advent-of-code.collections :refer [seq-contains?]]))
 
 (def puzzle-input ["kc-qy" "qy-FN" "kc-ZP" "end-FN" "li-ZP" "yc-start" "end-qy" "yc-ZP" "wx-ZP" "qy-li" "yc-li" "yc-wx" "kc-FN" "FN-li" "li-wx" "kc-wx" "ZP-start" "li-kc" "qy-nv" "ZP-qy" "nv-xr" "wx-start" "end-nv" "kc-nv" "nv-XQ"])
 
@@ -79,7 +79,7 @@
                                    (update a :active (fn [active] (set (conj active (conj active-path c)))))))
                            a))))
           {:active #{}
-           :paths paths}
+           :paths  paths}
           active))
 
 

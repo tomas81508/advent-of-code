@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-13
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_13.txt")
@@ -45,13 +46,13 @@
                     buses))))))
 
 (deftest puzzle-a
-         (let [state (->> (get-puzzle-input)
-                          (create-state))
-               result (get-earliest-bus state)]
-           (is= result [677 1002637])
-           (is= (* (- (second result) (:earliest-time state))
-                   (first result))
-                3385)))
+  (let [state (->> (get-puzzle-input)
+                   (create-state))
+        result (get-earliest-bus state)]
+    (is= result [677 1002637])
+    (is= (* (- (second result) (:earliest-time state))
+            (first result))
+         3385)))
 
 
 (defn create-state-2 [input]
@@ -72,12 +73,12 @@
         n2 (if (neg? (first l2)) (second l2) (first l2))
         d2 (- (second l2) (first l2))
         algorithm (fn [large large-d small small-d]
-                   (let [x (- large small)]
-                     (loop [m 1]
-                       (let [r (+ x (* m large-d))]
-                         (if (zero? (mod r small-d))
-                           (+ (* large-d m) large)
-                           (recur (inc m)))))))]
+                    (let [x (- large small)]
+                      (loop [m 1]
+                        (let [r (+ x (* m large-d))]
+                          (if (zero? (mod r small-d))
+                            (+ (* large-d m) large)
+                            (recur (inc m)))))))]
     (if (> n1 n2)
       (algorithm n1 d1 n2 d2)
       (algorithm n2 d2 n1 d1))))
@@ -105,9 +106,9 @@
   )
 
 (deftest puzzle-b
-         (is= (time (solver-b (get-puzzle-input)))
-              ; "Elapsed time: 0.54216 msecs"
-              600689120448303))
+  (is= (time (solver-b (get-puzzle-input)))
+       ; "Elapsed time: 0.54216 msecs"
+       600689120448303))
 
 
 

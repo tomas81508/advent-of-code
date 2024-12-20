@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2022.day-17
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
             [clojure.set :refer [intersection union]]))
 
 (def input (slurp "src/advent_of_code/dec_2022/day_17_input.txt"))
@@ -198,7 +198,7 @@
   (def r-diff 1735)
 
   (def one-stream-state (move-a-stream state stream))
-  (def done-rocks (:number-of-rocks one-stream-state)) ;1741
+  (def done-rocks (:number-of-rocks one-stream-state))      ;1741
   (def all-rocks 1000000000000)
   (def left-rocks (- all-rocks done-rocks))
   (def quot-rocks (quot left-rocks r-diff))

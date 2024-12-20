@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-14
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_14.txt")
@@ -70,13 +71,13 @@
           program))
 
 (deftest puzzle-a
-         (is= (time (->> (get-puzzle-input)
-                         (create-state)
-                         (run-program)
-                         (vals)
-                         (reduce +)))
-              ; "Elapsed time: 11.817048 msecs"
-              7440382076205))
+  (is= (time (->> (get-puzzle-input)
+                  (create-state)
+                  (run-program)
+                  (vals)
+                  (reduce +)))
+       ; "Elapsed time: 11.817048 msecs"
+       7440382076205))
 
 (def test-input-2 ["mask = 000000000000000000000000000000X1001X"
                    "mem[42] = 100"
@@ -166,11 +167,11 @@
   (apply + (vals memory)))
 
 (deftest puzzle-b
-         (is= (time (-> (create-state (get-puzzle-input))
-                        (run-program-version-2)
-                        (sum-values)))
-              ; "Elapsed time: 232.403889 msecs"
-              4200656704538))
+  (is= (time (-> (create-state (get-puzzle-input))
+                 (run-program-version-2)
+                 (sum-values)))
+       ; "Elapsed time: 232.403889 msecs"
+       4200656704538))
 
 
 

@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2023.day-06
   (:require [clojure.test :refer [deftest]]
-            [advent-of-code.test :refer [is= is-not is]]
+            [advent-of-code.test :refer [is=]]
             [clojure.string :refer [split split-lines]]
             [clojure.math]))
 
@@ -43,11 +43,11 @@
 
 (deftest puzzle-b
   (is= (time (let [t (->> (re-seq #"\d+" (first input))
-                           (apply str)
-                           (read-string))
+                          (apply str)
+                          (read-string))
                    d (->> (re-seq #"\d+" (second input))
-                           (apply str)
-                           (read-string))]
+                          (apply str)
+                          (read-string))]
                (integer-points-in-interval t d)))
        ; "Elapsed time: 0.129292 msecs"
        42550411))

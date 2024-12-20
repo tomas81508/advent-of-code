@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2021.day-17
-  (:require [ysera.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is= is is-not]]))
 
 (def puzzle-input {:x [144 178] :y [-100 -76]})
 
@@ -69,6 +69,6 @@
              y (range -100 300)]
          [x y])
        (filter (fn [velocity]
-               (launch {:position [0 0] :velocity velocity} puzzle-input)))
+                 (launch {:position [0 0] :velocity velocity} puzzle-input)))
        (count))
   )

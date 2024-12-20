@@ -1,7 +1,7 @@
 (ns advent-of-code.dec-2021.day-18
-  (:require [ysera.test :refer [is= deftest]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.math.combinatorics :refer [combinations]]
-            [ysera.math :refer [floor ceil]]))
+            [advent-of-code.math :refer [floor ceil]]))
 
 (def puzzle-input (slurp "src/advent_of_code/dec_2021/day_18_input.txt"))
 

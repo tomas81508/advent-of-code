@@ -146,7 +146,7 @@
        (:visited)
        (keys)
        (pmap (fn [p] (let [atlas (update atlas :obstacles conj p)]
-                      (move-until-the-end atlas state))))
+                       (move-until-the-end atlas state))))
        (filter (fn [x] (= x :loop)))
        (count)))
 

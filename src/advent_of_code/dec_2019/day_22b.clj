@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-22b
-  (:require [ysera.test :refer [is is= is-not deftest]]))
+  (:require [advent-of-code.test :refer [is is= is-not]]
+            [clojure.test :refer [deftest]]))
 
 
 (defn new-stack-index

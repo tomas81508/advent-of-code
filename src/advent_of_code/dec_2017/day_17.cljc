@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-17
-  (:require [ysera.test :refer [is=]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def puzzle-input 366)
 

@@ -1,7 +1,7 @@
 (ns advent-of-code.dec-2015.day-06b
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [clojure.string :refer [split-lines
-                                    starts-with?]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
+            [clojure.string :refer [split-lines starts-with?]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2015/day_06_input.txt")
@@ -52,10 +52,10 @@
           (apply toggle lights args))))
 
 (deftest puzzle-b
-         (is= (->> (get-puzzle-input)
-                   (reduce handle-instruction {})
-                   (vals)
-                   (reduce +))
-              15343601))
+  (is= (->> (get-puzzle-input)
+            (reduce handle-instruction {})
+            (vals)
+            (reduce +))
+       15343601))
 
 

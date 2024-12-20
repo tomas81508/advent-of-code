@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2017.day-03
-  (:require [ysera.test :refer [deftest is=]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 
 (defn get-level
@@ -141,16 +142,16 @@
        (apply +)))
 
 (deftest answer-3a-alt
-         (is= (taxi-distance (get-coordinate 1) [0 0])
-              0)
-         (is= (taxi-distance (get-coordinate 12) [0 0])
-              3)
-         (is= (taxi-distance (get-coordinate 23) [0 0])
-              2)
-         (is= (taxi-distance (get-coordinate 1024) [0 0])
-              31)
-         (is= (taxi-distance (get-coordinate 277678) [0 0])
-              475))
+  (is= (taxi-distance (get-coordinate 1) [0 0])
+       0)
+  (is= (taxi-distance (get-coordinate 12) [0 0])
+       3)
+  (is= (taxi-distance (get-coordinate 23) [0 0])
+       2)
+  (is= (taxi-distance (get-coordinate 1024) [0 0])
+       31)
+  (is= (taxi-distance (get-coordinate 277678) [0 0])
+       475))
 
 ;; puzzle b
 
@@ -214,8 +215,8 @@
     (get grid (:last-coordinate grid))))
 
 (deftest puzzle-b
-         (is= (solve-b 277678)
-              279138))
+  (is= (solve-b 277678)
+       279138))
 
 
 

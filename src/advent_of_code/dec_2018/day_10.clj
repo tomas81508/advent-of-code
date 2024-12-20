@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2018.day-10
-  (:require [ysera.test :refer [deftest is is-not is=]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (-> (slurp "src/advent_of_code/dec_2018/day_10.txt")
@@ -177,32 +178,32 @@
 
 
 (deftest example
-         (is= (-> (create-state test-data)
-                  (time-tick)
-                  (time-tick)
-                  (time-tick)
-                  (state->string))
-              (str "After 3 seconds:\n"
-                   "#...#..###\n"
-                   "#...#...#.\n"
-                   "#...#...#.\n"
-                   "#####...#.\n"
-                   "#...#...#.\n"
-                   "#...#...#.\n"
-                   "#...#...#.\n"
-                   "#...#..###\n"))
-         (is= (-> (create-state test-data)
-                  (time-ticks 3)
-                  (state->string))
-              (str "After 3 seconds:\n"
-                   "#...#..###\n"
-                   "#...#...#.\n"
-                   "#...#...#.\n"
-                   "#####...#.\n"
-                   "#...#...#.\n"
-                   "#...#...#.\n"
-                   "#...#...#.\n"
-                   "#...#..###\n")))
+  (is= (-> (create-state test-data)
+           (time-tick)
+           (time-tick)
+           (time-tick)
+           (state->string))
+       (str "After 3 seconds:\n"
+            "#...#..###\n"
+            "#...#...#.\n"
+            "#...#...#.\n"
+            "#####...#.\n"
+            "#...#...#.\n"
+            "#...#...#.\n"
+            "#...#...#.\n"
+            "#...#..###\n"))
+  (is= (-> (create-state test-data)
+           (time-ticks 3)
+           (state->string))
+       (str "After 3 seconds:\n"
+            "#...#..###\n"
+            "#...#...#.\n"
+            "#...#...#.\n"
+            "#####...#.\n"
+            "#...#...#.\n"
+            "#...#...#.\n"
+            "#...#...#.\n"
+            "#...#..###\n")))
 
 (defn puzzle-solutions []
   (time (-> (get-puzzle-input)

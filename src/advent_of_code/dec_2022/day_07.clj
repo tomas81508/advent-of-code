@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2022.day-07
-  (:require [ysera.test :refer [is is-not is=]]
-            [clojure.test :refer [deftest]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.string :refer [split-lines
                                     starts-with?]]))
 

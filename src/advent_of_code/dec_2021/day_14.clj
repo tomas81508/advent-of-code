@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2021.day-14
-  (:require [ysera.test :refer [is= deftest]])
+  (:require [advent-of-code.test :refer [is=]]
+                       [clojure.test :refer [deftest]])
   (:import (java.util ArrayList)))
 
 (def pair-insertion-pattern #"(\w\w) -> (\w)")
@@ -98,20 +99,20 @@
 
 (comment
   (time (let [double-freq (->> puzzle-template
-                              (create-combinations)
-                              ((apply comp (repeat 10 (partial step-2 puzzle-pair-insertions))))
-                              (reduce-kv (fn [a [c1 c2] v]
-                                           (-> a
-                                               (update c1 (fn [x] (+ (or x 0) v)))
-                                               (update c2 (fn [x] (+ (or x 0) v)))))
-                                         {})
-                              (vals)
-                              (sort))
-             f (first double-freq)
-             min (/ (if (odd? f) (inc f) f) 2)
-             l (last double-freq)
-             max (/ (if (odd? l) (inc l) l) 2)]
-         (- max min)))
+                               (create-combinations)
+                               ((apply comp (repeat 10 (partial step-2 puzzle-pair-insertions))))
+                               (reduce-kv (fn [a [c1 c2] v]
+                                            (-> a
+                                                (update c1 (fn [x] (+ (or x 0) v)))
+                                                (update c2 (fn [x] (+ (or x 0) v)))))
+                                          {})
+                               (vals)
+                               (sort))
+              f (first double-freq)
+              min (/ (if (odd? f) (inc f) f) 2)
+              l (last double-freq)
+              max (/ (if (odd? l) (inc l) l) 2)]
+          (- max min)))
   ; "Elapsed time: 3.087743 msecs"
   3009
 

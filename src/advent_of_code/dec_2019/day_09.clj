@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-09
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.math.combinatorics :refer [permutations]]))
 
 (def BOOST
@@ -238,9 +239,9 @@
          (recur program))))))
 
 (deftest puzzle-a
-         (is= (first (:outputs (run BOOST [1])))
-              2399197539))
+  (is= (first (:outputs (run BOOST [1])))
+       2399197539))
 
 (deftest puzzle-b
-         (is= (first (:outputs (run BOOST [2])))
-              35106))
+  (is= (first (:outputs (run BOOST [2])))
+       35106))

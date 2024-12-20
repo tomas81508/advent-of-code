@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-03
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_03.txt")
@@ -62,15 +63,15 @@
        (count)))
 
 (deftest puzzle-a
-         (is= (let [state (create-state (get-puzzle-input))]
-                (number-of-found-trees state [3 1]))
-              205))
+  (is= (let [state (create-state (get-puzzle-input))]
+         (number-of-found-trees state [3 1]))
+       205))
 
 (deftest puzzle-b
-         (is= (let [state (create-state (get-puzzle-input))
-                    slopes [[1 1] [3 1] [5 1] [7 1] [1 2]]]
-                (->> slopes
-                     (map (fn [slope] (number-of-found-trees state slope)))
-                     (apply *)))
-              3952146825))
+  (is= (let [state (create-state (get-puzzle-input))
+             slopes [[1 1] [3 1] [5 1] [7 1] [1 2]]]
+         (->> slopes
+              (map (fn [slope] (number-of-found-trees state slope)))
+              (apply *)))
+       3952146825))
 

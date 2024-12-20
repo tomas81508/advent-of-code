@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-19-part-a
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input-rules []
   (-> (slurp "src/advent_of_code/dec_2020/day_19_rules.txt")
@@ -74,12 +75,12 @@
   (= (match-rule rules s rule) ""))
 
 (deftest puzzle-a
-         (is= (let [rules (create-rules (get-puzzle-input-rules))
-                    messages (get-puzzle-input-messages)]
-                (->> messages
-                     (filter (fn [m] (exact-match rules m 0)))
-                     (count)))
-              291))
+  (is= (let [rules (create-rules (get-puzzle-input-rules))
+             messages (get-puzzle-input-messages)]
+         (->> messages
+              (filter (fn [m] (exact-match rules m 0)))
+              (count)))
+       291))
 
 
 

@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2016.day-06
-  (:require [ysera.test :refer [deftest is=]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 ; --- Day 6: Signals and Noise ---
 ;
@@ -62,10 +63,10 @@
        (clojure.string/join)))
 
 (deftest puzzle-a
-         (is= (-> (slurp "src/advent_of_code/dec_2016/day_06_input.txt")
-                  (clojure.string/split #"\n")
-                  (error-correction))
-              "bjosfbce"))
+  (is= (-> (slurp "src/advent_of_code/dec_2016/day_06_input.txt")
+           (clojure.string/split #"\n")
+           (error-correction))
+       "bjosfbce"))
 
 (defn error-correction-least-common
   {:test (fn []
@@ -94,7 +95,7 @@
        (clojure.string/join)))
 
 (deftest puzzle-b
-         (is= (-> (slurp "src/advent_of_code/dec_2016/day_06_input.txt")
-                  (clojure.string/split #"\n")
-                  (error-correction-least-common))
-              "veqfxzfx"))
+  (is= (-> (slurp "src/advent_of_code/dec_2016/day_06_input.txt")
+           (clojure.string/split #"\n")
+           (error-correction-least-common))
+       "veqfxzfx"))

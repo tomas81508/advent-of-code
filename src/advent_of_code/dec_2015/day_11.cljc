@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2015.day-11
-  (:require [ysera.test :refer [deftest is= is is-not]]))
-
+  (:require [advent-of-code.test :refer [is= is is-not]]
+            [clojure.test :refer [deftest]]))
 
 (def puzzle-input "hepxcrrq")
 
@@ -95,11 +95,11 @@
 
 
 (deftest puzzle-a
-         (is= (time (next-password "hepxcrrq"))
-              ; "Elapsed time: 1176.312849 msecs"
-              "hepxxyzz"))
+  (is= (time (next-password "hepxcrrq"))
+       ; "Elapsed time: 1176.312849 msecs"
+       "hepxxyzz"))
 
 (deftest puzzle-b
-         (is= (time (next-password "hepxxyzz"))
-              ; "Elapsed time: 3094.955637 msecs"
-              "heqaabcc"))
+  (is= (time (next-password "hepxxyzz"))
+       ; "Elapsed time: 3094.955637 msecs"
+       "heqaabcc"))

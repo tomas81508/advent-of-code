@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-04
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.spec.alpha :as spec]))
 
 (defn get-puzzle-input []
@@ -73,12 +74,12 @@
   (>= (count (select-keys passport [:ecl :pid :eyr :hcl :byr :iyr :hgt])) 7))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (format-input-data)
-                   (map valid-passport?)
-                   (filter true?)
-                   (count))
-              245))
+  (is= (->> (get-puzzle-input)
+            (format-input-data)
+            (map valid-passport?)
+            (filter true?)
+            (count))
+       245))
 
 (defn four-digits?
   [x]
@@ -89,8 +90,8 @@
                           (fn [n] (<= 1920 (read-string n) 2002))))
 
 (deftest byr
-         (is (spec/valid? ::byr "2002"))
-         (is-not (spec/valid? ::byr "2003")))
+  (is (spec/valid? ::byr "2002"))
+  (is-not (spec/valid? ::byr "2003")))
 
 ;iyr (Issue Year) - four digits; at least 2010 and at most 2020.
 (spec/def ::iyr (spec/and four-digits?
@@ -111,32 +112,32 @@
                         (<= 59 n 76))))))
 
 (deftest hgt
-         (is (spec/valid? ::hgt "60in"))
-         (is (spec/valid? ::hgt "190cm"))
-         (is-not (spec/valid? ::hgt "190in"))
-         (is-not (spec/valid? ::hgt "190")))
+  (is (spec/valid? ::hgt "60in"))
+  (is (spec/valid? ::hgt "190cm"))
+  (is-not (spec/valid? ::hgt "190in"))
+  (is-not (spec/valid? ::hgt "190")))
 
 ;hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
 (spec/def ::hcl (fn [x] (re-matches (re-pattern "#[0-9|a-f]{6}") x)))
 
 (deftest hcl
-         (is (spec/valid? ::hcl "#123abc"))
-         (is-not (spec/valid? ::hcl "#123abz"))
-         (is-not (spec/valid? ::hcl "123abc")))
+  (is (spec/valid? ::hcl "#123abc"))
+  (is-not (spec/valid? ::hcl "#123abz"))
+  (is-not (spec/valid? ::hcl "123abc")))
 
 ;ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
 (spec/def ::ecl (fn [x] (re-matches (re-pattern "(amb|blu|brn|gry|grn|hzl|oth)") x)))
 
 (deftest ecl
-         (is (spec/valid? ::ecl "brn"))
-         (is-not (spec/valid? ::ecl "wat")))
+  (is (spec/valid? ::ecl "brn"))
+  (is-not (spec/valid? ::ecl "wat")))
 
 ;pid (Passport ID) - a nine-digit number, including leading zeroes.
 (spec/def ::pid (fn [x] (re-matches (re-pattern "[\\d]{9}") x)))
 
 (deftest pid
-         (is (spec/valid? ::pid "000000001"))
-         (is-not (spec/valid? ::pid "0123456789")))
+  (is (spec/valid? ::pid "000000001"))
+  (is-not (spec/valid? ::pid "0123456789")))
 
 ;cid (Country ID) - ignored, missing or not.
 
@@ -187,12 +188,12 @@
   (spec/valid? ::passport x))
 
 (deftest puzzle-b
-         (is= (->> (get-puzzle-input)
-                   (format-input-data)
-                   (map really-valid-passport?)
-                   (filter true?)
-                   (count))
-              133))
+  (is= (->> (get-puzzle-input)
+            (format-input-data)
+            (map really-valid-passport?)
+            (filter true?)
+            (count))
+       133))
 
 
 

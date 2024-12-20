@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2017.day-06
-  (:require [ysera.test :refer [deftest is=]]
-            [ysera.collections :refer [seq-contains?]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 (def puzzle-input [10 3 15 10 5 15 5 15 9 2 5 8 5 2 3 6])
 
@@ -46,8 +46,8 @@
   {:test (fn []
            (is= (get-number-of-cycles-for-next-redistribution [0 2 7 0])
                 {:redistributions 5
-                 :first {:banks [2 4 1 2]
-                         :index 1}}))}
+                 :first           {:banks [2 4 1 2]
+                                   :index 1}}))}
   [banks]
   (loop [state {:redistributions 0
                 :current-value   banks
@@ -59,19 +59,19 @@
                                         (= (:banks old-value) value)))
                               (first))]
         {:redistributions (inc (:redistributions state))
-         :first old-value}
+         :first           old-value}
         (recur (-> state
                    (assoc :current-value value)
                    (update :old-values conj {:banks value :index (inc (:redistributions state))})
                    (update :redistributions inc)))))))
 
 (deftest puzzle-a
-         (is= (time (:redistributions (get-number-of-cycles-for-next-redistribution puzzle-input)))
-              ; "Elapsed time: 14616.61325 msecs"
-              14029))
+  (is= (time (:redistributions (get-number-of-cycles-for-next-redistribution puzzle-input)))
+       ; "Elapsed time: 14616.61325 msecs"
+       14029))
 
 (deftest puzzle-b
-         (is= (time (let [result (get-number-of-cycles-for-next-redistribution puzzle-input)]
-                      (- (:redistributions result) (get-in result [:first :index]))))
-              ; "Elapsed time: 14616.61325 msecs"
-              2765))
+  (is= (time (let [result (get-number-of-cycles-for-next-redistribution puzzle-input)]
+               (- (:redistributions result) (get-in result [:first :index]))))
+       ; "Elapsed time: 14616.61325 msecs"
+       2765))

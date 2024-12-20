@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2022.day-08
-  (:require [ysera.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is= is is-not]]))
 
 (def test-input ["30373"
                  "25512"

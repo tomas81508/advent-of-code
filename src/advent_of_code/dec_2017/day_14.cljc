@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2017.day-14
-  (:require [ysera.test :refer [is=]]
-            [advent-of-code.dec-2017.day-10 :refer [knot-hash]]
+  (:require [advent-of-code.dec-2017.day-10 :refer [knot-hash]]
             [clojure.set :refer [difference union]]))
 
 (def get-bits

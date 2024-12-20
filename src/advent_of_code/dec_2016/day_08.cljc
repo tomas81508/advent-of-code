@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2016.day-08
-  (:require [ysera.test :refer [deftest is is-not is=]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is=]]
+            [advent-of-code.collections :refer [seq-contains?]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [split starts-with?]]))
 
 ; --- Day 8: Two-Factor Authentication ---

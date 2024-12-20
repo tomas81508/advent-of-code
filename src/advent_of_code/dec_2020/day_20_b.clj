@@ -1,7 +1,8 @@
 (ns advent-of-code.dec-2020.day-20-b
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [ysera.collections :refer [seq-contains?]]
-            [ysera.math :refer [floor]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.collections :refer [seq-contains?]]
+            [advent-of-code.math :refer [floor]]))
 
 (defn create-state
   {:test (fn []
@@ -345,13 +346,13 @@
                            monster))))))
 
 (deftest puzzle-b
-         (is= (let [number-of-sea-monsters (->> [:i :r :rr :rrr :f :fr :frr :frrr]
-                                                (map (fn [orientation]
-                                                       (let [p (change-image picture orientation)]
-                                                         (count (sea-monster p)))))
-                                                (apply max))]
-                (- (count picture) (* number-of-sea-monsters (count monster))))
-              2424))
+  (is= (let [number-of-sea-monsters (->> [:i :r :rr :rrr :f :fr :frr :frrr]
+                                         (map (fn [orientation]
+                                                (let [p (change-image picture orientation)]
+                                                  (count (sea-monster p)))))
+                                         (apply max))]
+         (- (count picture) (* number-of-sea-monsters (count monster))))
+       2424))
 
 
 

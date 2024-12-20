@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-07
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.math.combinatorics :refer [permutations]]))
 
 (defn get-puzzle-input []
@@ -188,12 +189,12 @@
 
 
 (deftest larger-example
-         (let [program [3 21 1008 21 8 20 1005 20 22 107 8 21 20 1006 20 31
-                        1106 0 36 98 0 0 1002 21 125 20 4 20 1105 1 46 104
-                        999 1105 1 46 1101 1000 1 20 4 20 1105 1 46 98 99]]
-           (is= (:outputs (run program [5])) [999])
-           (is= (:outputs (run program [8])) [1000])
-           (is= (:outputs (run program [51])) [1001])))
+  (let [program [3 21 1008 21 8 20 1005 20 22 107 8 21 20 1006 20 31
+                 1106 0 36 98 0 0 1002 21 125 20 4 20 1105 1 46 104
+                 999 1105 1 46 1101 1000 1 20 4 20 1105 1 46 98 99]]
+    (is= (:outputs (run program [5])) [999])
+    (is= (:outputs (run program [8])) [1000])
+    (is= (:outputs (run program [51])) [1001])))
 
 
 (defn run-amplifiers
@@ -230,10 +231,10 @@
        (apply max)))
 
 (deftest puzzle-a
-         (is= (time (-> (get-puzzle-input)
-                        (get-max-thrusters)))
-              ; "Elapsed time: 16.31669 msecs"
-              13848))
+  (is= (time (-> (get-puzzle-input)
+                 (get-max-thrusters)))
+       ; "Elapsed time: 16.31669 msecs"
+       13848))
 
 (defn run-amplifiers-loop
   {:test (fn []
@@ -250,9 +251,9 @@
                                        :inputs   [v]
                                        :outputs  []
                                        :index    0}))
-                            {:amplifiers []
-                             :signal     0
-                             :current-index    0}
+                            {:amplifiers    []
+                             :signal        0
+                             :current-index 0}
                             phases))
          i 0]
     (let [current-index (:current-index system)
@@ -275,7 +276,7 @@
        (apply max)))
 
 (deftest puzzle-b
-         (is= (time (get-loop-max-thrusters (get-puzzle-input)))
-              ; "Elapsed time: 66.647157 msecs"
-              12932154))
+  (is= (time (get-loop-max-thrusters (get-puzzle-input)))
+       ; "Elapsed time: 66.647157 msecs"
+       12932154))
 

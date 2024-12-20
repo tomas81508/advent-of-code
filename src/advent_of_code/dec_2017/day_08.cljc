@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-08
-  (:require [ysera.test :refer [is=]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def test-input ["b inc 5 if a > 1"
                  "a inc 1 if b < 5"

@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-17
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (-> (slurp "src/advent_of_code/dec_2020/day_17.txt")
@@ -161,27 +162,27 @@
                                     (set)))))
 
 (deftest test-puzzle
-         (is= (->> (create-state test-input 3)
-                   ((apply comp (repeat 6 tick)))
-                   (:active-cubes)
-                   (count))
-              112))
+  (is= (->> (create-state test-input 3)
+            ((apply comp (repeat 6 tick)))
+            (:active-cubes)
+            (count))
+       112))
 
 (deftest puzzle-a
-         (is= (time (->> (create-state (get-puzzle-input) 3)
-                         ((apply comp (repeat 6 tick)))
-                         (:active-cubes)
-                         (count)))
-              ; "Elapsed time: 224.755917 msecs"
-              237))
+  (is= (time (->> (create-state (get-puzzle-input) 3)
+                  ((apply comp (repeat 6 tick)))
+                  (:active-cubes)
+                  (count)))
+       ; "Elapsed time: 224.755917 msecs"
+       237))
 
 (deftest puzzle-b
-         (is= (time (->> (create-state (get-puzzle-input) 4)
-                         ((apply comp (repeat 6 tick)))
-                         (:active-cubes)
-                         (count)))
-              ; "Elapsed time: 7201.658119 msecs"
-              2448))
+  (is= (time (->> (create-state (get-puzzle-input) 4)
+                  ((apply comp (repeat 6 tick)))
+                  (:active-cubes)
+                  (count)))
+       ; "Elapsed time: 7201.658119 msecs"
+       2448))
 
 
 

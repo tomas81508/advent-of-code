@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2018.day-08
-  (:require [ysera.collections :refer [seq-contains?]]
-            [ysera.test :refer [is= is is-not deftest error?]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]))
 
 (defn get-puzzle-input []
@@ -55,11 +55,11 @@
 
 
 (deftest puzzle-part-1
-         (is= (->> (get-puzzle-input)
-                   (get-node)
-                   (first)
-                   (sum-metadata-part-1))
-              35852))
+  (is= (->> (get-puzzle-input)
+            (get-node)
+            (first)
+            (sum-metadata-part-1))
+       35852))
 
 (def s (atom []))
 
@@ -98,9 +98,9 @@
 
 
 (deftest puzzle-part-2
-         (is= (->> (get-puzzle-input)
-                   (get-node)
-                   (first)
-                   (sum-metadata-part-2))
-              33422))
+  (is= (->> (get-puzzle-input)
+            (get-node)
+            (first)
+            (sum-metadata-part-2))
+       33422))
 

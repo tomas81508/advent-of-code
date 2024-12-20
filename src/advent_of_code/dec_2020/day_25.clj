@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2020.day-25
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [ysera.collections :refer [seq-contains?]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.collections :refer [seq-contains?]]))
 
 (def puzzle-input [13316116 13651422])
 
@@ -33,11 +34,11 @@
         (recur (inc i) v)))))
 
 (deftest puzzle-a
-         (let [door-public-key (first puzzle-input)
-               card-public-key (second puzzle-input)
-               door-loop-size (loop-size 7 door-public-key)
-               card-loop-size (loop-size 7 card-public-key)]
-           (is= (produce-encryption-key door-public-key card-loop-size)
-                12929)
-           (is= (produce-encryption-key card-public-key door-loop-size)
-                12929)))
+  (let [door-public-key (first puzzle-input)
+        card-public-key (second puzzle-input)
+        door-loop-size (loop-size 7 door-public-key)
+        card-loop-size (loop-size 7 card-public-key)]
+    (is= (produce-encryption-key door-public-key card-loop-size)
+         12929)
+    (is= (produce-encryption-key card-public-key door-loop-size)
+         12929)))

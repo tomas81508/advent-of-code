@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-24
-  (:require [ysera.test :refer [is=]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.string :refer [split split-lines]]))
 
 (def input (-> (slurp "src/advent_of_code/dec_2017/day_24_input.txt")
@@ -125,7 +125,7 @@
        (reduce (fn [{length :length strength :strength :as a} bridge]
                  (let [bridge-length (count bridge)]
                    (cond (> bridge-length length)
-                         {:length bridge-length
+                         {:length   bridge-length
                           :strength (->> (flatten bridge)
                                          (reduce +))}
 
@@ -135,7 +135,7 @@
                          :else
                          (let [bridge-strength (->> (flatten bridge)
                                                     (reduce +))]
-                           {:length bridge-length
+                           {:length   bridge-length
                             :strength (max bridge-strength strength)}))))
                {:length   0
                 :strength 0}))

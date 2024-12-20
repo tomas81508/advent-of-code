@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-12
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn create-initial-moon-state
   {:test (fn []
@@ -122,13 +123,13 @@
           planets))
 
 (deftest puzzle-a
-         (is= (time (as-> (get-puzzle-input) $
-                          (create-state $)
-                          (iterate step $)
-                          (nth $ 1000)
-                          (calculate-energy $)))
-              ; "Elapsed time: 57.539504 msecs"
-              9441))
+  (is= (time (as-> (get-puzzle-input) $
+                   (create-state $)
+                   (iterate step $)
+                   (nth $ 1000)
+                   (calculate-energy $)))
+       ; "Elapsed time: 57.539504 msecs"
+       9441))
 
 (defn detect-cycle-of-axis
   {:test (fn []
@@ -197,9 +198,9 @@
     (lcmv cycle-x cycle-y cycle-z)))
 
 (deftest puzzle-b
-         (is= (time (as-> (get-puzzle-input) $
-                          (create-state $)
-                          (into [] $)
-                          (detect-cycle $)))
-              503560201099704))
+  (is= (time (as-> (get-puzzle-input) $
+                   (create-state $)
+                   (into [] $)
+                   (detect-cycle $)))
+       503560201099704))
 

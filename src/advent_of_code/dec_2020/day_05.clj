@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-05
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_05.txt")
@@ -47,21 +48,21 @@
      (find-column string)))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (map find-seat-id)
-                   (apply max))
-              947))
+  (is= (->> (get-puzzle-input)
+            (map find-seat-id)
+            (apply max))
+       947))
 
 (deftest puzzle-b
-         (is= (let [seat-ids (->> (get-puzzle-input)
-                                  (map find-seat-id)
-                                  (set))
-                    min-seat-id (apply min seat-ids)
-                    max-seat-id (apply max seat-ids)]
-                (some (fn [id] (and (not (contains? seat-ids id))
-                                    id))
-                      (range min-seat-id (inc max-seat-id))))
-              636))
+  (is= (let [seat-ids (->> (get-puzzle-input)
+                           (map find-seat-id)
+                           (set))
+             min-seat-id (apply min seat-ids)
+             max-seat-id (apply max seat-ids)]
+         (some (fn [id] (and (not (contains? seat-ids id))
+                             id))
+               (range min-seat-id (inc max-seat-id))))
+       636))
 
 
 

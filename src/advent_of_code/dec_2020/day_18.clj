@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2020.day-18
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.collections :refer [seq-contains?]]
             [clojure.string :refer [ends-with? split starts-with?]]))
 
 (defn get-puzzle-input []
@@ -100,11 +101,11 @@
                                    :operation nil)))))))
 
 (deftest puzzle-a
-         (is= (time (->> (get-puzzle-input)
-                         (map evaluate)
-                         (apply +)))
-              ; "Elapsed time: 16.379615 msecs"
-              280014646144))
+  (is= (time (->> (get-puzzle-input)
+                  (map evaluate)
+                  (apply +)))
+       ; "Elapsed time: 16.379615 msecs"
+       280014646144))
 
 
 (defn s-number?
@@ -199,11 +200,11 @@
 
 
 (deftest puzzle-b
-         (is= (time (->> (get-puzzle-input)
-                         (map evaluate-2)
-                         (apply +)))
-              ; "Elapsed time: 14.584276 msecs"
-              9966990988262))
+  (is= (time (->> (get-puzzle-input)
+                  (map evaluate-2)
+                  (apply +)))
+       ; "Elapsed time: 14.584276 msecs"
+       9966990988262))
 
 
 

@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2015.day-05
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [split-lines]]))
 
 (defn get-puzzle-input []
@@ -56,10 +57,10 @@
        (not (contains-strange-strings? s))))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (filter nice?)
-                   (count))
-              238))
+  (is= (->> (get-puzzle-input)
+            (filter nice?)
+            (count))
+       238))
 
 
 (defn contains-pair-twice?
@@ -106,7 +107,7 @@
        (contains-repeated-letters? s)))
 
 (deftest puzzle-b
-         (is= (->> (get-puzzle-input)
-                   (filter nice-2?)
-                   (count))
-              69))
+  (is= (->> (get-puzzle-input)
+            (filter nice-2?)
+            (count))
+       69))

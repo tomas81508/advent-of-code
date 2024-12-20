@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-02
-  (:require [ysera.test :refer [is= deftest]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 
 (defn get-puzzle-input []
@@ -60,12 +61,12 @@
    (run program nil nil)))
 
 (deftest puzzle-2a
-         (is= (-> (get-puzzle-input)
-                  (assoc-in [0 1] 12)
-                  (assoc-in [0 2] 2)
-                  (run)
-                  (ffirst))
-              3058646))
+  (is= (-> (get-puzzle-input)
+           (assoc-in [0 1] 12)
+           (assoc-in [0 2] 2)
+           (run)
+           (ffirst))
+       3058646))
 
 (defn solve
   {:test (fn []
@@ -83,7 +84,7 @@
     {:noun noun :verb verb}))
 
 (deftest puzzle-2b
-         (is= (let [{noun :noun
-                     verb :verb} (solve (get-puzzle-input) 19690720)]
-                (+ (* 100 noun) verb))
-              8976))
+  (is= (let [{noun :noun
+              verb :verb} (solve (get-puzzle-input) 19690720)]
+         (+ (* 100 noun) verb))
+       8976))

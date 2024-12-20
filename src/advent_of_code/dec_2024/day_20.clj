@@ -119,7 +119,7 @@
                 (->> cheat-moves
                      (map (fn [cm] [cm (map + p cm)]))
                      (filter (fn [[[cmx cmy] cp]] (when-let [cheat-distance (get distances-to-end cp)]
-                                        (<= cheat-distance (- current-distance threshold (+ (abs cmx) (abs cmy)))))))
+                                                    (<= cheat-distance (- current-distance threshold (+ (abs cmx) (abs cmy)))))))
                      (count)))))
        (reduce +)))
 

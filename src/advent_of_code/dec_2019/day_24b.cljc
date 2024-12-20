@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2019.day-24b
-  (:require [ysera.test :refer [is is= is-not]]
+  (:require [advent-of-code.test :refer [is is= is-not]]
             [clojure.math :refer [pow]]
             [clojure.set :refer [union]]))
 

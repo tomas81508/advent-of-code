@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2021.day-11
-  (:require [ysera.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is= is is-not]]))
 
 (def puzzle-input "5723573158\n3154748563\n4783514878\n3848142375\n3637724151\n8583172484\n7747444184\n1613367882\n6228614227\n4732225334")
 

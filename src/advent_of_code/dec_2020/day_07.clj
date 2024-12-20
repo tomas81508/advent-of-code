@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-07
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_07.txt")
@@ -87,11 +88,11 @@
         (recur new-result)))))
 
 (deftest puzzle-a
-         (is= (-> (get-puzzle-input)
-                  (create-state)
-                  (get-containing-bags :shiny-gold-bag)
-                  (count))
-              164))
+  (is= (-> (get-puzzle-input)
+           (create-state)
+           (get-containing-bags :shiny-gold-bag)
+           (count))
+       164))
 
 (def test-input-2
   ["shiny gold bags contain 2 dark red bags."
@@ -149,11 +150,11 @@
   (apply + (vals (inner-bags state bag))))
 
 (deftest puzzle-b
-         (is= (as-> (get-puzzle-input) $
-                    (create-state $)
-                    (inner-bags $ :shiny-gold-bag)
-                    (vals $)
-                    (apply + $))
-              7872))
+  (is= (as-> (get-puzzle-input) $
+             (create-state $)
+             (inner-bags $ :shiny-gold-bag)
+             (vals $)
+             (apply + $))
+       7872))
 
 

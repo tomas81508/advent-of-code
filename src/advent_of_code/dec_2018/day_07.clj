@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2018.day-07
-  (:require [ysera.collections :refer [seq-contains?]]
-            [ysera.test :refer [is= is is-not deftest error?]]
+  (:require [advent-of-code.collections :refer [seq-contains?]]
+            [advent-of-code.test :refer [is= is is-not]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]))
 
 (defn get-puzzle-input []
@@ -103,12 +104,12 @@
       (recur state))))
 
 (deftest puzzle-part-1
-         (is= (->> (get-puzzle-input)
-                   (create-state-part-1)
-                   (do-all-tasks)
-                   (:done-tasks)
-                   (string/join ""))
-              "IJLFUVDACEHGRZPNKQWSBTMXOY"))
+  (is= (->> (get-puzzle-input)
+            (create-state-part-1)
+            (do-all-tasks)
+            (:done-tasks)
+            (string/join ""))
+       "IJLFUVDACEHGRZPNKQWSBTMXOY"))
 
 
 ;;;; PART 2
@@ -292,9 +293,9 @@
       (recur state))))
 
 (deftest puzzle-part-2
-         (is= (-> (get-puzzle-input)
-                  (create-state-part-2 5 60)
-                  (do-all-tasks-simultaneously)
-                  (select-keys [:done-tasks :time]))
-              {:done-tasks ["I" "J" "L" "V" "F" "D" "U" "H" "A" "C" "E" "R" "G" "Z" "P" "N" "Q" "K" "W" "S" "B" "T" "M" "X" "O" "Y"]
-               :time       1072}))
+  (is= (-> (get-puzzle-input)
+           (create-state-part-2 5 60)
+           (do-all-tasks-simultaneously)
+           (select-keys [:done-tasks :time]))
+       {:done-tasks ["I" "J" "L" "V" "F" "D" "U" "H" "A" "C" "E" "R" "G" "Z" "P" "N" "Q" "K" "W" "S" "B" "T" "M" "X" "O" "Y"]
+        :time       1072}))

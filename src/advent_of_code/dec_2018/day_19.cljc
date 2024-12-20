@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2018.day-19
-  (:require [ysera.test :refer [is=]]
+  (:require [advent-of-code.test :refer [is=]]
             [advent-of-code.dec-2018.day-16 :as day-16]))
 
 (def get-operation {"addr" day-16/addr

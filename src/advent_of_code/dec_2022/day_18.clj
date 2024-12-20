@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2022.day-18
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def input (slurp "src/advent_of_code/dec_2022/day_18_input.txt"))
 (def test-input "2,2,2\n1,2,2\n3,2,2\n2,1,2\n2,3,2\n2,2,1\n2,2,3\n2,2,4\n2,2,6\n1,2,5\n3,2,5\n2,1,5\n2,3,5")

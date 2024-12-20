@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2021.day-15
-  (:require [ysera.test :refer [is= deftest]]))
+  (:require [advent-of-code.test :refer [is=]]
+                       [clojure.test :refer [deftest]]))
 
 (def test-input "1163751742\n1381373672\n2136511328\n3694931569\n7463417111\n1319128137\n1359912421\n3125421639\n1293138521\n2311944581")
 

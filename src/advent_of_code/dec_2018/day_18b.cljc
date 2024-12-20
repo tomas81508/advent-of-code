@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2018.day-18b
-  (:require [ysera.test :refer [deftest is=]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn create-state
   {:test (fn []
@@ -169,20 +170,20 @@
           (count))))
 
 (deftest from-spec
-         (is= (-> (create-state [".#.#...|#."
-                                 ".....#|##|"
-                                 ".|..|...#."
-                                 "..|#.....#"
-                                 "#.#|||#|#|"
-                                 "...#.||..."
-                                 ".|....|..."
-                                 "||...#|.#|"
-                                 "|.||||..|."
-                                 "...#.|..|."])
-                  (tick 10) (tick 10) (tick 10) (tick 10) (tick 10)
-                  (tick 10) (tick 10) (tick 10) (tick 10) (tick 10)
-                  (get-resource-value))
-              1147))
+  (is= (-> (create-state [".#.#...|#."
+                          ".....#|##|"
+                          ".|..|...#."
+                          "..|#.....#"
+                          "#.#|||#|#|"
+                          "...#.||..."
+                          ".|....|..."
+                          "||...#|.#|"
+                          "|.||||..|."
+                          "...#.|..|."])
+           (tick 10) (tick 10) (tick 10) (tick 10) (tick 10)
+           (tick 10) (tick 10) (tick 10) (tick 10) (tick 10)
+           (get-resource-value))
+       1147))
 
 (defn solve-puzzle-a []
   (as-> (slurp "src/advent_of_code/dec_2018/day_18.txt") $

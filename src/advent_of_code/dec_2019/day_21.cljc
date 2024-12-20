@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2019.day-21
-  (:require [ysera.test :refer [is is= is-not]]
+  (:require [advent-of-code.test :refer [is is= is-not]]
             [advent-of-code.dec-2019.day-09 :refer [run
                                                     create-program]]))
 

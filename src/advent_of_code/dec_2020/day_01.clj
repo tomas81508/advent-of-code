@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-01
-  (:require [ysera.test :refer [is= deftest]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 
 (defn get-puzzle-input []
@@ -20,9 +21,9 @@
 
 
 (deftest puzzle-1a
-         (is= (let [numbers (get-numbers-that-sums-to-2020 (get-puzzle-input))]
-                (apply * numbers))
-              744475))
+  (is= (let [numbers (get-numbers-that-sums-to-2020 (get-puzzle-input))]
+         (apply * numbers))
+       744475))
 
 (defn get-product-of-triple-summing-to-2020
   {:test (fn []
@@ -38,5 +39,5 @@
       (first)))
 
 (deftest puzzle-1b
-         (is= (get-product-of-triple-summing-to-2020 (get-puzzle-input))
-              70276940))
+  (is= (get-product-of-triple-summing-to-2020 (get-puzzle-input))
+       70276940))

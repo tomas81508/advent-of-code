@@ -1,7 +1,6 @@
 (ns advent-of-code.dec-2022.day-16b-v2
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [advent-of-code.dec-2022.day-16a-v2 :refer [distance-test-map
-                                                        distance-map]]
+  (:require [advent-of-code.test :refer [is is-not]]
+            [advent-of-code.dec-2022.day-16a-v2 :refer [distance-map]]
             [clojure.math.combinatorics]))
 
 
@@ -11,7 +10,7 @@
                                          :open-valves    #{}
                                          :total-pressure 0}}
                   :max-total-pressure 0
-                  :visits {}})
+                  :visits             {}})
 
 
 (defn dead-end?

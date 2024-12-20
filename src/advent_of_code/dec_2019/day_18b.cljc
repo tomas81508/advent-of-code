@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2019.day-18b
-  (:require [ysera.test :refer [is= is is-not]]
+  (:require [advent-of-code.test :refer [is= is is-not]]
             [clojure.string :refer [lower-case]]
             [advent-of-code.dec-2019.day-18 :refer [door?
                                                     key?

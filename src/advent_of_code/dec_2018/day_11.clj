@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2018.day-11
-  (:require [ysera.test :refer [deftest is is-not is=]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def grid-serial-number 6878)
 
@@ -89,7 +89,7 @@
                 -4))}
   [serial-number size]
   (reduce (fn [a [x y]]
-            (assoc a [x y] {:power-level (find-power-level [x y] serial-number)
+            (assoc a [x y] {:power-level  (find-power-level [x y] serial-number)
                             :summed-value (+ (if (= y 1) 0 (:summed-value (a [x (dec y)])))
                                              (reduce (fn [sum x]
                                                        (+ sum (or (:power-level (a [x y]))
@@ -101,10 +101,8 @@
                 y (range 1 (inc size))]
             [x y])))
 
-(comment
-  (defonce summed-table-18 (get-summed-table 18 300))
-  (defonce summed-table-42 (get-summed-table 42 300))
-  )
+(defonce summed-table-18 (get-summed-table 18 300))
+(defonce summed-table-42 (get-summed-table 42 300))
 
 (get summed-table-18 [33 46])
 
@@ -132,8 +130,8 @@
   {:test (fn []
            (is= (get-max-power-level-square summed-table-18)
                 {:best-result 113
-                 :cell [90 269]
-                 :size 16}))}
+                 :cell        [90 269]
+                 :size        16}))}
   [summed-table]
   (let [size (->> (keys summed-table)
                   (map first)
@@ -141,13 +139,13 @@
     (reduce (fn [a [x y square-size]]
               (if (nil? a)
                 {:best-result (get-power-level-square summed-table [x y] square-size)
-                 :cell [x y]
-                 :size square-size}
+                 :cell        [x y]
+                 :size        square-size}
                 (let [power-level-square (get-power-level-square summed-table [x y] square-size)]
                   (if (> power-level-square (:best-result a))
                     {:best-result power-level-square
-                     :cell [x y]
-                     :size square-size}
+                     :cell        [x y]
+                     :size        square-size}
                     a))))
             nil
             (for [x (range 1 (inc size))

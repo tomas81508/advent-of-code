@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2016.day-15
-  (:require [ysera.test :refer [deftest is= is is-not]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.string :refer [split-lines]]))
 
 (def input (->> (slurp "src/advent_of_code/dec_2016/day_15_input.txt")
@@ -7,11 +7,6 @@
 
 (def test-input ["Disc #1 has 5 positions; at time=0, it is at position 4."
                  "Disc #2 has 2 positions; at time=0, it is at position 1."])
-
-(defn periods
-  ([disc-number start-position positions]
-   (periods (mod (- positions start-position disc-number) positions) positions))
-  ([start period] (lazy-seq (cons start (periods (+ start period) period)))))
 
 (defn create-disc-periods
   [input]

@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-11
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_11.txt")
@@ -133,23 +134,23 @@
              (:seats state)))
 
 (deftest puzzle-test
-         (is= (loop [state (create-state test-input)]
-                (let [next-state (tick-a-round state)]
-                  (if (= state next-state)
-                    (count (get-occupied-seats state))
-                    (recur next-state))))
-              37))
+  (is= (loop [state (create-state test-input)]
+         (let [next-state (tick-a-round state)]
+           (if (= state next-state)
+             (count (get-occupied-seats state))
+             (recur next-state))))
+       37))
 
 (comment
   "This test takes about 7s so i don't want to run it as often."
   (deftest puzzle-a
-           (is= (time (loop [state (create-state (get-puzzle-input))]
-                        (let [next-state (tick-a-round state)]
-                          (if (= state next-state)
-                            (count (get-occupied-seats state))
-                            (recur next-state)))))
-                ; "Elapsed time: 7518.975366 msecs"
-                2321))
+    (is= (time (loop [state (create-state (get-puzzle-input))]
+                 (let [next-state (tick-a-round state)]
+                   (if (= state next-state)
+                     (count (get-occupied-seats state))
+                     (recur next-state)))))
+         ; "Elapsed time: 7518.975366 msecs"
+         2321))
   )
 
 (defn create-state-2
@@ -325,15 +326,15 @@
 
 (comment
   (deftest puzzle-b
-           (is= (time (loop [state (create-state-2 (get-puzzle-input))
-                             counter 0]
-                        (println counter)
-                        (let [next-state (tick-a-round-with-directions state)]
-                          (if (= state next-state)
-                            (count (get-occupied-seats state))
-                            (recur next-state (inc counter))))))
-                ; "Elapsed time: 8759.0915 msecs"
-                2102))
+    (is= (time (loop [state (create-state-2 (get-puzzle-input))
+                      counter 0]
+                 (println counter)
+                 (let [next-state (tick-a-round-with-directions state)]
+                   (if (= state next-state)
+                     (count (get-occupied-seats state))
+                     (recur next-state (inc counter))))))
+         ; "Elapsed time: 8759.0915 msecs"
+         2102))
 
   )
 

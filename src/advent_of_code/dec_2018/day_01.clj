@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2018.day-01
-  (:require [ysera.test :refer [is= deftest]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn solve-part-1
   {:test (fn []
@@ -14,9 +15,9 @@
        (map read-string)))
 
 (deftest puzzle-part-1
-         (is= (-> (get-puzzle-input)
-                  (solve-part-1))
-              529))
+  (is= (-> (get-puzzle-input)
+           (solve-part-1))
+       529))
 
 (defn solve-part-2a
   {:test (fn []
@@ -40,7 +41,7 @@
            (is= (solve-part-2b [3 3 4 -2 -4]) 10))}
   [input]
   (loop [current-sum 0
-         all-sums    #{0}
+         all-sums #{0}
          input (flatten (repeat input))]
     (let [next-sum (+ current-sum (first input))]
       (if (contains? all-sums next-sum)
@@ -50,9 +51,9 @@
                (drop 1 input))))))
 
 (deftest puzzle-part-2
-         (is= (-> (get-puzzle-input)
-                  (solve-part-2a))
-              464)
-         (is= (-> (get-puzzle-input)
-                  (solve-part-2b))
-              464))
+  (is= (-> (get-puzzle-input)
+           (solve-part-2a))
+       464)
+  (is= (-> (get-puzzle-input)
+           (solve-part-2b))
+       464))

@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-03
-  (:require [ysera.test :refer [is= deftest]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 
 (defn get-puzzle-input []
@@ -132,11 +133,11 @@
        (apply min)))
 
 (deftest puzzle-a
-         (is= (time (->> (get-puzzle-input)
-                         (apply create-state)
-                         (find-min-distance)))
-              ; "Elapsed time: 580.560342 msecs"
-              375))
+  (is= (time (->> (get-puzzle-input)
+                  (apply create-state)
+                  (find-min-distance)))
+       ; "Elapsed time: 580.560342 msecs"
+       375))
 
 ;;; PART 2
 
@@ -200,9 +201,9 @@
        (first)))
 
 (deftest puzzle-b
-         (is= (time (->> (get-puzzle-input)
-                         (apply create-state-2)
-                         (find-min-wire-total-length)))
-              ; "Elapsed time: 682.542272 msecs"
-              {:distance          1813
-               :wire-total-length 14746}))
+  (is= (time (->> (get-puzzle-input)
+                  (apply create-state-2)
+                  (find-min-wire-total-length)))
+       ; "Elapsed time: 682.542272 msecs"
+       {:distance          1813
+        :wire-total-length 14746}))

@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2016.day-11
-  (:require [ysera.test :refer [deftest is= is is-not]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [advent-of-code.collections :refer [seq-contains?]]
             [clojure.string :refer [split]]
             [clojure.math.combinatorics :refer [combinations]]))
 

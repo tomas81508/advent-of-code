@@ -80,17 +80,17 @@
     (let [next-position (map + current (:direction state))]
       ;(println next-position)
       (cond (contains? (:obstacles atlas) next-position)
-            (do ;(println "Hit an obstacle")
-                (-> state
-                    (assoc :position current)
-                    (assoc :direction (turn-right (:direction state)))
-                    (update :visited clojure.set/union walk)))
+            (do                                             ;(println "Hit an obstacle")
+              (-> state
+                  (assoc :position current)
+                  (assoc :direction (turn-right (:direction state)))
+                  (update :visited clojure.set/union walk)))
 
             (out-of-bound? atlas next-position)
-            (do ;(println "Out of bounds")
-                (-> state
-                    (assoc :position next-position)
-                    (update :visited clojure.set/union walk)))
+            (do                                             ;(println "Out of bounds")
+              (-> state
+                  (assoc :position next-position)
+                  (update :visited clojure.set/union walk)))
 
             :else
             (recur (conj walk next-position)

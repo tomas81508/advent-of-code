@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-22
-  (:require [ysera.test :refer [is= is is-not]]
+  (:require [advent-of-code.test :refer [is= is is-not]]
             [clojure.string :refer [split-lines]]))
 
 (def infected (->> (slurp "src/advent_of_code/dec_2017/day_22_input.txt")

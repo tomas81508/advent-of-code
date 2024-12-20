@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2015.day-03
-  (:require [ysera.test :refer [is= deftest]]
-            [clojure.string :refer [split-lines]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (slurp "src/advent_of_code/dec_2015/day_03_input.txt"))
@@ -36,25 +36,25 @@
        (:houses)))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (houses-getting-presents)
-                   (keys)
-                   (count))
-              2081))
+  (is= (->> (get-puzzle-input)
+            (houses-getting-presents)
+            (keys)
+            (count))
+       2081))
 
 (defn houses-getting-presents-with-robo-santa
   {:test (fn []
            (is= (houses-getting-presents-with-robo-santa "^v")
-                {[0 0] 2
-                 [0 1] 1
+                {[0 0]  2
+                 [0 1]  1
                  [0 -1] 1})
            (is= (houses-getting-presents-with-robo-santa "^>v<")
                 {[0 0] 4
                  [0 1] 1
                  [1 0] 1})
            (is= (houses-getting-presents-with-robo-santa "^v^v^v^v^v")
-                {[0 0] 2
-                 [0 1] 1 [0 2] 1 [0 3] 1 [0 4] 1 [0 5] 1
+                {[0 0]  2
+                 [0 1]  1 [0 2] 1 [0 3] 1 [0 4] 1 [0 5] 1
                  [0 -1] 1 [0 -2] 1 [0 -3] 1 [0 -4] 1 [0 -5] 1}))}
   [directions]
   (->> directions
@@ -73,17 +73,17 @@
                        (assoc :santa-position santa-position)
                        (update-in [:houses robo-santa-position] (fn [n] (if n (inc n) 1)))
                        (assoc :robo-santa-position robo-santa-position))))
-               {:houses   {[0 0] 2}
-                :santa-position [0 0]
+               {:houses              {[0 0] 2}
+                :santa-position      [0 0]
                 :robo-santa-position [0 0]})
        (:houses)))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (houses-getting-presents-with-robo-santa)
-                   (keys)
-                   (count))
-              2341))
+  (is= (->> (get-puzzle-input)
+            (houses-getting-presents-with-robo-santa)
+            (keys)
+            (count))
+       2341))
 
 
 

@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2017.day-02
-  (:require [ysera.test :refer [deftest is=]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]))
 
 (defn max-difference
@@ -46,12 +47,12 @@
           (string/split-lines input)))
 
 (deftest puzzle-a
-         (is= (checksum (slurp "src/advent_of_code/dec_2017/day_02_input.txt") max-difference)
-              42378))
+  (is= (checksum (slurp "src/advent_of_code/dec_2017/day_02_input.txt") max-difference)
+       42378))
 
 (deftest puzzle-b
-         (is= (checksum (slurp "src/advent_of_code/dec_2017/day_02_input.txt") max-div)
-              246))
+  (is= (checksum (slurp "src/advent_of_code/dec_2017/day_02_input.txt") max-div)
+       246))
 
 
 

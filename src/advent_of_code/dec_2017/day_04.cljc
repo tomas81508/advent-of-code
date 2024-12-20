@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2017.day-04
-  (:require [ysera.test :refer [deftest is is-not is=]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]))
 
 (defn valid-passphrase
@@ -13,11 +14,11 @@
     (= (count words) (count unique-words))))
 
 (deftest puzzle-a
-         (is= (->> (slurp "src/advent_of_code/dec_2017/day_04_input.txt")
-                   (string/split-lines)
-                   (filter valid-passphrase)
-                   (count))
-              455))
+  (is= (->> (slurp "src/advent_of_code/dec_2017/day_04_input.txt")
+            (string/split-lines)
+            (filter valid-passphrase)
+            (count))
+       455))
 
 (defn valid-improved-passphrase
   {:test (fn []
@@ -33,11 +34,11 @@
     (= (count sorted-words) (count unique-words))))
 
 (deftest puzzle-b
-         (is= (->> (slurp "src/advent_of_code/dec_2017/day_04_input.txt")
-                   (string/split-lines)
-                   (filter valid-improved-passphrase)
-                   (count))
-              186))
+  (is= (->> (slurp "src/advent_of_code/dec_2017/day_04_input.txt")
+            (string/split-lines)
+            (filter valid-improved-passphrase)
+            (count))
+       186))
 
 
 

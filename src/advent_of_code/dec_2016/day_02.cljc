@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2016.day-02
-  (:require [ysera.test :refer [deftest is is-not is=]]
-            [advent-of-code.dec-2016.day-01 :refer [distance abs]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [advent-of-code.dec-2016.day-01 :refer [distance]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]))
 
 ; --- Day 2: Bathroom Security ---
@@ -111,12 +112,12 @@
       (string/split #"\n")))
 
 (deftest puzzle-a
-         (is= (apply reveal-bathroom-code
-                     [0 0]
-                     on-square-board?
-                     square-coordinate->input-map
-                     input-data)
-              "97289"))
+  (is= (apply reveal-bathroom-code
+              [0 0]
+              on-square-board?
+              square-coordinate->input-map
+              input-data)
+       "97289"))
 
 ; --- Part Two ---
 ;
@@ -169,9 +170,9 @@
 
 (deftest puzzle-b
   (is= (apply reveal-bathroom-code
-                [-2 0]
-                on-diamond-board?
-                diamond-coordinate->input-map input-data)
+              [-2 0]
+              on-diamond-board?
+              diamond-coordinate->input-map input-data)
        "9A7DC"))
 
 

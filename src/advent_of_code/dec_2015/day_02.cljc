@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2015.day-02
-  (:require [ysera.test :refer [is= deftest]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [split-lines]]))
 
 (defn get-puzzle-input []
@@ -20,14 +21,14 @@
        (apply +)))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (split-lines)
-                   (map (fn [w-h-l]
-                          (let [dimensions (re-matches pattern w-h-l)]
-                            (->> (map read-string (rest dimensions))
-                                 (apply calculate-paper)))))
-                   (reduce +))
-              1598415))
+  (is= (->> (get-puzzle-input)
+            (split-lines)
+            (map (fn [w-h-l]
+                   (let [dimensions (re-matches pattern w-h-l)]
+                     (->> (map read-string (rest dimensions))
+                          (apply calculate-paper)))))
+            (reduce +))
+       1598415))
 
 (defn calculate-ribbon
   {:test (fn []
@@ -44,12 +45,12 @@
      (* width height length)))
 
 (deftest puzzle-b
-         (is= (->> (get-puzzle-input)
-                   (split-lines)
-                   (map (fn [w-h-l]
-                          (let [dimensions (re-matches pattern w-h-l)]
-                            (->> (map read-string (rest dimensions))
-                                 (apply calculate-ribbon)))))
-                   (reduce +))
-              3812909))
+  (is= (->> (get-puzzle-input)
+            (split-lines)
+            (map (fn [w-h-l]
+                   (let [dimensions (re-matches pattern w-h-l)]
+                     (->> (map read-string (rest dimensions))
+                          (apply calculate-ribbon)))))
+            (reduce +))
+       3812909))
 

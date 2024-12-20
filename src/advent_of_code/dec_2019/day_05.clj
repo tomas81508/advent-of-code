@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-05
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_05.txt") $
@@ -152,24 +153,24 @@
 
 
 (deftest larger-example
-         (let [program [3 21 1008 21 8 20 1005 20 22 107 8 21 20 1006 20 31
-                        1106 0 36 98 0 0 1002 21 125 20 4 20 1105 1 46 104
-                        999 1105 1 46 1101 1000 1 20 4 20 1105 1 46 98 99]]
-           (is= (run program 5) 999)
-           (is= (run program 8) 1000)
-           (is= (run program 51) 1001)))
+  (let [program [3 21 1008 21 8 20 1005 20 22 107 8 21 20 1006 20 31
+                 1106 0 36 98 0 0 1002 21 125 20 4 20 1105 1 46 104
+                 999 1105 1 46 1101 1000 1 20 4 20 1105 1 46 98 99]]
+    (is= (run program 5) 999)
+    (is= (run program 8) 1000)
+    (is= (run program 51) 1001)))
 
 
 (deftest puzzle-a
-         (is= (time (-> (get-puzzle-input)
-                        (run 1)))
-              ; "Elapsed time: 7.136423 msecs"
-              16348437))
+  (is= (time (-> (get-puzzle-input)
+                 (run 1)))
+       ; "Elapsed time: 7.136423 msecs"
+       16348437))
 
 (deftest puzzle-b
-         (is= (time (-> (get-puzzle-input)
-                        (run 5)))
-              ; "Elapsed time: 7.033396 msecs"
-              6959377))
+  (is= (time (-> (get-puzzle-input)
+                 (run 5)))
+       ; "Elapsed time: 7.033396 msecs"
+       6959377))
 
 

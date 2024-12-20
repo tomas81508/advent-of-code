@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-25
-  (:require [ysera.test :refer [is=]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def state {:tape         [0]
             :current      0

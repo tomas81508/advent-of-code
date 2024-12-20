@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2017.day-07
-  (:require [ysera.test :refer [deftest is=]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.string :as string]))
 
 (def test-input ["pbga (66)"

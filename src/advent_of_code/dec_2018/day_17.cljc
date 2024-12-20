@@ -1,6 +1,5 @@
-(ns advent-of-code.dec-2018.day-17)
-  (:require [clojure.string :as str]
-            [ysera.test :refer [is]])
+(ns advent-of-code.dec-2018.day-17
+  (:require [clojure.string]))
 
 (defn get-puzzle-input []
   (-> (slurp "src/advent_of_code/dec_2018/day_17.txt")

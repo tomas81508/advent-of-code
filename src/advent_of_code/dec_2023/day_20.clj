@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2023.day-20
-  (:require [advent-of-code.test :refer [is= is is-not]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is=]]
+            [advent-of-code.collections :refer [seq-contains?]]
             [clojure.test :refer [deftest]]
             [clojure.string :refer [split-lines split starts-with?]]))
 

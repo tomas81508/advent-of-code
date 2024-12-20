@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2021.day-06
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 ; Initial state: 3,4,3,1,2
 ; After  1 day:  2,3,2,0,1
@@ -67,22 +68,22 @@
 
                      :else
                      (assoc state (dec k) v)
-                 ))
+                     ))
              {}
              state))
 
 (deftest puzzle-a
-         (is= (time (->> (create-state puzzle-input)
-                         ((apply comp (repeat 80 next-day)))
-                         (vals)
-                         (reduce +)))
-              ; "Elapsed time: 0.550389 msecs"
-              380612))
+  (is= (time (->> (create-state puzzle-input)
+                  ((apply comp (repeat 80 next-day)))
+                  (vals)
+                  (reduce +)))
+       ; "Elapsed time: 0.550389 msecs"
+       380612))
 
 (deftest puzzle-b
-         (is= (time (->> (create-state puzzle-input)
-                         ((apply comp (repeat 256 next-day)))
-                         (vals)
-                         (reduce +)))
-              ; "Elapsed time: 0.998816 msecs"
-              1710166656900))
+  (is= (time (->> (create-state puzzle-input)
+                  ((apply comp (repeat 256 next-day)))
+                  (vals)
+                  (reduce +)))
+       ; "Elapsed time: 0.998816 msecs"
+       1710166656900))

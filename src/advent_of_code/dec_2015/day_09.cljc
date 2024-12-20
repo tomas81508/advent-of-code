@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2015.day-09
-  (:require [ysera.test :refer [deftest is=]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [split-lines]]
             [clojure.set :refer [union]]
             [clojure.math.combinatorics :refer [permutations]]))
@@ -77,11 +78,11 @@
        (reduce min)))
 
 (deftest puzzle-a
-         (is= (time (-> (get-puzzle-input)
-                        (create-state)
-                        (calculate-min-distance)))
-              ; "Elapsed time: 335.934565 msecs"
-              251))
+  (is= (time (-> (get-puzzle-input)
+                 (create-state)
+                 (calculate-min-distance)))
+       ; "Elapsed time: 335.934565 msecs"
+       251))
 
 (defn calculate-max-distance
   {:test (fn []
@@ -94,11 +95,11 @@
        (reduce max)))
 
 (deftest puzzle-a
-         (is= (time (-> (get-puzzle-input)
-                        (create-state)
-                        (calculate-max-distance)))
-              ; "Elapsed time: 294.473778 msecs"
-              898))
+  (is= (time (-> (get-puzzle-input)
+                 (create-state)
+                 (calculate-max-distance)))
+       ; "Elapsed time: 294.473778 msecs"
+       898))
 
 
 

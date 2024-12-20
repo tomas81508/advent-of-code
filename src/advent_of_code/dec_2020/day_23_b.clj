@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2020.day-23-b
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [ysera.collections :refer [seq-contains?]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.collections :refer [seq-contains?]]))
 
 (def puzzle-input "157623984")
 
@@ -91,19 +92,19 @@
         (recur next (str result next))))))
 
 (deftest test-cup-labels-after-100-moves
-         (is= (as-> (create-state test-input) $
-                    ((apply comp (repeat 100 move)) $)
-                    (:circle $)
-                    (collect-cup-labels $))
-              "67384529"))
+  (is= (as-> (create-state test-input) $
+             ((apply comp (repeat 100 move)) $)
+             (:circle $)
+             (collect-cup-labels $))
+       "67384529"))
 
 (deftest puzzle-a
-         (is= (time (as-> (create-state puzzle-input) $
-                          ((apply comp (repeat 100 move)) $)
-                          (:circle $)
-                          (collect-cup-labels $)))
-              ; "Elapsed time: 0.419383 msecs"
-              "58427369"))
+  (is= (time (as-> (create-state puzzle-input) $
+                   ((apply comp (repeat 100 move)) $)
+                   (:circle $)
+                   (collect-cup-labels $)))
+       ; "Elapsed time: 0.419383 msecs"
+       "58427369"))
 
 (defn create-state-2
   [input size]
@@ -129,28 +130,28 @@
     [cup1 cup2]))
 
 (deftest puzzle-test
-         (is= (time (as-> (create-state-2 test-input 1000000) $
-                          (loop [state $
-                                 counter 0]
-                            (if (= counter 9999999)
-                              (move state)
-                              (recur (move state) (inc counter))))
-                          (find-cups-after-1 $)
-                          (apply * $)))
-              ; "Elapsed time: 35152.479094 msecs"
-              149245887792))
+  (is= (time (as-> (create-state-2 test-input 1000000) $
+                   (loop [state $
+                          counter 0]
+                     (if (= counter 9999999)
+                       (move state)
+                       (recur (move state) (inc counter))))
+                   (find-cups-after-1 $)
+                   (apply * $)))
+       ; "Elapsed time: 35152.479094 msecs"
+       149245887792))
 
 (deftest puzzle-test
-         (is= (time (as-> (create-state-2 puzzle-input 1000000) $
-                          (loop [state $
-                                 counter 0]
-                            (if (= counter 9999999)
-                              (move state)
-                              (recur (move state) (inc counter))))
-                          (find-cups-after-1 $)
-                          (apply * $)))
-              ; "Elapsed time: 34562.123593 msecs"
-              111057672960))
+  (is= (time (as-> (create-state-2 puzzle-input 1000000) $
+                   (loop [state $
+                          counter 0]
+                     (if (= counter 9999999)
+                       (move state)
+                       (recur (move state) (inc counter))))
+                   (find-cups-after-1 $)
+                   (apply * $)))
+       ; "Elapsed time: 34562.123593 msecs"
+       111057672960))
 
 
 

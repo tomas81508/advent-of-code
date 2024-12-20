@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-21
-  (:require [ysera.test :refer [is= is is-not]]
+  (:require [advent-of-code.test :refer [is= is is-not]]
             [clojure.math]))
 
 (def input (slurp "src/advent_of_code/dec_2017/day_21_input.txt"))
@@ -24,7 +24,7 @@
 (defn configurations
   {:test (fn []
            (is= (configurations ["#." ".."])
-                                #{["#." ".."] [".#" ".."] [".." "#."] [".." ".#"]})
+                #{["#." ".."] [".#" ".."] [".." "#."] [".." ".#"]})
            (is= (configurations [".#." "..#" "###"])
                 #{["..#" "#.#" ".##"] ["###" "..#" ".#."] ["###" "#.." ".#."] [".#." "..#" "###"]
                   [".#." "#.." "###"] ["##." "#.#" "#.."] [".##" "#.#" "..#"] ["#.." "#.#" "##."]}))}

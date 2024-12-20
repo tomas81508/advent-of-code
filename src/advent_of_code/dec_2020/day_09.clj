@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-09
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_09.txt")
@@ -40,9 +41,9 @@
         n))))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (find-first-error 25))
-              1504371145))
+  (is= (->> (get-puzzle-input)
+            (find-first-error 25))
+       1504371145))
 
 (defn find-contiguous-set
   {:test (fn []
@@ -67,28 +68,28 @@
   (+ (apply min numbers) (apply max numbers)))
 
 (deftest puzzle-b
-         (let [contiguous-set (time (find-contiguous-set 1504371145 (get-puzzle-input)))]
-           ; "Elapsed time: 1325.877419 msecs"
-           (is= contiguous-set
-                [54418204
-                 76670764
-                 58849294
-                 82972768
-                 82657283
-                 89013309
-                 78479083
-                 88337414
-                 84689277
-                 87147239
-                 87462724
-                 91290880
-                 95930397
-                 128860283
-                 95091036
-                 125859569
-                 96641621])
-           (is= (add-smallest-and-largest-numbers contiguous-set)
-                183278487)))
+  (let [contiguous-set (time (find-contiguous-set 1504371145 (get-puzzle-input)))]
+    ; "Elapsed time: 1325.877419 msecs"
+    (is= contiguous-set
+         [54418204
+          76670764
+          58849294
+          82972768
+          82657283
+          89013309
+          78479083
+          88337414
+          84689277
+          87147239
+          87462724
+          91290880
+          95930397
+          128860283
+          95091036
+          125859569
+          96641621])
+    (is= (add-smallest-and-largest-numbers contiguous-set)
+         183278487)))
 
 
 

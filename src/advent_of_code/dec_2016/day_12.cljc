@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2016.day-12
-  (:require [ysera.test :refer [deftest is= is is-not]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [starts-with? split]]))
 
 
@@ -75,13 +75,13 @@
                  (recur (+ current (read-string steps)) memory))))))))
 
 (deftest puzzle-a
-         (is= (time (-> (run puzzle-input)
-                        (get "a")))
-              ; "Elapsed time: 477.288251 msecs"
-              318007))
+  (is= (time (-> (run puzzle-input)
+                 (get "a")))
+       ; "Elapsed time: 477.288251 msecs"
+       318007))
 
 (deftest puzzle-b
-         (is= (time (-> (run puzzle-input {"c" 1})
-                        (get "a")))
-              ; "Elapsed time: 11451.04182 msecs"
-              9227661))
+  (is= (time (-> (run puzzle-input {"c" 1})
+                 (get "a")))
+       ; "Elapsed time: 11451.04182 msecs"
+       9227661))

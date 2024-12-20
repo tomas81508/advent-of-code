@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2016.day-14
-  (:require [ysera.test :refer [deftest is= is is-not]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
             [digest :refer [md5]]))
 
 

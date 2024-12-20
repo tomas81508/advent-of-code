@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2020.day-24
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [ysera.collections :refer [seq-contains?]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.collections :refer [seq-contains?]]))
 
 (def test-input ["sesenwnenenewseeswwswswwnenewsewsw"
                  "neeenesenwnwwswnenewnwwsewnenwseswesw"
@@ -65,10 +66,10 @@
   (count (get-black-coordinates coordinates)))
 
 (deftest puzzle-a
-         (is= (time (->> puzzle-input
-                         (map find-coordinate)
-                         (calculate-black-tiles)))
-              320))
+  (is= (time (->> puzzle-input
+                  (map find-coordinate)
+                  (calculate-black-tiles)))
+       320))
 
 (def directions #{[-2 0] [2 0] [-1 -1] [-1 1] [1 -1] [1 1]})
 
@@ -143,36 +144,36 @@
                    (turn-to-black? c coordinates))))))
 
 (deftest puzzle-test
-         (is= (time (as-> test-input $
-                          (map find-coordinate $)
-                          (get-black-coordinates $)
-                          (into #{} $)
-                          (loop [black-coordinates $
-                                 counter 0]
-                            (println counter)
-                            (if (= counter 100)
-                              black-coordinates
-                              (recur (flip-tiles black-coordinates)
-                                     (inc counter))))
-                          (count $)))
-              ; "Elapsed time: 108262.898953 msecs"
-              2208))
+  (is= (time (as-> test-input $
+                   (map find-coordinate $)
+                   (get-black-coordinates $)
+                   (into #{} $)
+                   (loop [black-coordinates $
+                          counter 0]
+                     (println counter)
+                     (if (= counter 100)
+                       black-coordinates
+                       (recur (flip-tiles black-coordinates)
+                              (inc counter))))
+                   (count $)))
+       ; "Elapsed time: 108262.898953 msecs"
+       2208))
 
 (deftest puzzle-b
-         (is= (time (as-> puzzle-input $
-                          (map find-coordinate $)
-                          (get-black-coordinates $)
-                          (into #{} $)
-                          (loop [black-coordinates $
-                                 counter 0]
-                            (println counter)
-                            (if (= counter 100)
-                              black-coordinates
-                              (recur (flip-tiles black-coordinates)
-                                     (inc counter))))
-                          (count $)))
-              ; "Elapsed time: 445577.407061 msecs"
-              3777))
+  (is= (time (as-> puzzle-input $
+                   (map find-coordinate $)
+                   (get-black-coordinates $)
+                   (into #{} $)
+                   (loop [black-coordinates $
+                          counter 0]
+                     (println counter)
+                     (if (= counter 100)
+                       black-coordinates
+                       (recur (flip-tiles black-coordinates)
+                              (inc counter))))
+                   (count $)))
+       ; "Elapsed time: 445577.407061 msecs"
+       3777))
 
 
 

@@ -1,7 +1,7 @@
 (ns advent-of-code.dec-2015.day-07
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [clojure.string :refer [split-lines
-                                    starts-with?]]))
+  (:require [advent-of-code.test :refer [is is=]]
+            [clojure.test :refer [deftest]]
+            [clojure.string :refer [split-lines]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2015/day_07_input.txt")
@@ -10,7 +10,7 @@
 ; x AND y -> z
 (def and-pattern (re-pattern "(\\w+) AND (\\w+) -> (\\w+)"))
 (deftest and-pattern-test
-         (is (re-matches and-pattern "x AND y -> d")))
+  (is (re-matches and-pattern "x AND y -> d")))
 
 ; x OR y -> e
 (def or-pattern (re-pattern "(\\w+) OR (\\w+) -> (\\w+)"))
@@ -211,11 +211,11 @@
 
 
 (deftest puzzle-a
-         (is= (-> (run-instructions (get-puzzle-input))
-                  (get "a"))
-              3176))
+  (is= (-> (run-instructions (get-puzzle-input))
+           (get "a"))
+       3176))
 
 (deftest puzzle-b
-         (is= (-> (run-instructions (get-puzzle-input) {"b" 3176})
-                  (get "a"))
-              14710))
+  (is= (-> (run-instructions (get-puzzle-input) {"b" 3176})
+           (get "a"))
+       14710))

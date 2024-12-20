@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-19
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input-rules []
   (-> (slurp "src/advent_of_code/dec_2020/day_19_rules.txt")
@@ -92,14 +93,14 @@
         (match-rule rules s rule)))
 
 (deftest puzzle-a
-         (is= (time (let [rules (create-rules (get-puzzle-input-rules))
-                          messages (get-puzzle-input-messages)]
-                      (->> messages
-                           (filter (fn [m] (exact-match rules m 0)))
-                           (count))))
-              ; "Elapsed time: 308.766772 msecs"
-              291)
-         )
+  (is= (time (let [rules (create-rules (get-puzzle-input-rules))
+                   messages (get-puzzle-input-messages)]
+               (->> messages
+                    (filter (fn [m] (exact-match rules m 0)))
+                    (count))))
+       ; "Elapsed time: 308.766772 msecs"
+       291)
+  )
 
 (def test-rules-2 (create-rules ["0: 8 11"
                                  "1: \"a\""
@@ -138,53 +139,53 @@
                                       11 [[42 31] [42 11 31]])))
 
 (deftest test-2
-         (is-not (exact-match test-rules-2 "abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa" 0))
-         (is (exact-match test-rules-2 "bbabbbbaabaabba" 0))
-         (is-not (exact-match test-rules-2 "babbbbaabbbbbabbbbbbaabaaabaaa" 0))
-         (is-not (exact-match test-rules-2 "aaabbbbbbaaaabaababaabababbabaaabbababababaaa" 0))
-         (is-not (exact-match test-rules-2 "bbbbbbbaaaabbbbaaabbabaaa" 0))
-         (is-not (exact-match test-rules-2 "bbbababbbbaaaaaaaabbababaaababaabab" 0))
-         (is (exact-match test-rules-2 "ababaaaaaabaaab" 0))
-         (is (exact-match test-rules-2 "ababaaaaabbbaba" 0))
-         (is-not (exact-match test-rules-2 "baabbaaaabbaaaababbaababb" 0))
-         (is-not (exact-match test-rules-2 "abbbbabbbbaaaababbbbbbaaaababb" 0))
-         (is-not (exact-match test-rules-2 "aaaaabbaabaaaaababaa" 0))
-         (is-not (exact-match test-rules-2 "aaaabbaaaabbaaa" 0))
-         (is-not (exact-match test-rules-2 "aaaabbaabbaaaaaaabbbabbbaaabbaabaaa" 0))
-         (is-not (exact-match test-rules-2 "babaaabbbaaabaababbaabababaaab" 0))
-         (is-not (exact-match test-rules-2 "aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba" 0)))
+  (is-not (exact-match test-rules-2 "abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa" 0))
+  (is (exact-match test-rules-2 "bbabbbbaabaabba" 0))
+  (is-not (exact-match test-rules-2 "babbbbaabbbbbabbbbbbaabaaabaaa" 0))
+  (is-not (exact-match test-rules-2 "aaabbbbbbaaaabaababaabababbabaaabbababababaaa" 0))
+  (is-not (exact-match test-rules-2 "bbbbbbbaaaabbbbaaabbabaaa" 0))
+  (is-not (exact-match test-rules-2 "bbbababbbbaaaaaaaabbababaaababaabab" 0))
+  (is (exact-match test-rules-2 "ababaaaaaabaaab" 0))
+  (is (exact-match test-rules-2 "ababaaaaabbbaba" 0))
+  (is-not (exact-match test-rules-2 "baabbaaaabbaaaababbaababb" 0))
+  (is-not (exact-match test-rules-2 "abbbbabbbbaaaababbbbbbaaaababb" 0))
+  (is-not (exact-match test-rules-2 "aaaaabbaabaaaaababaa" 0))
+  (is-not (exact-match test-rules-2 "aaaabbaaaabbaaa" 0))
+  (is-not (exact-match test-rules-2 "aaaabbaabbaaaaaaabbbabbbaaabbaabaaa" 0))
+  (is-not (exact-match test-rules-2 "babaaabbbaaabaababbaabababaaab" 0))
+  (is-not (exact-match test-rules-2 "aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba" 0)))
 
 (deftest test-puzzle-b
-         (is-not (exact-match test-rules-2-modified "abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa" 0))
-         (is (exact-match test-rules-2-modified "bbabbbbaabaabba" 0))
-         (is (exact-match test-rules-2-modified "babbbbaabbbbbabbbbbbaabaaabaaa" 0))
-         (is (exact-match test-rules-2-modified "aaabbbbbbaaaabaababaabababbabaaabbababababaaa" 0))
-         (is (exact-match test-rules-2-modified "bbbbbbbaaaabbbbaaabbabaaa" 0))
-         (is (exact-match test-rules-2-modified "bbbababbbbaaaaaaaabbababaaababaabab" 0))
-         (is (exact-match test-rules-2-modified "ababaaaaaabaaab" 0))
-         (is (exact-match test-rules-2-modified "ababaaaaabbbaba" 0))
-         (is (exact-match test-rules-2-modified "baabbaaaabbaaaababbaababb" 0))
-         (is (exact-match test-rules-2-modified "abbbbabbbbaaaababbbbbbaaaababb" 0))
-         (is (exact-match test-rules-2-modified "aaaaabbaabaaaaababaa" 0))
-         (is-not (exact-match test-rules-2-modified "aaaabbaaaabbaaa" 0))
-         (is (exact-match test-rules-2-modified "aaaabbaabbaaaaaaabbbabbbaaabbaabaaa" 0))
-         (is-not (exact-match test-rules-2-modified "babaaabbbaaabaababbaabababaaab" 0))
-         (is (exact-match test-rules-2-modified "aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba" 0))
-         )
+  (is-not (exact-match test-rules-2-modified "abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa" 0))
+  (is (exact-match test-rules-2-modified "bbabbbbaabaabba" 0))
+  (is (exact-match test-rules-2-modified "babbbbaabbbbbabbbbbbaabaaabaaa" 0))
+  (is (exact-match test-rules-2-modified "aaabbbbbbaaaabaababaabababbabaaabbababababaaa" 0))
+  (is (exact-match test-rules-2-modified "bbbbbbbaaaabbbbaaabbabaaa" 0))
+  (is (exact-match test-rules-2-modified "bbbababbbbaaaaaaaabbababaaababaabab" 0))
+  (is (exact-match test-rules-2-modified "ababaaaaaabaaab" 0))
+  (is (exact-match test-rules-2-modified "ababaaaaabbbaba" 0))
+  (is (exact-match test-rules-2-modified "baabbaaaabbaaaababbaababb" 0))
+  (is (exact-match test-rules-2-modified "abbbbabbbbaaaababbbbbbaaaababb" 0))
+  (is (exact-match test-rules-2-modified "aaaaabbaabaaaaababaa" 0))
+  (is-not (exact-match test-rules-2-modified "aaaabbaaaabbaaa" 0))
+  (is (exact-match test-rules-2-modified "aaaabbaabbaaaaaaabbbabbbaaabbaabaaa" 0))
+  (is-not (exact-match test-rules-2-modified "babaaabbbaaabaababbaabababaaab" 0))
+  (is (exact-match test-rules-2-modified "aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba" 0))
+  )
 
 (deftest puzzle-b
-         (is= (time (let [rules (-> (create-rules (get-puzzle-input-rules))
-                                    (assoc 8 [[42] [42 8]]
-                                           11 [[42 31] [42 11 31]]))
-                          messages (get-puzzle-input-messages)]
-                      (->> messages
-                           (map-indexed (fn [i m] [i m]))
-                           (filter (fn [[i m]]
-                                     (exact-match rules m 0)))
-                           (count))))
-              ; "Elapsed time: 2231.075036 msecs"
-              409)
-         )
+  (is= (time (let [rules (-> (create-rules (get-puzzle-input-rules))
+                             (assoc 8 [[42] [42 8]]
+                                    11 [[42 31] [42 11 31]]))
+                   messages (get-puzzle-input-messages)]
+               (->> messages
+                    (map-indexed (fn [i m] [i m]))
+                    (filter (fn [[i m]]
+                              (exact-match rules m 0)))
+                    (count))))
+       ; "Elapsed time: 2231.075036 msecs"
+       409)
+  )
 
 
 

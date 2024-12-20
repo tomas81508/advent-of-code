@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2016.day-01
-  (:require [ysera.test :refer [deftest is is=]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.collections :refer [seq-contains?]]
             [clojure.string :refer [split]]))
 
 ; --- Day 1: No Time for a Taxicab ---
@@ -97,9 +98,9 @@
       (split #", ")))
 
 (deftest puzzle-a
-         (is= (->> input-data
-                   (apply taxicab-geometry-distance))
-              287))
+  (is= (->> input-data
+            (apply taxicab-geometry-distance))
+       287))
 
 ; --- Part Two ---
 
@@ -138,10 +139,10 @@
             (recur (conj visited-coordinates new-coordinates) new-face-direction (inc directive-index) 0)))))
 
 (deftest puzzle-b
-         (is= (->> input-data
-                   (apply first-place-to-visit-twice)
-                   (apply distance))
-              133))
+  (is= (->> input-data
+            (apply first-place-to-visit-twice)
+            (apply distance))
+       133))
 
 
 

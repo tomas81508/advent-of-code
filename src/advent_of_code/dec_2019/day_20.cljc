@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2019.day-20
-  (:require [ysera.test :refer [deftest is=]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.collections :refer [seq-contains?]]
             [clojure.string :refer [join]]))
 
 (def test-maze-1 ["         A           "
@@ -218,8 +219,8 @@
                visits)))))
 
 (deftest puzzle-a
-         (is= (time (-> (get-puzzle-input)
-                        (create-state)
-                        (move-to-goal)))
-              ; "Elapsed time: 166.052141 msecs"
-              454))
+  (is= (time (-> (get-puzzle-input)
+                 (create-state)
+                 (move-to-goal)))
+       ; "Elapsed time: 166.052141 msecs"
+       454))

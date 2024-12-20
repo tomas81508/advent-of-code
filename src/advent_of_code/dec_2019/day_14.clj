@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2019.day-14
-  (:require [ysera.test :refer [is is-not is= deftest]]
-            [ysera.math :refer [floor]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.math :refer [floor]]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_14.txt") $
@@ -233,51 +234,51 @@
         (recur data)))))
 
 (deftest test-1
-         (is= (-> ["9 ORE => 2 A"
-                   "8 ORE => 3 B"
-                   "7 ORE => 5 C"
-                   "3 A, 4 B => 1 AB"
-                   "5 B, 7 C => 1 BC"
-                   "4 C, 1 A => 1 CA"
-                   "2 AB, 3 BC, 4 CA => 1 FUEL"]
-                  (create-state)
-                  (calculate-ore 1))
-              165))
+  (is= (-> ["9 ORE => 2 A"
+            "8 ORE => 3 B"
+            "7 ORE => 5 C"
+            "3 A, 4 B => 1 AB"
+            "5 B, 7 C => 1 BC"
+            "4 C, 1 A => 1 CA"
+            "2 AB, 3 BC, 4 CA => 1 FUEL"]
+           (create-state)
+           (calculate-ore 1))
+       165))
 
 (deftest test-2
-         (is= (-> ["157 ORE => 5 NZVS"
-                   "165 ORE => 6 DCFZ"
-                   "44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL"
-                   "12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ"
-                   "179 ORE => 7 PSHF"
-                   "177 ORE => 5 HKGWZ"
-                   "7 DCFZ, 7 PSHF => 2 XJWVT"
-                   "165 ORE => 2 GPVTF"
-                   "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT"]
-                  (create-state)
-                  (calculate-ore 1))
-              13312))
+  (is= (-> ["157 ORE => 5 NZVS"
+            "165 ORE => 6 DCFZ"
+            "44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL"
+            "12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ"
+            "179 ORE => 7 PSHF"
+            "177 ORE => 5 HKGWZ"
+            "7 DCFZ, 7 PSHF => 2 XJWVT"
+            "165 ORE => 2 GPVTF"
+            "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT"]
+           (create-state)
+           (calculate-ore 1))
+       13312))
 
 (deftest puzzle-a
-         (is= (time (-> (get-puzzle-input)
-                        (create-state)
-                        (calculate-ore 1)))
-              ; "Elapsed time: 14.474084 msecs"
-              612880))
+  (is= (time (-> (get-puzzle-input)
+                 (create-state)
+                 (calculate-ore 1)))
+       ; "Elapsed time: 14.474084 msecs"
+       612880))
 
 (deftest test-2b
-         (let [state (create-state ["157 ORE => 5 NZVS"
-                                    "165 ORE => 6 DCFZ"
-                                    "44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL"
-                                    "12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ"
-                                    "179 ORE => 7 PSHF"
-                                    "177 ORE => 5 HKGWZ"
-                                    "7 DCFZ, 7 PSHF => 2 XJWVT"
-                                    "165 ORE => 2 GPVTF"
-                                    "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT"])]
-           (is (< (calculate-ore state 82892753)
-                  1000000000000
-                  (calculate-ore state 82892754)))))
+  (let [state (create-state ["157 ORE => 5 NZVS"
+                             "165 ORE => 6 DCFZ"
+                             "44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL"
+                             "12 HKGWZ, 1 GPVTF, 8 PSHF => 9 QDVJ"
+                             "179 ORE => 7 PSHF"
+                             "177 ORE => 5 HKGWZ"
+                             "7 DCFZ, 7 PSHF => 2 XJWVT"
+                             "165 ORE => 2 GPVTF"
+                             "3 DCFZ, 7 NZVS, 5 HKGWZ, 10 PSHF => 8 KHKGT"])]
+    (is (< (calculate-ore state 82892753)
+           1000000000000
+           (calculate-ore state 82892754)))))
 
 (defn find-max-fuel
   {:test (fn []
@@ -310,8 +311,8 @@
               (recur guess max-guess))))))
 
 (deftest puzzle-b
-         ; This can easily be solved by binary search
-         (is= (time (let [state (create-state (get-puzzle-input))]
-                      (find-max-fuel state 1000000000000)))
-              ; "Elapsed time: 1650.927267 msecs"
-              2509120))
+  ; This can easily be solved by binary search
+  (is= (time (let [state (create-state (get-puzzle-input))]
+               (find-max-fuel state 1000000000000)))
+       ; "Elapsed time: 1650.927267 msecs"
+       2509120))

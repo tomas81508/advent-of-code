@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-20
-  (:require [ysera.test :refer [is= is is-not]]
+  (:require [advent-of-code.test :refer [is= is is-not]]
             [clojure.string :refer [split-lines]]))
 
 (def input (slurp "src/advent_of_code/dec_2017/day_20_input.txt"))
@@ -101,8 +101,8 @@
                 (if colliding-particle
                   (recur (inc index) non-colliding-particles)
                   (recur (inc index) (conj non-colliding-particles particle-at-index))))))))
-        (count))
-      )
+      (count))
+  )
 
 
 

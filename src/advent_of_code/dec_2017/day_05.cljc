@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2017.day-05
-  (:require [ysera.test :refer [deftest is is-not is=]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]
             [clojure.string :as string]))
 
@@ -43,17 +44,17 @@
             (not (neg? current)))))
 
 (deftest puzzle-a
-         (is= (loop [steps 0
-                     state {:current      0
-                            :instructions (->> (slurp "src/advent_of_code/dec_2017/day_05_input.txt")
-                                               (string/split-lines)
-                                               (map read-string)
-                                               (into []))}]
-                (if (outside? state)
-                  steps
-                  (recur (inc steps)
-                         (jump state))))
-              376976))
+  (is= (loop [steps 0
+              state {:current      0
+                     :instructions (->> (slurp "src/advent_of_code/dec_2017/day_05_input.txt")
+                                        (string/split-lines)
+                                        (map read-string)
+                                        (into []))}]
+         (if (outside? state)
+           steps
+           (recur (inc steps)
+                  (jump state))))
+       376976))
 
 
 ;; Puzzle b
@@ -91,17 +92,17 @@
 
 
 (deftest puzzle-a
-         (is= (loop [steps 0
-                     state {:current      0
-                            :instructions (->> (slurp "src/advent_of_code/dec_2017/day_05_input.txt")
-                                               (string/split-lines)
-                                               (map read-string)
-                                               (into []))}]
-                (if (outside? state)
-                  steps
-                  (recur (inc steps)
-                         (strange-jump state))))
-              29227751))
+  (is= (loop [steps 0
+              state {:current      0
+                     :instructions (->> (slurp "src/advent_of_code/dec_2017/day_05_input.txt")
+                                        (string/split-lines)
+                                        (map read-string)
+                                        (into []))}]
+         (if (outside? state)
+           steps
+           (recur (inc steps)
+                  (strange-jump state))))
+       29227751))
 
 
 

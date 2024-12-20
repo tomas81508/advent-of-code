@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-16
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (slurp "src/advent_of_code/dec_2020/day_16.txt"))
@@ -64,11 +65,11 @@
     (remove (partial valid-number? state) all-values)))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (create-state)
-                   (invalid-values)
-                   (apply +))
-              28882))
+  (is= (->> (get-puzzle-input)
+            (create-state)
+            (invalid-values)
+            (apply +))
+       28882))
 
 (def test-input-2 "class: 0-1 or 4-19\nrow: 0-5 or 8-19\nseat: 0-13 or 16-19\n\nyour ticket:\n11,12,13\n\nnearby tickets:\n3,9,18\n15,1,5\n5,14,9")
 
@@ -123,17 +124,17 @@
                       fields-coll)))))))
 
 (deftest puzzle-b
-         (is= (time (let [state (-> (create-state (get-puzzle-input))
-                                    (discard-invalid-tickets))
-                          fields-order (find-fields state)]
-                      (->> fields-order
-                           (map-indexed (fn [index field] [index field]))
-                           (filter (fn [[_ field]] (clojure.string/starts-with? field "departure")))
-                           (map (fn [[index _]] index))
-                           (map (fn [index] (get-in state [:your-ticket index])))
-                           (apply *))))
-              ; "Elapsed time: 71.722925 msecs"
-              1429779530273))
+  (is= (time (let [state (-> (create-state (get-puzzle-input))
+                             (discard-invalid-tickets))
+                   fields-order (find-fields state)]
+               (->> fields-order
+                    (map-indexed (fn [index field] [index field]))
+                    (filter (fn [[_ field]] (clojure.string/starts-with? field "departure")))
+                    (map (fn [[index _]] index))
+                    (map (fn [index] (get-in state [:your-ticket index])))
+                    (apply *))))
+       ; "Elapsed time: 71.722925 msecs"
+       1429779530273))
 
 
 

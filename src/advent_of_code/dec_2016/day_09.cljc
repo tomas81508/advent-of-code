@@ -1,7 +1,8 @@
 (ns advent-of-code.dec-2016.day-09
-  (:require [ysera.test :refer [deftest is is-not is=]]
-            [ysera.collections :refer [seq-contains?]]
-            [clojure.string :refer [split starts-with? join]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [advent-of-code.collections :refer [seq-contains?]]
+            [clojure.test :refer [deftest]]
+            [clojure.string :refer [join]]))
 
 (defn get-puzzle-input []
   (-> (slurp "src/advent_of_code/dec_2016/day_09_input.txt")))
@@ -32,10 +33,10 @@
                (str result before (join (repeat repeat-number repeat-characters))))))))
 
 (deftest puzzle-a
-         (is= (-> (get-puzzle-input)
-                  (decompress)
-                  (count))
-              74532))
+  (is= (-> (get-puzzle-input)
+           (decompress)
+           (count))
+       74532))
 
 (defn decompress-count-2
   {:test (fn []
@@ -62,6 +63,6 @@
       (+ result (count s)))))
 
 (deftest puzzle-b
-         (is= (time (-> (get-puzzle-input)
-                        (decompress-count-2)))
-              11558231665))
+  (is= (time (-> (get-puzzle-input)
+                 (decompress-count-2)))
+       11558231665))

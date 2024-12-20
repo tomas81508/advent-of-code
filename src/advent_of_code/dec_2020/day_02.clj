@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-02
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 
 (defn get-puzzle-input []
@@ -20,11 +21,11 @@
           (<= min-occur $ max-occur))))
 
 (deftest puzzle-2a
-         (is= (->> (get-puzzle-input)
-                   (map (fn [text] (clojure.string/split text (re-pattern ": "))))
-                   (filter (fn [[policy password]] (valid-password? policy password)))
-                   (count))
-              660))
+  (is= (->> (get-puzzle-input)
+            (map (fn [text] (clojure.string/split text (re-pattern ": "))))
+            (filter (fn [[policy password]] (valid-password? policy password)))
+            (count))
+       660))
 
 (defn valid-password-2?
   {:test (fn []
@@ -41,8 +42,8 @@
         (and (not at-position-max) at-position-min))))
 
 (deftest puzzle-2b
-         (is= (->> (get-puzzle-input)
-                   (map (fn [text] (clojure.string/split text (re-pattern ": "))))
-                   (filter (fn [[policy password]] (valid-password-2? policy password)))
-                   (count))
-              530))
+  (is= (->> (get-puzzle-input)
+            (map (fn [text] (clojure.string/split text (re-pattern ": "))))
+            (filter (fn [[policy password]] (valid-password-2? policy password)))
+            (count))
+       530))

@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2016.day-07
-  (:require [ysera.test :refer [deftest is is-not is=]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [advent-of-code.collections :refer [seq-contains?]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [split]]))
 
 ; --- Day 7: Internet Protocol Version 7 ---
@@ -69,11 +70,11 @@
 
 
 (deftest puzzle-a
-         (is= (as-> (slurp "src/advent_of_code/dec_2016/day_07_input.txt") $
-                    (clojure.string/split $ #"\n")
-                    (filter support-TLS? $)
-                    (count $))
-              110))
+  (is= (as-> (slurp "src/advent_of_code/dec_2016/day_07_input.txt") $
+             (clojure.string/split $ #"\n")
+             (filter support-TLS? $)
+             (count $))
+       110))
 
 ; --- Part Two ---
 ;
@@ -143,13 +144,13 @@
                   (flatten))]
     (reduce (fn [a ABA]
               (or a (let [BAB (ABA->BAB ABA)]
-                      (ysera.collections/seq-contains? BABs BAB))))
+                      (seq-contains? BABs BAB))))
             false
             ABAs)))
 
 (deftest puzzle-b
-         (is= (as-> (slurp "src/advent_of_code/dec_2016/day_07_input.txt") $
-                    (clojure.string/split $ #"\n")
-                    (filter support-SSL? $)
-                    (count $))
-              242))
+  (is= (as-> (slurp "src/advent_of_code/dec_2016/day_07_input.txt") $
+             (clojure.string/split $ #"\n")
+             (filter support-SSL? $)
+             (count $))
+       242))

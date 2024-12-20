@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2019.day-19
-  (:require [ysera.test :refer [is is= is-not]]
+  (:require [advent-of-code.test :refer [is is= is-not]]
             [advent-of-code.dec-2019.day-09 :refer [run
                                                     create-program]]))
 
@@ -89,7 +89,7 @@
 (show-beam 100 [1043 904])
 (show-beam 100 [1044 904])
 (show-beam 100 [1044 905])
-(show-beam 100 [1045 905]) ; only beam here
+(show-beam 100 [1045 905])                                  ; only beam here
 
 (+ (* 1045 10000) 905)
 

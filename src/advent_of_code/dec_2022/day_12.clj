@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2022.day-12
-  (:require [clojure.test :refer [deftest]]
-            [ysera.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is= is is-not]]))
 
 (def input (slurp "src/advent_of_code/dec_2022/day_12_input.txt"))
 

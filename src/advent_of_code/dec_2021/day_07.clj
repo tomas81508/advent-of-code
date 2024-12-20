@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2021.day-07
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (def test-input "16,1,2,0,4,2,7,1,2,14")
 

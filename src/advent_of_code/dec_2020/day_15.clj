@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-15
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (def puzzle-input [19 0 5 1 10 13])
 
@@ -37,9 +38,9 @@
       (first history))))
 
 (deftest puzzle-a
-         (is= (time (get-number-at (reverse puzzle-input) 2020))
-              ; "Elapsed time: 35.051243 msecs"
-              1015))
+  (is= (time (get-number-at (reverse puzzle-input) 2020))
+       ; "Elapsed time: 35.051243 msecs"
+       1015))
 
 (defn create-state
   {:test (fn []
@@ -100,14 +101,14 @@
       (:current-number state))))
 
 (deftest puzzle-a-v2
-         (is= (time (get-number-at-v2 (create-state puzzle-input) 2020))
-              ;"Elapsed time: 1.348726 msecs"
-              1015) )
+  (is= (time (get-number-at-v2 (create-state puzzle-input) 2020))
+       ;"Elapsed time: 1.348726 msecs"
+       1015))
 
 (deftest puzzle-b
-         (is= (time (get-number-at-v2 (create-state puzzle-input) 30000000))
-              ; "Elapsed time: 16646.658533 msecs"
-              201))
+  (is= (time (get-number-at-v2 (create-state puzzle-input) 30000000))
+       ; "Elapsed time: 16646.658533 msecs"
+       201))
 
 
 

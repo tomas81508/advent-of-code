@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-12
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 ; Matrix lib (very inefficient but fun)
 
@@ -179,11 +180,11 @@
        (apply +)))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (move-all-instructions (create-state))
-                   (:position)
-                   (manhattan-distance [0 0]))
-              1319))
+  (is= (->> (get-puzzle-input)
+            (move-all-instructions (create-state))
+            (:position)
+            (manhattan-distance [0 0]))
+       1319))
 
 (defn create-state-2 []
   {:position [0 0]
@@ -237,9 +238,9 @@
           instructions))
 
 (deftest puzzle-b
-         (is= (->> (get-puzzle-input)
-                   (move-all-instructions-2 (create-state-2))
-                   (:position)
-                   (manhattan-distance [0 0]))
-              62434))
+  (is= (->> (get-puzzle-input)
+            (move-all-instructions-2 (create-state-2))
+            (:position)
+            (manhattan-distance [0 0]))
+       62434))
 

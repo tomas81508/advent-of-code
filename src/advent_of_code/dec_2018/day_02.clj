@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2018.day-02
-  (:require [ysera.test :refer [is= deftest]]
-            [ysera.collections :refer [seq-contains?]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.collections :refer [seq-contains?]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2018/day_02.txt")
@@ -34,7 +35,7 @@
        (apply *)))
 
 (deftest puzzle-part-1
-         (is= (checksum (get-puzzle-input)) 8610))
+  (is= (checksum (get-puzzle-input)) 8610))
 
 (defn get-matching-chars
   {:test (fn []
@@ -69,5 +70,5 @@
 
 
 (deftest puzzle-part-2
-         (is= (common-letters (get-puzzle-input))
-              "iosnxmfkpabcjpdywvrtahluy"))
+  (is= (common-letters (get-puzzle-input))
+       "iosnxmfkpabcjpdywvrtahluy"))

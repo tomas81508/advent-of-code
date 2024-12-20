@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-06
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (slurp "src/advent_of_code/dec_2020/day_06.txt"))
@@ -36,11 +37,11 @@
        (count)))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (transform-input)
-                   (map answer-counts)
-                   (apply +))
-              6534))
+  (is= (->> (get-puzzle-input)
+            (transform-input)
+            (map answer-counts)
+            (apply +))
+       6534))
 
 (defn all-answer-counts
   {:test (fn []
@@ -62,11 +63,11 @@
                     0))))
 
 (deftest puzzle-b
-         (is= (->> (get-puzzle-input)
-                   (transform-input)
-                   (map all-answer-counts)
-                   (apply +))
-              3402))
+  (is= (->> (get-puzzle-input)
+            (transform-input)
+            (map all-answer-counts)
+            (apply +))
+       3402))
 
 
 

@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2023.day-21
-  (:require [advent-of-code.test :refer [is= is is-not]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.test :refer [deftest]]))
 
 (def input (-> (slurp "src/advent_of_code/dec_2023/day_21_input.txt")
@@ -149,7 +149,7 @@
                               small-north-west
                               small-south-east
                               small-south-west))))
-;      solution 631357596621921
+  ;      solution 631357596621921
   )
 
 

@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2016.day-05
-  (:require [ysera.test :refer [deftest is=]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.collections :refer [seq-contains?]]
             [digest :refer [md5]]
             [clojure.string :as string]))
 

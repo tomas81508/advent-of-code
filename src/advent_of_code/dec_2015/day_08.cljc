@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2015.day-08
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [split-lines] :as string]))
 
 
@@ -52,19 +53,19 @@
 (nth (get-puzzle-input) 292)
 
 (deftest test-input
-         (is= (->> (get-test-input)
-                   (take 4)
-                   (map (fn [s] (- (get-characters-of-code s)
-                                   (get-characters s))))
-                   (reduce +))
-              12))
+  (is= (->> (get-test-input)
+            (take 4)
+            (map (fn [s] (- (get-characters-of-code s)
+                            (get-characters s))))
+            (reduce +))
+       12))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (map (fn [s] (- (get-characters-of-code s)
-                                   (get-characters s))))
-                   (reduce +))
-              1333))
+  (is= (->> (get-puzzle-input)
+            (map (fn [s] (- (get-characters-of-code s)
+                            (get-characters s))))
+            (reduce +))
+       1333))
 
 (defn get-encoded-strings
   {:test (fn []
@@ -81,8 +82,8 @@
        (reduce + 2)))
 
 (deftest puzzle-b
-         (is= (->> (get-puzzle-input)
-                   (map (fn [i] (- (get-encoded-strings i)
-                                   (get-characters-of-code i))))
-                   (reduce +))
-              2046))
+  (is= (->> (get-puzzle-input)
+            (map (fn [i] (- (get-encoded-strings i)
+                            (get-characters-of-code i))))
+            (reduce +))
+       2046))

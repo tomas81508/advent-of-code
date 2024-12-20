@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-21
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (def puzzle-input (->> (slurp "src/advent_of_code/dec_2020/day_21.txt")
                        (clojure.string/split-lines)))
@@ -134,15 +135,15 @@
          (apply +))))
 
 (deftest puzzle-a
-         (is= (count-allergen-free-ingredients state)
-              1945))
+  (is= (count-allergen-free-ingredients state)
+       1945))
 
 (deftest puzzle-b
-         (is= (->> (get-allergen->food state)
-                   (seq)
-                   (sort-by first)
-                   (map second)
-                   (clojure.string/join ","))
-              "pgnpx,srmsh,ksdgk,dskjpq,nvbrx,khqsk,zbkbgp,xzb"))
+  (is= (->> (get-allergen->food state)
+            (seq)
+            (sort-by first)
+            (map second)
+            (clojure.string/join ","))
+       "pgnpx,srmsh,ksdgk,dskjpq,nvbrx,khqsk,zbkbgp,xzb"))
 
 

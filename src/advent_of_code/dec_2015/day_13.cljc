@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2015.day-13
-  (:require [ysera.test :refer [is= deftest]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.math.combinatorics :as combinatorics]))
 
 (def input (-> (slurp "src/advent_of_code/dec_2015/day_13_input.txt")

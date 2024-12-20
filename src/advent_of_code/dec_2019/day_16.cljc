@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2019.day-16
   (:require [clojure.test :refer [deftest]]
-            [ysera.test :refer [is=]]))
+            [advent-of-code.test :refer [is=]]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_16.txt") $

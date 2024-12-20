@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-23b
-  (:require [ysera.test :refer [is is-not is=]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]))
 
 ;        b = 109300, c = 126300, d = 0, e = 0, f = 0, g = 0, h = 0;
 ;

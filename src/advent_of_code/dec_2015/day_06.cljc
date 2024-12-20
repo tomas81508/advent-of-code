@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2015.day-06
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [split-lines
                                     starts-with?]]))
 
@@ -51,9 +52,9 @@
           (apply toggle lights args))))
 
 (deftest puzzle-a
-         (is= (->> (get-puzzle-input)
-                   (reduce handle-instruction #{})
-                   (count))
-              400410))
+  (is= (->> (get-puzzle-input)
+            (reduce handle-instruction #{})
+            (count))
+       400410))
 
 

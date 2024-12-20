@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2018.day-03
-  (:require [ysera.test :refer [is= is is-not deftest]]))
+  (:require [advent-of-code.test :refer [is= is is-not]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2018/day_03.txt")
@@ -46,12 +47,12 @@
                {})))
 
 (deftest puzzle-part-1
-         (is= (->> (get-puzzle-input)
-                   (get-fabric)
-                   (vals)
-                   (filter (fn [x] (> x 1)))
-                   (count))
-              96569))
+  (is= (->> (get-puzzle-input)
+            (get-fabric)
+            (vals)
+            (filter (fn [x] (> x 1)))
+            (count))
+       96569))
 
 
 (defn overlap?
@@ -74,11 +75,11 @@
 
 
 (deftest puzzle-part-2
-         (time (is= (let [fabric (->> (get-puzzle-input)
-                                      (get-fabric))]
-                      (->> (get-puzzle-input)
-                           (filter (fn [c] (not (overlap? fabric c))))
-                           (first)
-                           (parse-claim)
-                           (:id)))
-                    "1023")))
+  (time (is= (let [fabric (->> (get-puzzle-input)
+                               (get-fabric))]
+               (->> (get-puzzle-input)
+                    (filter (fn [c] (not (overlap? fabric c))))
+                    (first)
+                    (parse-claim)
+                    (:id)))
+             "1023")))

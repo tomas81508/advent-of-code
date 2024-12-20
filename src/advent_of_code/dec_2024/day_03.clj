@@ -52,6 +52,6 @@
   (* (* (* (* 1 2) 3) 4) 5)
 
   (update {:sum 42} :sum + (multiply "mul(3,4)"))
-  (update {:sum 42} :sum (fn [old-sum] (+ old-sum  (multiply "mul(3,4)"))))
+  (update {:sum 42} :sum (fn [old-sum] (+ old-sum (multiply "mul(3,4)"))))
   )
 

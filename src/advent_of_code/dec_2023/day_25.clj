@@ -1,8 +1,6 @@
 (ns advent-of-code.dec-2023.day-25
-  (:require [advent-of-code.test :refer [is= is is-not]]
-            [clojure.math.combinatorics :refer [combinations]]
-            [clojure.test :refer [deftest]]
-            [ysera.collections :refer [seq-contains?]]))
+  (:require [clojure.math.combinatorics :refer [combinations]]
+            [advent-of-code.collections :refer [seq-contains?]]))
 
 (def input (->> (slurp "src/advent_of_code/dec_2023/day_25_input.txt")
                 (clojure.string/split-lines)

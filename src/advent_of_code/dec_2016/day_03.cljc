@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2016.day-03
-  (:require [ysera.test :refer [deftest is is-not is=]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]))
 
 ; --- Day 3: Squares With Three Sides ---
@@ -34,18 +35,18 @@
                       (map read-string $)))
 
 (deftest puzzle-a
-         (is= (->> input-data
-                   (partition 3)
-                   (filter (fn [triple] (apply sides-of-a-triangle? triple)))
-                   (count))
-              1050))
+  (is= (->> input-data
+            (partition 3)
+            (filter (fn [triple] (apply sides-of-a-triangle? triple)))
+            (count))
+       1050))
 
 (deftest puzzle-b
-         (is= (->> input-data
-                   (partition 3)
-                   (apply map list)
-                   (flatten)
-                   (partition 3)
-                   (filter (fn [triple] (apply sides-of-a-triangle? triple)))
-                   (count))
-              1921))
+  (is= (->> input-data
+            (partition 3)
+            (apply map list)
+            (flatten)
+            (partition 3)
+            (filter (fn [triple] (apply sides-of-a-triangle? triple)))
+            (count))
+       1921))

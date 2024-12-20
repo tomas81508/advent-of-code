@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-04
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (def puzzle-input {:min 156218
                    :max 652527})
@@ -18,11 +19,11 @@
                       :else (recur (cons s r))))))))
 
 (deftest puzzle-a
-         (is= (time (->> (range (:min puzzle-input) (inc (:max puzzle-input)))
-                         (filter conditions-satisfied?)
-                         (count)))
-              ; "Elapsed time: 654.629057 msecs"
-              1694))
+  (is= (time (->> (range (:min puzzle-input) (inc (:max puzzle-input)))
+                  (filter conditions-satisfied?)
+                  (count)))
+       ; "Elapsed time: 654.629057 msecs"
+       1694))
 
 (defn conditions-satisfied-2?
   {:test (fn []
@@ -40,11 +41,11 @@
                   (contains? 2))))))
 
 (deftest puzzle-b
-         (is= (time (->> (range (:min puzzle-input) (inc (:max puzzle-input)))
-                         (filter conditions-satisfied-2?)
-                         (count)))
-              ; "Elapsed time: 658.763168 msecs"
-              1148))
+  (is= (time (->> (range (:min puzzle-input) (inc (:max puzzle-input)))
+                  (filter conditions-satisfied-2?)
+                  (count)))
+       ; "Elapsed time: 658.763168 msecs"
+       1148))
 
 
 

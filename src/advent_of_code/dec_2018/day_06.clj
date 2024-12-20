@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2018.day-06
-  (:require [ysera.test :refer [is= is is-not deftest]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is= is is-not]]
+            [advent-of-code.collections :refer [seq-contains?]]
             [clojure.string :as string]))
 
 (defn get-puzzle-input []

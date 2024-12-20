@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2021.day-09
-  (:require [ysera.test :refer [is= is is-not]]))
+  (:require [advent-of-code.test :refer [is= is is-not]]))
 
 (def puzzle-input (slurp "src/advent_of_code/dec_2021/day_09_input.txt"))
 

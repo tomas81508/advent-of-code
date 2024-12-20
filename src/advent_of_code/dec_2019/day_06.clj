@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-06
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_06.txt") $
@@ -58,9 +59,9 @@
                     (create-state)))
 
 (deftest puzzle-a
-         (is= (->> state
-                   (number-of-orbits))
-              402879))
+  (is= (->> state
+            (number-of-orbits))
+       402879))
 
 (defn create-state-2
   {:test (fn []
@@ -128,7 +129,7 @@
 (defonce state-2 (create-state-2 (get-puzzle-input)))
 
 (deftest puzzle-b
-         (is= (let [you-path (get-path state-2 "YOU")
-                    san-path (get-path state-2 "SAN")]
-                (orbit-distance you-path san-path))
-              484))
+  (is= (let [you-path (get-path state-2 "YOU")
+             san-path (get-path state-2 "SAN")]
+         (orbit-distance you-path san-path))
+       484))

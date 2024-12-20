@@ -1,7 +1,7 @@
 (ns advent-of-code.dec-2016.day-10
-  (:require [ysera.test :refer [deftest is is-not is=]]
-            [ysera.collections :refer [seq-contains?]]
-            [clojure.string :refer [split-lines starts-with? join]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
+            [clojure.string :refer [split-lines starts-with?]]))
 
 (defn get-puzzle-input []
   (-> (slurp "src/advent_of_code/dec_2016/day_10_input.txt")
@@ -109,15 +109,15 @@
                   compare-chips)))))
 
 (deftest puzzle-a
-         (is= (-> (get-puzzle-input)
-                  (create-state)
-                  (do-instructions [17 61]))
-              141))
+  (is= (-> (get-puzzle-input)
+           (create-state)
+           (do-instructions [17 61]))
+       141))
 
 (deftest puzzle-b
-         (is= (let [output (->> (get-puzzle-input)
-                                (create-state)
-                                (do-instructions)
-                                (:output))]
-                (* (get output 0) (get output 1) (get output 2)))
-              1209))
+  (is= (let [output (->> (get-puzzle-input)
+                         (create-state)
+                         (do-instructions)
+                         (:output))]
+         (* (get output 0) (get output 1) (get output 2)))
+       1209))

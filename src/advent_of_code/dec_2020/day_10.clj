@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-10
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_10.txt")
@@ -32,10 +33,10 @@
        (frequencies)))
 
 (deftest puzzle-a
-         (is= (->> (find-jolts-differencies (get-puzzle-input))
-                   (vals)
-                   (apply *))
-              2040))
+  (is= (->> (find-jolts-differencies (get-puzzle-input))
+            (vals)
+            (apply *))
+       2040))
 
 (declare find-number-of-adapter-arrangements-up-to-memoized)
 
@@ -72,13 +73,13 @@
 (def find-number-of-adapter-arrangements-up-to-memoized (memoize find-number-of-adapter-arrangements-up-to))
 
 (deftest puzzle-b
-         (is= (time (let [input (get-puzzle-input)
-                          max-jolt (+ 3 (apply max input))]
-                      (as-> (conj input 0 max-jolt) $
-                            (sort $)
-                            (find-number-of-adapter-arrangements-up-to $ max-jolt))))
-              ;"Elapsed time: 0.7467 msecs"
-              28346956187648))
+  (is= (time (let [input (get-puzzle-input)
+                   max-jolt (+ 3 (apply max input))]
+               (as-> (conj input 0 max-jolt) $
+                     (sort $)
+                     (find-number-of-adapter-arrangements-up-to $ max-jolt))))
+       ;"Elapsed time: 0.7467 msecs"
+       28346956187648))
 
 
 

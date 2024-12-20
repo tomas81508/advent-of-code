@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-11
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [advent-of-code.dec-2019.day-09 :refer [run]]))
 
 (defn get-puzzle-input []
@@ -56,29 +57,29 @@
                  direction))))))
 
 (deftest puzzle-a
-         (is= (time (-> (get-puzzle-input)
-                        (paint-all black)
-                        (keys)
-                        (count)))
-              ; "Elapsed time: 346.623486 msecs"
-              1771))
+  (is= (time (-> (get-puzzle-input)
+                 (paint-all black)
+                 (keys)
+                 (count)))
+       ; "Elapsed time: 346.623486 msecs"
+       1771))
 
 
 (deftest puzzle-b
-         (is= (time (let [painting (as-> (get-puzzle-input) $
-                                         (paint-all $ white))]
-                      (->> (range 6)
-                           (map (fn [y]
-                                  (->> (range 1 40)
-                                       (map (fn [x]
-                                              (if (= 1 (get painting [x y]))
-                                                "#"
-                                                " ")))
-                                       (clojure.string/join ""))))
-                           (clojure.string/join "\n"))))
-              (str "#  #  ##  #### #  #   ## #  # #  # ####\n"
-                   "#  # #  # #    #  #    # #  # #  #    #\n"
-                   "#### #    ###  ####    # #### #  #   # \n"
-                   "#  # # ## #    #  #    # #  # #  #  #  \n"
-                   "#  # #  # #    #  # #  # #  # #  # #   \n"
-                   "#  #  ### #### #  #  ##  #  #  ##  ####")))
+  (is= (time (let [painting (as-> (get-puzzle-input) $
+                                  (paint-all $ white))]
+               (->> (range 6)
+                    (map (fn [y]
+                           (->> (range 1 40)
+                                (map (fn [x]
+                                       (if (= 1 (get painting [x y]))
+                                         "#"
+                                         " ")))
+                                (clojure.string/join ""))))
+                    (clojure.string/join "\n"))))
+       (str "#  #  ##  #### #  #   ## #  # #  # ####\n"
+            "#  # #  # #    #  #    # #  # #  #    #\n"
+            "#### #    ###  ####    # #### #  #   # \n"
+            "#  # # ## #    #  #    # #  # #  #  #  \n"
+            "#  # #  # #    #  # #  # #  # #  # #   \n"
+            "#  #  ### #### #  #  ##  #  #  ##  ####")))

@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-10
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_10.txt") $
@@ -135,12 +136,12 @@
                    a)))))
 
 (deftest puzzle-a
-         (is= (time (-> (get-puzzle-input)
-                        (create-state)
-                        (get-best-location)
-                        (update :asteroids count)))
-              ; "Elapsed time: 563.419634 msecs"
-              {:origin [20 18], :asteroids 280}))
+  (is= (time (-> (get-puzzle-input)
+                 (create-state)
+                 (get-best-location)
+                 (update :asteroids count)))
+       ; "Elapsed time: 563.419634 msecs"
+       {:origin [20 18], :asteroids 280}))
 
 (defn sort-all-angles
   {:test (fn []
@@ -192,12 +193,12 @@
                    state)))))))
 
 (deftest puzzle-b
-         (is= (time (as-> (get-puzzle-input) $
-                          (create-state $)
-                          (use-laser $ [20 18])
-                          (nth $ 199)))
-              ; "Elapsed time: 67.982128 msecs"
-              [7 6]))
+  (is= (time (as-> (get-puzzle-input) $
+                   (create-state $)
+                   (use-laser $ [20 18])
+                   (nth $ 199)))
+       ; "Elapsed time: 67.982128 msecs"
+       [7 6]))
 
 
 

@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-12
-  (:require [ysera.test :refer [is=]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.set :refer [union difference]]))
 
 (def input (-> (slurp "src/advent_of_code/dec_2017/day_12_input.txt")
@@ -48,9 +48,9 @@
                                     (flatten)
                                     (set))
             new-programs (difference potential-programs
-                                                 (:programs state))]
+                                     (:programs state))]
         (recur {:programs (union (:programs state)
-                                             new-programs)
+                                 new-programs)
                 :check    new-programs})))))
 
 (comment

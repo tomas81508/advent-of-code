@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2021.day-02
-  (:require [ysera.test :refer [is= deftest]]))
+  (:require [advent-of-code.test :refer [is=]]
+                       [clojure.test :refer [deftest]]))
 
 (def input-data (->> (slurp "src/advent_of_code/dec_2021/day_02_input.txt")
                      (clojure.string/split-lines)))

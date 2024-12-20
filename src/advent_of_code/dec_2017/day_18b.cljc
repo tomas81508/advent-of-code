@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-18b
-  (:require [ysera.test :refer [is=]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def input ["set i 31" "set a 1" "mul p 17" "jgz p p" "mul a 2" "add i -1" "jgz i -2" "add a -1" "set i 127" "set p 826" "mul p 8505" "mod p a" "mul p 129749" "add p 12345" "mod p a" "set b p" "mod b 10000" "snd b" "add i -1" "jgz i -9" "jgz a 3" "rcv b" "jgz b -1" "set f 0" "set i 126" "rcv a" "rcv b" "set p a" "mul p -1" "add p b" "jgz p 4" "snd a" "set a b" "jgz 1 3" "snd b" "set f 1" "add i -1" "jgz i -11" "snd a" "jgz f -16" "jgz a -19"])
 
@@ -89,12 +89,12 @@
   (if (> n 100000)
     state
     (cond (not (program-blocked? state "0"))
-          (do ;(println "Running program 0")
-              (recur (run-program-until-blocked state "0") (inc n)))
+          (do                                               ;(println "Running program 0")
+            (recur (run-program-until-blocked state "0") (inc n)))
 
           (not (program-blocked? state "1"))
-          (do ;(println "Running program 1")
-              (recur (run-program-until-blocked state "1") (inc n)))
+          (do                                               ;(println "Running program 1")
+            (recur (run-program-until-blocked state "1") (inc n)))
 
           :else
           state)))

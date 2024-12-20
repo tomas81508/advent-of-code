@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2019.day-01
-  (:require [ysera.test :refer [is= deftest]]
-            [ysera.math :refer [floor]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.test :refer [deftest]]
+            [advent-of-code.math :refer [floor]]))
 
 
 (defn get-puzzle-input []
@@ -22,10 +23,10 @@
       (- 2)))
 
 (deftest puzzle-1a
-         (is= (->> (get-puzzle-input)
-                   (map required-fuel)
-                   (apply +))
-              3296560))
+  (is= (->> (get-puzzle-input)
+            (map required-fuel)
+            (apply +))
+       3296560))
 
 (defn total-required-fuel
   {:test (fn []
@@ -41,7 +42,7 @@
         total-fuel))))
 
 (deftest puzzle-1a
-         (is= (->> (get-puzzle-input)
-                   (map total-required-fuel)
-                   (apply +))
-              4941976))
+  (is= (->> (get-puzzle-input)
+            (map total-required-fuel)
+            (apply +))
+       4941976))

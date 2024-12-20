@@ -1,6 +1,6 @@
 (ns advent-of-code.dec-2019.day-20b
-  (:require [ysera.test :refer [is=]]
-            [ysera.collections :refer [seq-contains?]]
+  (:require [advent-of-code.test :refer [is=]]
+            [advent-of-code.collections :refer [seq-contains?]]
             [clojure.string :refer [join]]
             [advent-of-code.dec-2019.day-20 :refer [test-maze-1
                                                     get-puzzle-input]]))

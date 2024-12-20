@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-15
-  (:require [ysera.test :refer [is is-not is= deftest]]
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :refer [join]]
             [clojure.set :refer [map-invert difference union]]
             [advent-of-code.dec-2019.day-09 :refer [run
@@ -50,15 +51,15 @@
     (deref state-atom)))
 
 (deftest puzzle-a
-         (is= (time (->> (get-puzzle-input)
-                         (search-the-area)
-                         (:cells)
-                         (vals)
-                         (filter (fn [{type :type}] (= type :oxygen-system)))
-                         (first)
-                         (:distance)))
-              ; "Elapsed time: 188.711565 msecs"
-              230))
+  (is= (time (->> (get-puzzle-input)
+                  (search-the-area)
+                  (:cells)
+                  (vals)
+                  (filter (fn [{type :type}] (= type :oxygen-system)))
+                  (first)
+                  (:distance)))
+       ; "Elapsed time: 188.711565 msecs"
+       230))
 
 (def atlas (->> (get-puzzle-input)
                 (search-the-area)))
@@ -85,6 +86,6 @@
                new-cells)))))
 
 (deftest puzzle-b
-         (is= (time (calculate-max-distance atlas [12 14]))
-              288))
+  (is= (time (calculate-max-distance atlas [12 14]))
+       288))
 

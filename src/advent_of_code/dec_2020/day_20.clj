@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-20
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn create-state
   {:test (fn []
@@ -170,11 +171,11 @@
        (set)))
 
 (deftest puzzle-a
-         (is= (time (->> (get-corner-tiles (get-puzzle-input))
-                         (map read-string)
-                         (apply *)))
-              ; "Elapsed time: 17050.955188 msecs"
-              13983397496713))
+  (is= (time (->> (get-corner-tiles (get-puzzle-input))
+                  (map read-string)
+                  (apply *)))
+       ; "Elapsed time: 17050.955188 msecs"
+       13983397496713))
 
 ;;;;;; Part b
 

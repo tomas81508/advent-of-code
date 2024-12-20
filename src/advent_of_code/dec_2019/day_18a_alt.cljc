@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2019.day-18a-alt
-  (:require [ysera.test :refer [is= is is-not]]
+  (:require [advent-of-code.test :refer [is= is is-not]]
             [clojure.string :refer [lower-case]]
             [clojure.set :refer [subset?]]))
 

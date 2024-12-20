@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-23
-  (:require [ysera.test :refer [is=]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def input ["set b 93"
             "set c b"

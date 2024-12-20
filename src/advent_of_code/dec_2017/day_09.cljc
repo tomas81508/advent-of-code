@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-09
-  (:require [ysera.test :refer [is=]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.string :refer [join]]))
 
 (def test-input ["{}"

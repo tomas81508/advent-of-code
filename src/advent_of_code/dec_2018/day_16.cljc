@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2018.day-16
-  (:require [ysera.test :refer [deftest is is=]]
+  (:require [advent-of-code.test :refer [is is=]]
+            [clojure.test :refer [deftest]]
             [clojure.string :as string]))
 
 ; Addition:
@@ -156,14 +157,14 @@
             (string/split #" "))]))
 
 (deftest puzzle-a
-         (is= (->> (-> (slurp "src/advent_of_code/dec_2018/day_16a.txt")
-                       (clojure.string/split-lines))
-                   (remove (fn [l] (= l "")))
-                   (partition 3)
-                   (map get-sample)
-                   (filter (fn [sample] (apply three-opcodes? sample)))
-                   (count))
-              517))
+  (is= (->> (-> (slurp "src/advent_of_code/dec_2018/day_16a.txt")
+                (clojure.string/split-lines))
+            (remove (fn [l] (= l "")))
+            (partition 3)
+            (map get-sample)
+            (filter (fn [sample] (apply three-opcodes? sample)))
+            (count))
+       517))
 
 
 (defn group-by-operation
@@ -232,11 +233,11 @@
         updated-m))))
 
 (defn solve-puzzle-b []
-    (->> (-> (slurp "src/advent_of_code/dec_2018/day_16b.txt")
-             (clojure.string/split-lines))
-         (map (fn [l] (map read-string (string/split l #" "))))
-         (reduce (fn [register [operation-number & instruction]]
-                   ((number->operation operation-number) register instruction))
-                 [0 0 0 0])))
+  (->> (-> (slurp "src/advent_of_code/dec_2018/day_16b.txt")
+           (clojure.string/split-lines))
+       (map (fn [l] (map read-string (string/split l #" "))))
+       (reduce (fn [register [operation-number & instruction]]
+                 ((number->operation operation-number) register instruction))
+               [0 0 0 0])))
 
 

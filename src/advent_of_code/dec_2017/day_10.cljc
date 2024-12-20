@@ -1,5 +1,5 @@
 (ns advent-of-code.dec-2017.day-10
-  (:require [ysera.test :refer [is=]]))
+  (:require [advent-of-code.test :refer [is=]]))
 
 (def input-string "63,144,180,149,1,255,167,84,125,65,188,0,2,254,229,24")
 

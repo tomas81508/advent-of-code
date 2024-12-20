@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2020.day-08
-  (:require [ysera.test :refer [is is-not is= deftest]]))
+  (:require [advent-of-code.test :refer [is is-not is=]]
+            [clojure.test :refer [deftest]]))
 
 (defn get-puzzle-input []
   (->> (slurp "src/advent_of_code/dec_2020/day_08.txt")
@@ -96,11 +97,11 @@
 
 
 (deftest puzzle-a
-         (is= (-> (get-puzzle-input)
-                  (create-program)
-                  (run-program-until-loop)
-                  (:accumulator))
-              1475))
+  (is= (-> (get-puzzle-input)
+           (create-program)
+           (run-program-until-loop)
+           (:accumulator))
+       1475))
 
 (defn create-program-candidates
   {:test (fn []
@@ -137,12 +138,12 @@
        (first)))
 
 (deftest puzzle-b
-         (is= (-> (get-puzzle-input)
-                  (create-program)
-                  (create-program-candidates)
-                  (find-correct-program)
-                  (:accumulator))
-              1270))
+  (is= (-> (get-puzzle-input)
+           (create-program)
+           (create-program-candidates)
+           (find-correct-program)
+           (:accumulator))
+       1270))
 
 
 
