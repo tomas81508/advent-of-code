@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2019.day-16
-  (:require [ysera.test :refer [is= deftest]]))
+  (:require [clojure.test :refer [deftest]]
+            [ysera.test :refer [is=]]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_16.txt") $
@@ -49,24 +50,24 @@
             (range size))))
 
 (deftest larger-examples
-         (is= (->> (reduce (fn [a _]
-                             (phase a))
-                           [8 0 8 7 1 2 2 4 5 8 5 9 1 4 5 4 6 6 1 9 0 8 3 2 1 8 6 4 5 5 9 5]
-                           (range 100))
-                   (take 8))
-              [2 4 1 7 6 1 7 6])
-         (is= (->> (reduce (fn [a _]
-                             (phase a))
-                           [1 9 6 1 7 8 0 4 2 0 7 2 0 2 2 0 9 1 4 4 9 1 6 0 4 4 1 8 9 9 1 7]
-                           (range 100))
-                   (take 8))
-              [7 3 7 4 5 4 1 8])
-         (is= (->> (reduce (fn [a _]
-                             (phase a))
-                           [6 9 3 1 7 1 6 3 4 9 2 9 4 8 6 0 6 3 3 5 9 9 5 9 2 4 3 1 9 8 7 3]
-                           (range 100))
-                   (take 8))
-              [5 2 4 3 2 1 3 3]))
+  (is= (->> (reduce (fn [a _]
+                      (phase a))
+                    [8 0 8 7 1 2 2 4 5 8 5 9 1 4 5 4 6 6 1 9 0 8 3 2 1 8 6 4 5 5 9 5]
+                    (range 100))
+            (take 8))
+       [2 4 1 7 6 1 7 6])
+  (is= (->> (reduce (fn [a _]
+                      (phase a))
+                    [1 9 6 1 7 8 0 4 2 0 7 2 0 2 2 0 9 1 4 4 9 1 6 0 4 4 1 8 9 9 1 7]
+                    (range 100))
+            (take 8))
+       [7 3 7 4 5 4 1 8])
+  (is= (->> (reduce (fn [a _]
+                      (phase a))
+                    [6 9 3 1 7 1 6 3 4 9 2 9 4 8 6 0 6 3 3 5 9 9 5 9 2 4 3 1 9 8 7 3]
+                    (range 100))
+            (take 8))
+       [5 2 4 3 2 1 3 3]))
 
 (comment
   ; puzzle-a
@@ -113,11 +114,11 @@
 
 (comment
   (time (let [input (->> (get-puzzle-input)
-                   (repeat 10000)
-                   (flatten))
-        offset (read-string (apply str (take 7 input)))]
-    (->> (after-offset-phase input offset 100)
-         (take 8))))
+                         (repeat 10000)
+                         (flatten))
+              offset (read-string (apply str (take 7 input)))]
+          (->> (after-offset-phase input offset 100)
+               (take 8))))
   ; "Elapsed time: 10925.463464 msecs"
   ; (6 0 5 9 2 1 9 9)
   )

@@ -1,6 +1,7 @@
 (ns advent-of-code.dec-2024.day-07
   (:require [advent-of-code.test :refer [is= is is-not]]
-            [clojure.math.combinatorics :refer [permuted-combinations]]))
+            [clojure.math.combinatorics :refer [permuted-combinations]]
+            [clojure.math]))
 
 (def input (->> (slurp "src/advent_of_code/dec_2024/day_07_input.txt")
                 (clojure.string/split-lines)))
