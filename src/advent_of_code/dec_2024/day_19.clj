@@ -15,14 +15,11 @@
 
 
 (defn create-material-pattern
-  [pattern]
-  (Pattern/compile (str "^(?:" (->> pattern (clojure.string/join "|")) ")+$")))
+  [patterns]
+  (Pattern/compile (str "^(?:" (->> patterns (clojure.string/join "|")) ")+$")))
 
 (def test-material-pattern (create-material-pattern test-patterns))
 (def material-pattern (create-material-pattern patterns))
-
-; (re-find #"^(?:r|wr|b|g|bwu|rb|gb|br)+$" "bwurrg")
-
 
 (defn possible-design?
   {:test (fn []
