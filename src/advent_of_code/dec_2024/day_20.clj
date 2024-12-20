@@ -125,15 +125,15 @@
        (map (fn [p]
               (let [current-distance (get distances-to-end p)]
                 (->> cheat-moves
-                     (map (fn [cm] (map + p cm)))
-                     (filter (fn [cp] (when-let [cheat-distance (get distances-to-end cp)]
-                                        (<= cheat-distance (- current-distance threshold 2)))))
-                     ;(map (fn [cp] [p cp (- current-distance (get distances-to-end cp) 2)]))
+                     (map (fn [cm] [cm (map + p cm)]))
+                     (filter (fn [[[cmx cmy] cp]] (when-let [cheat-distance (get distances-to-end cp)]
+                                        (<= cheat-distance (- current-distance threshold (+ (abs cmx) (abs cmy)))))))
                      (count)))))
        (reduce +)))
 
 (comment
   (how-many-cheats distances-to-end track cheat-moves-2 100)
+  ; 1327
   )
 
 (def cheat-moves-20
@@ -144,7 +144,8 @@
 
 (comment
   (time (how-many-cheats distances-to-end track cheat-moves-20 100))
-  ; 1033120 too high
+  ; "Elapsed time: 6344.270965 msecs"
+  ; => 985737
   )
 
 
