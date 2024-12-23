@@ -39,7 +39,7 @@
   [state]
   (->> state
        (keys)
-       (filter (fn [c] (string/starts-with? c "t")))
+       (filter (fn [c] (clojure.string/starts-with? c "t")))
        (reduce (fn [a c]
                  (println c)
                  (let [clusters (cluster-of-three (:state a) c)]
@@ -53,19 +53,49 @@
 
 (comment
   (time (solve-one state))
+  (time (solve-one test-state))
   )
 
-(defn get-cluster
-  [state c]
-  (loop [result-cluster #{c}
-         boundary (get state c)]
-    ))
+; part two
 
+(defn get-clusters
+  [state cluster]
+  (->> cluster
+       (map (fn [c] (get state c)))
+       (apply clojure.set/intersection)
+       (map (fn [c] (conj cluster c)))))
 
+(defn get-largest-cluster
+  {:test (fn []
+           (is= (get-largest-cluster test-state)
+                #{"co" "de" "ka" "ta"}))}
+  [state]
+  (loop [clusters (->> state
+                       (keys)
+                       (map (fn [c] #{c}))
+                       (into #{}))
+         n 0]
+    (println n (count clusters))
+    ;(println n clusters)
+    (if (= 1 (count clusters))
+      (first clusters)
+      (recur (->> clusters
+                  (map (fn [cluster] (get-clusters state cluster)))
+                  (flatten)
+                  (into #{}))
+             (inc n)))))
 
+(defn get-password
+  [cluster]
+  (->> cluster
+       (sort)
+       (clojure.string/join ",")))
 
+(comment
 
+  (time (-> (get-largest-cluster state)
+            (get-password)))
+  ; "Elapsed time: 8362.193314 msecs"
+  ; => "bc,bf,do,dw,dx,ll,ol,qd,sc,ua,xc,yu,zt"
 
-
-
-
+ )
