@@ -1,6 +1,5 @@
 (ns advent-of-code.dec-2015.day-14
   (:require [advent-of-code.test :refer [is=]]
-            [clojure.math.combinatorics :as combinatorics]
             [clojure.edn :as edn]))
 
 (def input (-> (slurp "src/advent_of_code/dec_2015/day_14_input.txt")
