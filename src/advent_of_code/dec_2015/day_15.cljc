@@ -1,8 +1,6 @@
 (ns advent-of-code.dec-2015.day-15
   (:require [advent-of-code.test :refer [is=]]
-            [clojure.math.combinatorics :as combinatorics]
-            [clojure.edn :as edn]
-            [clojure.walk :refer [postwalk]]))
+            [clojure.edn :as edn]))
 
 (def input ["Frosting: capacity 4, durability -2, flavor 0, texture 0, calories 5"
             "Candy: capacity 0, durability 5, flavor -1, texture 0, calories 8"
