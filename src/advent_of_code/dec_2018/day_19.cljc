@@ -1,5 +1,7 @@
 (ns advent-of-code.dec-2018.day-19
   (:require [advent-of-code.test :refer [is=]]
+            [clojure.string :as string]
+            [clojure.edn :as edn]
             [advent-of-code.dec-2018.day-16 :as day-16]))
 
 (def get-operation {"addr" day-16/addr
@@ -70,26 +72,26 @@
 
 (defn read-program
   [src]
-  (let [lines (->> (slurp "src/advent_of_code/dec_2018/day_19_messages.txt")
-                   (clojure.string/split-lines))
+  (let [lines (->> src
+                   (string/split-lines))
         instructions (->> lines
                           (drop 1)
                           (map (fn [line]
                                  {:opcode (subs line 0 4)
                                   :args   (as-> (subs line 5) $
                                                 (clojure.string/split $ #" ")
-                                                (map read-string $))}))
+                                                (map edn/read-string $))}))
                           (into []))
         ip-bound (as-> lines $
                        (take 1 $)
                        (first $)
                        (subs $ 4)
-                       (read-string $))]
+                       (edn/read-string $))]
     {:ip-bound ip-bound :instructions instructions}))
 
 (defn solve-puzzle-a []
   (time (let [{ip-bound :ip-bound instructions :instructions}
-              (read-program "src/advent_of_code/dec_2018/day_19_messages.txt")]
+              (read-program "src/advent_of_code/dec_2018/day_19.txt")]
           (run-program instructions ip-bound [0 0 0 0 0 0]))))
 
 ; "Elapsed time: 7460.002189 msecs"
