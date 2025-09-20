@@ -61,7 +61,6 @@
         damage (calculate-damage state attacker-id defender-id)
         killed-units (min (quot damage (:hit-points defender))
                           (:units defender))]
-    (println "A" attacker-id "D" defender-id "damage" damage "ku" killed-units)
     killed-units))
 
 (defn get-group-ids
@@ -184,13 +183,12 @@
                                       :initiative 4}}}))}
   [state]
   (let [planed-attacks (target-selection state)]
-    (println "planed attacks:" planed-attacks)
     (attack-phase state planed-attacks)))
 
 (defn end?
   [state]
   (or (= (get state :immune) {})
-      (= (get state :infections) {})))
+      (= (get state :infection) {})))
 
 (defn get-units
   [state]
@@ -219,11 +217,17 @@
                                       :type       :slashing,
                                       :initiative 4}}}))}
   [state]
-  (let [state (play-a-round state)]
-    (println (get-units state))
-    (if (end? state)
-      state
-      (recur state))))
+  (loop [memory #{state}
+         state (play-a-round state)]
+    (cond (end? state)
+          state
+
+          (contains? memory state)
+          state
+
+          :else
+          (recur (conj memory state)
+                 (play-a-round state)))))
 
 (def state
   {:immune    {:group0 {:id         [:immune :group0]
@@ -242,21 +246,21 @@
                :group2 {:id         [:immune :group2]
                         :units      1767
                         :hit-points 5757
-                        :weak       #{:fire :radiation}
+                        :weakness   #{:fire :radiation}
                         :attack     27
                         :type       :radiation
                         :initiative 4}
                :group3 {:id         [:immune :group3]
                         :units      1472
                         :hit-points 7155
-                        :weak       #{:slashing :bludgeoning}
+                        :weakness   #{:slashing :bludgeoning}
                         :attack     42
                         :type       :radiation
                         :initiative 20}
                :group4 {:id         [:immune :group4]
                         :units      2610
                         :hit-points 5083
-                        :weak       #{:slashing :fire}
+                        :weakness   #{:slashing :fire}
                         :attack     14
                         :type       :fire
                         :initiative 17}
@@ -276,7 +280,7 @@
                :group7 {:id         [:immune :group7]
                         :units      6111
                         :hit-points 1395
-                        :weak       #{:bludgeoning}
+                        :weakness   #{:bludgeoning}
                         :immune     #{:radiation :fire}
                         :attack     1
                         :type       :slashing
@@ -291,7 +295,7 @@
                :group9 {:id         [:immune :group9]
                         :units      3091
                         :hit-points 6684
-                        :weak       #{:radiation}
+                        :weakness   #{:radiation}
                         :immune     #{:slashing}
                         :attack     17
                         :type       :cold
@@ -299,7 +303,7 @@
    :infection {:group0 {:id         [:infection :group0]
                         :units      1929
                         :hit-points 13168
-                        :weak       #{:bludgeoning}
+                        :weakness   #{:bludgeoning}
                         :attack     13
                         :type       :fire
                         :initiative 7}
@@ -313,7 +317,7 @@
                :group2 {:id         [:infection :group2]
                         :units      1380
                         :hit-points 20450
-                        :weak       #{:slashing :radiation}
+                        :weakness   #{:slashing :radiation}
                         :immune     #{:bludgeoning :fire}
                         :attack     28
                         :type       :cold
@@ -321,7 +325,7 @@
                :group3 {:id         [:infection :group3]
                         :units      4914
                         :hit-points 6963
-                        :weak       #{:slashing}
+                        :weakness   #{:slashing}
                         :immune     #{:fire}
                         :attack     2
                         :type       :cold
@@ -329,7 +333,7 @@
                :group4 {:id         [:infection :group4]
                         :units      1481
                         :hit-points 14192
-                        :weak       #{:slashing :fire}
+                        :weakness   #{:slashing :fire}
                         :immune     #{:radiation}
                         :attack     17
                         :type       :bludgeoning
@@ -337,7 +341,7 @@
                :group5 {:id         [:infection :group5]
                         :units      58
                         :hit-points 40282
-                        :weak       #{:cold :slashing}
+                        :weakness   #{:cold :slashing}
                         :attack     1346
                         :type       :radiation
                         :initiative 9}
@@ -358,36 +362,62 @@
                         :units      4874
                         :hit-points 37620
                         :immune     #{:bludgeoning}
-                        :weak       #{:cold}
+                        :weakness   #{:cold}
                         :attack     13
                         :type       :bludgeoning
                         :initiative 1}
                :group9 {:id         [:infection :group9]
                         :units      4378
                         :hit-points 32200
-                        :weak       #{:cold}
+                        :weakness   #{:cold}
                         :attack     10
                         :type       :bludgeoning
                         :initiative 2}}})
+
+(defn calculate-win
+  [state]
+  (let [groups (->> (get-group-ids state)
+                    (map (fn [id] (get-group state id))))]
+    (->> groups
+         (map :units)
+         (apply +))))
 
 (defn puzzle-1
   {:test (fn []
            (is= (puzzle-1 test-state-1)
                 5216))}
   [state]
-  (let [end-state (play state)
-        groups (->> (get-group-ids end-state)
-                    (map (fn [id] (get-group end-state id))))]
-    (->> groups
-         (map :units)
-         (apply +))))
+  (calculate-win (play state)))
 
-(comment
-  (time (let [end-state (play state)
-              groups (->> (get-group-ids end-state)
-                          (map (fn [id] (get-group end-state id))))]
-          (->> groups
-               (map :units)
-               (apply +))))
-  ; too high 25410
-  )
+(defn apply-boost
+  {:test (fn []
+           (is= (-> (play (apply-boost state 1000))
+                    (:infection))
+                {}))}
+  [state boost]
+  (update state :immune (fn [immune]
+                          (->> immune
+                               (reduce-kv (fn [a k g]
+                                            (assoc a k (update g :attack + boost)))
+                                          {})))))
+
+(defn puzzle-2
+  [state boost]
+  (loop [lower-bound 0
+         upper-bound boost]
+    (println "Testing with bounds" lower-bound upper-bound)
+    (let [mean-value (quot (+ upper-bound lower-bound 1) 2)
+          boosted-state (apply-boost state mean-value)
+          end-state (play boosted-state)]
+      (cond (= upper-bound mean-value)
+            (calculate-win end-state)
+
+            (= (:infection end-state) {})
+            (recur lower-bound mean-value)
+
+            :else
+            (recur mean-value upper-bound)))))
+
+  (comment
+    (puzzle-2 state 100)
+    )
