@@ -21,3 +21,16 @@
            (is= (ceil 2.5) 3))}
   [x]
   (int (Math/ceil (double x))))
+
+(defn x
+  ([] (x (drop 2 (range))))
+  ([[n & ns]]
+   (cons n
+         (lazy-seq (x (->> ns
+                           (remove (fn [m]
+                                     (println m)
+                                     (zero? (rem m n))))))))))
+
+(comment
+  (take 20 (x))
+  )
