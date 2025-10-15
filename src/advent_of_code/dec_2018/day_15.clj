@@ -15,24 +15,25 @@
   {:test (fn []
            (is= (create-state test-input-1)
                 {:cavern   #{[2 2] [2 3] [3 3] [1 1] [5 3] [4 1] [5 2] [1 3] [5 1] [3 1] [2 1] [1 2] [3 2]},
-                 :warriors #{{:position [1 1] :hp 200 :type :elf :id 0}
-                             {:position [4 1] :hp 200 :type :goblin :id 1}
-                             {:position [2 3] :hp 200 :type :goblin :id 2}
-                             {:position [5 3] :hp 200 :type :goblin :id 3}}}))}
+                 :warriors {[1 1] {:hp 200 :type :elf :id 0}
+                            [4 1] {:hp 200 :type :goblin :id 1}
+                            [2 3] {:hp 200 :type :goblin :id 2}
+                            [5 3] {:hp 200 :type :goblin :id 3}}}))}
   [input]
   (->> input
        (reduce-kv (fn [state y row]
                     (->> (vec row)
                          (reduce-kv (fn [state x c]
                                       (cond-> state
-                                              (#{\G \E} c) (update :warriors conj
-                                                                   {:position [x y] :hp 200
-                                                                    :type     (if (= c \G) :goblin :elf)
-                                                                    :id       (count (:warriors state))})
+                                              (#{\G \E} c) (update :warriors assoc
+                                                                   [x y]
+                                                                   {:hp   200
+                                                                    :type (if (= c \G) :goblin :elf)
+                                                                    :id   (count (:warriors state))})
                                               (#{\G \E \.} c) (update :cavern conj [x y])))
                                     state)))
                   {:cavern   #{}
-                   :warriors #{}})))
+                   :warriors {}})))
 
 (def state (create-state input))
 
@@ -50,51 +51,30 @@
 (defn get-warrior-by-position
   {:test (fn []
            (is= (get-warrior-by-position test-state-1 [1 1])
-                {:position [1 1], :hp 200, :type :elf, :id 0})
+                {:hp 200 :type :elf :id 0})
            (is-not (get-warrior-by-position test-state-1 [10 10])))}
   [state position]
-  (->> (:warriors state)
-       (some (fn [{p :position :as e}] (when (= p position) e)))))
+  (get (:warriors state) position))
 
 (defn get-warrior-by-id
   {:test (fn []
            (is= (get-warrior-by-id test-state-1 0)
-                {:position [1 1], :hp 200, :type :elf, :id 0})
+                [[1 1] {:hp 200 :type :elf :id 0}])
            (is-not (get-warrior-by-id test-state-1 10)))}
   [state id]
   (->> (:warriors state)
-       (some (fn [w] (when (= id (:id w)) w)))))
-
-(defn extend-path
-  {:test (fn []
-           (is= (extend-path test-state-1 (list [2 1] [1 1])
-                             [0 1]
-                             {:position [1 1], :hp 200, :type :elf, :id 0}
-                             #{[1 2]})
-                (list [2 2] [2 1] [1 1]))
-           (is-not (extend-path (create-state ["GG."]) (list [0 0])
-                                [1 0]
-                                {:position [0 0], :hp 200, :type :goblin, :id 0}
-                                #{})))}
-  [state path direction warrior visited-path]
-  (let [new-position (mapv + (first path) direction)]
-    (when (and (cavern? state new-position)
-               (not (contains? visited-path new-position))
-               (not (contains? (into #{} path) new-position))
-               (let [warrior-at-position (get-warrior-by-position state new-position)]
-                 (not (= (:type warrior-at-position) (:type warrior)))))
-      (conj path new-position))))
+       (some (fn [[p w]] (when (= id (:id w)) [p w])))))
 
 (defn filter-enemy-paths
   "Returns paths where an enemy is at the current position in the path."
   {:test (fn []
            (is= (filter-enemy-paths test-state-1
-                                    [[[1 1]] [[2 3] [1 3]]]
-                                    {:position [1 1], :hp 200, :type :elf, :id 0})
-                [[[2 3] [1 3]]]))}
+                                    [[[2 1] [4 1]] [[1 2] [1 4]]]
+                                    {:hp 200 :type :elf :id 0})
+                [[[2 1] [4 1]]]))}
   [state paths warrior]
   (->> paths
-       (filter (fn [[position]]
+       (filter (fn [[_ position]]
                  (when-let [other-warrior (get-warrior-by-position state position)]
                    (not= (:type other-warrior) (:type warrior)))))))
 
@@ -102,92 +82,185 @@
 (defn basic-move
   {:test (fn []
            (is= (-> (basic-move test-state-1
-                                {:position [1 1], :hp 200, :type :elf, :id 0}
+                                {:hp 200, :type :elf, :id 0}
+                                [1 1]
                                 [2 1])
                     (get-warrior-by-position [2 1])
                     (:id))
                 0))}
-  [state warrior to-position]
+  [state warrior from-position to-position]
   (update state :warriors (fn [warriors]
-                            (->> warriors
-                                 (map (fn [w]
-                                        (if (= w warrior)
-                                          (assoc w :position to-position)
-                                          w)))
-                                 (set)))))
+                            (-> warriors
+                                (dissoc from-position)
+                                (assoc to-position warrior)))))
+
+(defn free-space?
+  {:test (fn []
+           (is (free-space? (create-state ["E.G"]) [1 0]))
+           (is-not (free-space? (create-state ["E.G"]) [0 0])))}
+  [state p]
+  (and (cavern? state p)
+       (not (get-warrior-by-position state p))))
+
+(defn get-positions-in-range
+  {:test (fn []
+           (is= (get-positions-in-range test-state-1 {:hp 200 :type :goblin :id 1})
+                #{[1 2] [2 1]}))}
+  [state warrior]
+  (->> (:warriors state)
+       (filter (fn [[_ {t :type}]] (not= t (:type warrior))))
+       (mapcat (fn [[p _]] (->> directions
+                                (map (fn [d] (map + p d))))))
+       (filter (fn [p] (free-space? state p)))
+       (set)))
+
+(defn enemy?
+  [state warrior position]
+  (when-let [w (get-warrior-by-position state position)]
+    (not= (:type w) (:type warrior))))
+
+(defn next-to-enemy?
+  [state position warrior]
+  (->> directions
+       (map (fn [d] (map + position d)))
+       (some (fn [p] (enemy? state warrior p)))))
 
 (defn move
   {:test (fn []
-           (is (-> (move test-state-1 {:position [1 1], :hp 200, :type :elf, :id 0})
+           (is (-> (move test-state-1 [1 1] {:hp 200, :type :elf, :id 0})
                    (get-warrior-by-position [2 1]))))}
-  [state warrior]
-  (loop [paths (vector (list (:position warrior)))]
-    (let [visited-paths (->> paths
-                             (reduce (fn [a path] (apply conj a path))
-                                     #{}))
-          extended-paths (->> paths
-                              (mapcat (fn [path]
-                                        (->> directions
-                                             (keep (fn [d]
-                                                     (extend-path state path d warrior visited-paths)))))))]
-      (if (empty? extended-paths)
+  [state position warrior]
+  (if (next-to-enemy? state position warrior)
+    state
+    (let [positions-in-range (get-positions-in-range state warrior)]
+      (if (empty? positions-in-range)
         state
-        (let [enemy-paths (filter-enemy-paths state extended-paths warrior)]
-          (if (empty? enemy-paths)
-            (recur extended-paths)
-            (let [first-path (first enemy-paths)]
-              (if (= (count first-path) 2)
-                state
-                (let [next-position (first (take-last 2 first-path))]
-                  (basic-move state warrior next-position))))))))))
+        (loop [current-positions [[nil position]]           ; [first-step actual-step]
+               visited #{position}]
+          (let [extended-paths (->> current-positions
+                                    (mapcat (fn [[first-step cp :as path]]
+                                              (->> directions
+                                                   (keep (fn [d]
+                                                           (let [new-position (map + cp d)]
+                                                             (when (and (cavern? state new-position)
+                                                                        (not (contains? visited new-position))
+                                                                        (let [warrior-at-position (get-warrior-by-position state new-position)]
+                                                                          (not (= (:type warrior-at-position) (:type warrior)))))
+                                                               (if (nil? first-step)
+                                                                 [new-position new-position]
+                                                                 (assoc path 1 new-position)))))))))
+                                    (reduce (fn [{visited :visited :as a} [sp cp :as path]]
+                                              (if (contains? visited cp)
+                                                a
+                                                (-> a
+                                                    (update :paths conj path)
+                                                    (update :visited conj cp))))
+                                            {:paths   []
+                                             :visited #{}})
+                                    (:paths))]
+            (if (empty? extended-paths)
+              state
+              (let [enemy-paths (->> extended-paths
+                                     (filter (fn [[_ p]] (contains? positions-in-range p))))]
+                (if (empty? enemy-paths)
+                  (recur extended-paths (apply conj visited (map second extended-paths)))
+                  (let [next-position (->> enemy-paths
+                                           (sort-by (juxt (comp second second) (comp first second)))
+                                           (ffirst))]
+                    (basic-move state warrior position next-position)))))))))))
 
 (defn get-attack-targets
   {:test (fn []
            (is= (-> (create-state ["GE"])
-                    (get-attack-targets {:position [0 0] :hp 200 :type :goblin :id 0}))
-                [{:position [1 0] :hp 200 :type :elf :id 1}])
+                    (get-attack-targets [0 0] {:hp 200 :type :goblin :id 0}))
+                [{:position [1 0] :warrior {:hp 200 :type :elf :id 1}}])
            (is= (-> (create-state ["G.E"])
-                    (get-attack-targets {:position [0 0] :hp 200 :type :goblin :id 0}))
+                    (get-attack-targets [0 0] {:hp 200 :type :goblin :id 0}))
                 []))}
-  [state {position :position type :type}]
+  [state position {type :type}]
   (->> directions
        (map (fn [d] (map + position d)))
-       (keep (fn [tp] (->> (get state :warriors)
-                           (some (fn [{p :position t :type :as e}]
-                                   (when (and (= p tp)
-                                              (not= t type))
-                                     e))))))))
+       (keep (fn [tp] (when-let [target (get-warrior-by-position state tp)]
+                        (when (not= (:type target) type)
+                          {:position tp :warrior target}))))))
+
+(def targets-sorter (juxt (comp :hp :warrior) (comp second :position) (comp first :position)))
 
 (defn attack
   {:test (fn []
            (is= (-> (attack (create-state [".G." "GEG" ".G."])
-                            {:position [1 1], :hp 200, :type :elf, :id 2}
-                            [{:position [1 0], :hp 200, :type :goblin, :id 0}
-                             {:position [1 2], :hp 200, :type :goblin, :id 4}
-                             {:position [2 1], :hp 200, :type :goblin, :id 3}
-                             {:position [0 1], :hp 200, :type :goblin, :id 1}])
+                            [1 1]
+                            {:hp 200, :type :elf, :id 2})
                     (get-warrior-by-position [1 0])
                     (:hp))
                 197)
+           (is= (-> (attack (create-state ["..." "GEG" ".G."])
+                            [1 1]
+                            {:hp 200, :type :elf, :id 2})
+                    (get-warrior-by-position [0 1])
+                    (:hp))
+                197)
+           (is= (-> (create-state ["..." "GEG" ".G."])
+                    (assoc-in [:warriors [1 2] :hp] 100)
+                    (attack [1 1] {:hp 200, :type :elf, :id 2})
+                    (get-warrior-by-position [1 2])
+                    (:hp))
+                97)
            (is= (-> (attack {:cavern   #{[0 0] [1 0]},
-                             :warriors #{{:position [0 0], :hp 200, :type :elf, :id 0}
-                                         {:position [1 0], :hp 2, :type :goblin, :id 1}}}
-                            {:position [0 0], :hp 200, :type :elf, :id 0}
-                            [{:position [1 0], :hp 2, :type :goblin, :id 1}])
+                             :warriors {[0 0] {:hp 200 :type :elf :id 0}
+                                        [1 0] {:hp 2 :type :goblin :id 1}}}
+                            [0 0]
+                            {:hp 200, :type :elf, :id 0})
                     (:warriors)
                     (count))
                 1))}
-  [state warrior targets]
-  (let [target (->> targets
-                    (sort-by (juxt :hp (comp second :position) (comp first :position)))
-                    (first))
-        damaged-target (update target :hp - 3)]
-    (update state :warriors (fn [warriors]
-                              (let [other-warriors (disj warriors target)]
-                                (if (pos? (:hp damaged-target))
-                                  (conj other-warriors damaged-target)
-                                  other-warriors))))))
+  [state position warrior]
+  (let [targets (get-attack-targets state position warrior)]
+    (if (empty? targets)
+      state
+      (let [{tp :position tw :warrior} (->> targets
+                                            (sort-by targets-sorter)
+                                            (first))
+            damaged-warrior (update tw :hp - 3)]
+        (if (pos? (:hp damaged-warrior))
+          (assoc-in state [:warriors tp] damaged-warrior)
+          (update state :warriors dissoc tp))))))
 
+(def warrior-types #{:elf :goblin})
+
+(defn end-game?
+  {:test (fn []
+           (is (end-game? (create-state ["GG.."])))
+           (is-not (end-game? (create-state ["G..E"])))
+           (is-not (end-game? (create-state ["GG..EE"]))))}
+  [state]
+  (let [w-types (->> (:warriors state)
+                     (vals)
+                     (reduce (fn [a w]
+                               (cond (= a warrior-types) (reduced false)
+                                     (contains? a (:type w)) a
+                                     :else (conj a (:type w))))
+                             #{}))]
+    (and w-types (not= w-types warrior-types))))
+
+(def warrior-sorter (juxt (comp second) (comp first)))
+
+(def test-case-1 (create-state ["#######"
+                                "#.G...#"
+                                "#...EG#"
+                                "#.#.#G#"
+                                "#..G#E#"
+                                "#.....#"
+                                "#######"]))
+
+(defn get-sorted-warriors
+  {:test (fn []
+           (is= (get-sorted-warriors test-state-1)
+                [[1 1] [4 1] [2 3] [5 3]]))}
+  [state]
+  (->> (:warriors state)
+       (keys)
+       (sort-by warrior-sorter)))
 
 (defn make-a-turn
   {:test (fn []
@@ -204,18 +277,20 @@
                     (:hp))
                 197))}
   [state]
-  (let [warriors (->> (:warriors state)
-                      (sort-by (juxt (comp second :position)
-                                     (comp first :position))))]
-    (reduce (fn [state {id :id :as w}]
-              (let [state (move state w)
-                    w (get-warrior-by-id state id)
-                    targets (get-attack-targets state w)]
-                (if (empty? targets)
-                  state
-                  (attack state w targets))))
+  (let [warrior-positions (->> (:warriors state)
+                               (keys)
+                               (sort-by warrior-sorter))]
+    (reduce (fn [state p]
+              (if (end-game? state)
+                (reduced (assoc state :end true))
+                (let [w (get-warrior-by-position state p)
+                      move-state (move state p w)
+                      [p w] (if (= move-state state)
+                              [p w]
+                              (get-warrior-by-id move-state (:id w)))]
+                  (attack move-state p w))))
             state
-            warriors)))
+            warrior-positions)))
 
 (defn state->string
   [state]
@@ -241,14 +316,6 @@
                         row)))
          (string/join "\n"))))
 
-
-(def test-case-1 (create-state ["#######"
-                                "#.G...#"
-                                "#...EG#"
-                                "#.#.#G#"
-                                "#..G#E#"
-                                "#.....#"
-                                "#######"]))
 
 (println (state->string ((apply comp (repeat 37 make-a-turn))
                          (create-state ["#######"
@@ -304,18 +371,23 @@
                                          "#.G...G.#"
                                          "#.....G.#"
                                          "#########"]))
-                [20 937 18740]))}
+                [20 937 18740])
+           )}
   [state]
-  (loop [i 0
+  (loop [rounds 0
          state state]
     (let [next-state (make-a-turn state)]
-      (if (= state next-state)
-        (let [sum-of-hp (->> (:warriors state)
+      (println rounds (end-game? next-state))
+      (if (:end next-state)
+        (let [sum-of-hp (->> (:warriors next-state)
+                             (vals)
                              (map :hp)
                              (reduce +))]
-          [i sum-of-hp (* i sum-of-hp)])
-        (recur (inc i) next-state)))))
+          [rounds sum-of-hp (* rounds sum-of-hp)])
+        (recur (inc rounds) next-state)))))
 
 (comment
   (puzzle-1 state)
+  ; 210737 too high [83 2539 210737]
+  ; 206558 too low [82 2519 206558]
   )
