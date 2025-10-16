@@ -54,7 +54,7 @@
                 {:hp 200 :type :elf :id 0})
            (is-not (get-warrior-by-position test-state-1 [10 10])))}
   [state position]
-  (get (:warriors state) position))
+  (get-in state [:warriors position]))
 
 (defn get-warrior-by-id
   {:test (fn []
@@ -64,19 +64,6 @@
   [state id]
   (->> (:warriors state)
        (some (fn [[p w]] (when (= id (:id w)) [p w])))))
-
-(defn filter-enemy-paths
-  "Returns paths where an enemy is at the current position in the path."
-  {:test (fn []
-           (is= (filter-enemy-paths test-state-1
-                                    [[[2 1] [4 1]] [[1 2] [1 4]]]
-                                    {:hp 200 :type :elf :id 0})
-                [[[2 1] [4 1]]]))}
-  [state paths warrior]
-  (->> paths
-       (filter (fn [[_ position]]
-                 (when-let [other-warrior (get-warrior-by-position state position)]
-                   (not= (:type other-warrior) (:type warrior)))))))
 
 
 (defn basic-move
@@ -102,22 +89,26 @@
   (and (cavern? state p)
        (not (get-warrior-by-position state p))))
 
+(defn enemies?
+  [{t1 :type} {t2 :type}]
+  {:pre [t1 t2]}
+  (not= t1 t2))
+
 (defn get-positions-in-range
   {:test (fn []
            (is= (get-positions-in-range test-state-1 {:hp 200 :type :goblin :id 1})
                 #{[1 2] [2 1]}))}
   [state warrior]
   (->> (:warriors state)
-       (filter (fn [[_ {t :type}]] (not= t (:type warrior))))
-       (mapcat (fn [[p _]] (->> directions
-                                (map (fn [d] (map + p d))))))
+       (filter (fn [[_ t]] (enemies? t warrior)))
+       (mapcat (fn [[p _]] (->> directions (map (fn [d] (map + p d))))))
        (filter (fn [p] (free-space? state p)))
        (set)))
 
 (defn enemy?
   [state warrior position]
   (when-let [w (get-warrior-by-position state position)]
-    (not= (:type w) (:type warrior))))
+    (enemies? w warrior)))
 
 (defn next-to-enemy?
   [state position warrior]
@@ -145,11 +136,12 @@
                                                              (when (and (cavern? state new-position)
                                                                         (not (contains? visited new-position))
                                                                         (let [warrior-at-position (get-warrior-by-position state new-position)]
-                                                                          (not (= (:type warrior-at-position) (:type warrior)))))
-                                                               (if (nil? first-step)
-                                                                 [new-position new-position]
-                                                                 (assoc path 1 new-position)))))))))
-                                    (reduce (fn [{visited :visited :as a} [sp cp :as path]]
+                                                                          (or (nil? warrior-at-position)
+                                                                              (enemies? warrior-at-position warrior))))
+                                                               (if first-step
+                                                                 (assoc path 1 new-position)
+                                                                 [new-position new-position]))))))))
+                                    (reduce (fn [{visited :visited :as a} [_ cp :as path]]
                                               (if (contains? visited cp)
                                                 a
                                                 (-> a
@@ -177,11 +169,11 @@
            (is= (-> (create-state ["G.E"])
                     (get-attack-targets [0 0] {:hp 200 :type :goblin :id 0}))
                 []))}
-  [state position {type :type}]
+  [state position warrior]
   (->> directions
        (map (fn [d] (map + position d)))
        (keep (fn [tp] (when-let [target (get-warrior-by-position state tp)]
-                        (when (not= (:type target) type)
+                        (when (enemies? target warrior)
                           {:position tp :warrior target}))))))
 
 (def targets-sorter (juxt (comp :hp :warrior) (comp second :position) (comp first :position)))
@@ -221,7 +213,7 @@
       (let [{tp :position tw :warrior} (->> targets
                                             (sort-by targets-sorter)
                                             (first))
-            damaged-warrior (update tw :hp - 3)]
+            damaged-warrior (update tw :hp - (get warrior :attack 3))]
         (if (pos? (:hp damaged-warrior))
           (assoc-in state [:warriors tp] damaged-warrior)
           (update state :warriors dissoc tp))))))
@@ -234,14 +226,11 @@
            (is-not (end-game? (create-state ["G..E"])))
            (is-not (end-game? (create-state ["GG..EE"]))))}
   [state]
-  (let [w-types (->> (:warriors state)
-                     (vals)
-                     (reduce (fn [a w]
-                               (cond (= a warrior-types) (reduced false)
-                                     (contains? a (:type w)) a
-                                     :else (conj a (:type w))))
-                             #{}))]
-    (and w-types (not= w-types warrior-types))))
+  (let [warriors (vals (:warriors state))
+        first-warrior (first warriors)]
+    (->> warriors
+         (some (fn [w] (enemies? w first-warrior)))
+         (not))))
 
 (def warrior-sorter (juxt (comp second) (comp first)))
 
@@ -264,6 +253,12 @@
 
 (defn make-a-turn
   {:test (fn []
+           (is= (-> (make-a-turn {:cavern   #{[0 0] [1 0]},
+                                  :warriors {[0 0] {:hp 2, :type :goblin, :id 0},
+                                             [1 0] {:hp 2, :type :elf, :id 1}}})
+                    (get-warrior-by-position [0 0])
+                    (:hp))
+                2)
            (is= (-> (make-a-turn (create-state ["G..E"]))
                     (get-warrior-by-position [2 0])
                     (:hp))
@@ -283,14 +278,23 @@
     (reduce (fn [state p]
               (if (end-game? state)
                 (reduced (assoc state :end true))
-                (let [w (get-warrior-by-position state p)
-                      move-state (move state p w)
-                      [p w] (if (= move-state state)
-                              [p w]
-                              (get-warrior-by-id move-state (:id w)))]
-                  (attack move-state p w))))
+                (if-let [w (get-warrior-by-position state p)]
+                  (let [move-state (move state p w)
+                        [p w] (if (= move-state state)
+                                [p w]
+                                (get-warrior-by-id move-state (:id w)))]
+                    (attack move-state p w))
+                  state)))
             state
             warrior-positions)))
+
+(defn elf?
+  [warrior]
+  (= (:type warrior) :elf))
+
+(defn goblin?
+  [warrior]
+  (= (:type warrior) :goblin))
 
 (defn state->string
   [state]
@@ -300,94 +304,174 @@
         max-x (->> (:cavern state)
                    (map first)
                    (reduce max 0))]
-    (->> (for [y (range (+ 2 max-y))
-               x (range (+ 2 max-x))]
+    (->> (for [y (range 1 (+ 1 max-y))
+               x (range 1 (+ 1 max-x))]
            [x y])
-         (partition (+ 2 max-x))
+         (partition max-x)
          (map (fn [row]
-                (reduce (fn [a p]
-                          (let [warrior (get-warrior-by-position state p)]
-                            (str a
-                                 (cond (= (:type warrior) :goblin) "G"
-                                       (= (:type warrior) :elf) "E"
-                                       (contains? (:cavern state) p) "."
-                                       :else "#"))))
-                        ""
-                        row)))
-         (string/join "\n"))))
+                (let [stuff (->> row
+                                 (map (fn [p]
+                                        (if-let [warrior (get-warrior-by-position state p)]
+                                          [(if (goblin? warrior) "G" "E") (:hp warrior)]
+                                          [(if (contains? (:cavern state) p) "." "#") nil]))))]
+                  (str (apply str (map first stuff))
+                       " "
+                       (str "(" (clojure.string/join ") (" (keep second stuff)) ")\n")))))
+         (apply str))))
 
+(defn sum-hp
+  [state]
+  (->> (:warriors state)
+       (vals)
+       (map :hp)
+       (reduce + 0)))
 
-(println (state->string ((apply comp (repeat 37 make-a-turn))
-                         (create-state ["#######"
-                                        "#G..#E#"
-                                        "#E#E.E#"
-                                        "#G.##.#"
-                                        "#...#E#"
-                                        "#...E.#"
-                                        "#######"]))))
-
-(defn puzzle-1
+(defn fight
   {:test (fn []
-           (is= (puzzle-1 test-case-1)
+           (is= (fight test-case-1)
                 [47 590 27730])
-           (is= (puzzle-1 (create-state ["#######"
-                                         "#G..#E#"
-                                         "#E#E.E#"
-                                         "#G.##.#"
-                                         "#...#E#"
-                                         "#...E.#"
-                                         "#######"]))
+           (is= (fight (create-state ["#######"
+                                      "#G..#E#"
+                                      "#E#E.E#"
+                                      "#G.##.#"
+                                      "#...#E#"
+                                      "#...E.#"
+                                      "#######"]))
                 [37 982 36334])
-           (is= (puzzle-1 (create-state ["#######"
-                                         "#E..EG#"
-                                         "#.#G.E#"
-                                         "#E.##E#"
-                                         "#G..#.#"
-                                         "#..E#.#"
-                                         "#######"]))
+           (is= (fight (create-state ["#######"
+                                      "#E..EG#"
+                                      "#.#G.E#"
+                                      "#E.##E#"
+                                      "#G..#.#"
+                                      "#..E#.#"
+                                      "#######"]))
                 [46 859 39514])
-           (is= (puzzle-1 (create-state ["#######"
-                                         "#E.G#.#"
-                                         "#.#G..#"
-                                         "#G.#.G#"
-                                         "#G..#.#"
-                                         "#...E.#"
-                                         "#######"]))
+           (is= (fight (create-state ["#######"
+                                      "#E.G#.#"
+                                      "#.#G..#"
+                                      "#G.#.G#"
+                                      "#G..#.#"
+                                      "#...E.#"
+                                      "#######"]))
                 [35 793 27755])
-           (is= (puzzle-1 (create-state ["#######"
-                                         "#.E...#"
-                                         "#.#..G#"
-                                         "#.###.#"
-                                         "#E#G#G#"
-                                         "#...#G#"
-                                         "#######"]))
+           (is= (fight (create-state ["#######"
+                                      "#.E...#"
+                                      "#.#..G#"
+                                      "#.###.#"
+                                      "#E#G#G#"
+                                      "#...#G#"
+                                      "#######"]))
                 [54 536 28944])
-           (is= (puzzle-1 (create-state ["#########"
-                                         "#G......#"
-                                         "#.E.#...#"
-                                         "#..##..G#"
-                                         "#...##..#"
-                                         "#...#...#"
-                                         "#.G...G.#"
-                                         "#.....G.#"
-                                         "#########"]))
+           (is= (fight (create-state ["#########"
+                                      "#G......#"
+                                      "#.E.#...#"
+                                      "#..##..G#"
+                                      "#...##..#"
+                                      "#...#...#"
+                                      "#.G...G.#"
+                                      "#.....G.#"
+                                      "#########"]))
                 [20 937 18740])
            )}
-  [state]
-  (loop [rounds 0
-         state state]
-    (let [next-state (make-a-turn state)]
-      (println rounds (end-game? next-state))
-      (if (:end next-state)
-        (let [sum-of-hp (->> (:warriors next-state)
-                             (vals)
-                             (map :hp)
-                             (reduce +))]
-          [rounds sum-of-hp (* rounds sum-of-hp)])
-        (recur (inc rounds) next-state)))))
+  ([state]
+   (fight state 3))
+  ([state elf-attack]
+   (let [state (update state :warriors
+                       (fn [warriors]
+                         (->> warriors
+                              (reduce-kv (fn [warriors k w]
+                                           (if (goblin? w)
+                                             (assoc-in warriors [k :attack] 3)
+                                             (assoc-in warriors [k :attack] elf-attack)))
+                                         warriors))))]
+     (loop [rounds 0
+            state state]
+       (let [next-state (make-a-turn state)]
+         (if (:end next-state)
+           (let [sum-of-hp (sum-hp next-state)]
+             (println (state->string next-state))
+             [rounds sum-of-hp (* rounds sum-of-hp)])
+           (recur (inc rounds) next-state)))))))
 
 (comment
-  (puzzle-1 state)
-  ; 210737 too high [83 2539 210737]
-  ; 206558 too low [82 2519 206558]
+  (time (fight state 3))
+  ; "Elapsed time: 238.411583 msecs"
+  ; => [82 2531 207542]
+  )
+
+(defn calculate-number-of-elves
+  [state]
+  (->> (:warriors state)
+       (vals)
+       (filter elf?)
+       (count)))
+
+(defn fight-without-loosing-an-elf
+  {:test (fn []
+           (is= (fight-without-loosing-an-elf test-case-1)
+                [29 172 4988])
+           (is= (fight-without-loosing-an-elf (create-state ["#######"
+                                                             "#E..EG#"
+                                                             "#.#G.E#"
+                                                             "#E.##E#"
+                                                             "#G..#.#"
+                                                             "#..E#.#"
+                                                             "#######"]))
+                [33 948 31284])
+           (is= (fight-without-loosing-an-elf (create-state ["#######"
+                                                             "#E.G#.#"
+                                                             "#.#G..#"
+                                                             "#G.#.G#"
+                                                             "#G..#.#"
+                                                             "#...E.#"
+                                                             "#######"]))
+                [37 94 3478])
+           (is= (fight-without-loosing-an-elf (create-state ["#######"
+                                                             "#.E...#"
+                                                             "#.#..G#"
+                                                             "#.###.#"
+                                                             "#E#G#G#"
+                                                             "#...#G#"
+                                                             "#######"]))
+                [39 166 6474])
+           (is= (fight-without-loosing-an-elf (create-state ["#########"
+                                                             "#G......#"
+                                                             "#.E.#...#"
+                                                             "#..##..G#"
+                                                             "#...##..#"
+                                                             "#...#...#"
+                                                             "#.G...G.#"
+                                                             "#.....G.#"
+                                                             "#########"]))
+                [30 38 1140])
+           )}
+  [state]
+  (let [number-of-elves (calculate-number-of-elves state)]
+    (loop [elf-attack 4]
+      (println elf-attack)
+      (let [state (update state :warriors
+                          (fn [warriors]
+                            (->> warriors
+                                 (reduce-kv (fn [warriors k w]
+                                              (if (goblin? w)
+                                                (assoc-in warriors [k :attack] 3)
+                                                (assoc-in warriors [k :attack] elf-attack)))
+                                            warriors))))
+            [rounds result-state] (loop [rounds 0
+                                         state state]
+                                    (let [state (make-a-turn state)]
+                                      (if (:end state)
+                                        [rounds state]
+                                        (recur (inc rounds) state))))]
+        (if (= (calculate-number-of-elves result-state) number-of-elves)
+          (let [sum-of-hp (sum-hp result-state)]
+            (println (state->string result-state))
+            [rounds sum-of-hp (* rounds sum-of-hp)])
+            (recur (inc elf-attack)))))))
+
+(comment
+  (time (fight-without-loosing-an-elf state))
+  ; "Elapsed time: 2308.324958 msecs"
+  ; => [52 1244 64688]
+
   )
