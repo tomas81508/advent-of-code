@@ -1,177 +1,223 @@
 (ns advent-of-code.dec-2018.day-17
-  (:require [clojure.string]))
+  (:require [clojure.string :refer [split-lines join]]
+            [advent-of-code.test :refer [is= is is-not]]
+            [clojure.edn :as edn])
+  (:import [clojure.lang PersistentQueue]))
 
-(defn get-puzzle-input []
-  (-> (slurp "src/advent_of_code/dec_2018/day_17.txt")
-      (clojure.string/split-lines)))
+(def input (-> (slurp "src/advent_of_code/dec_2018/day_17.txt")
+               (split-lines)))
 
-(defn get-map
+(def test-input ["x=495, y=2..7"
+                 "y=7, x=495..501"
+                 "x=501, y=3..7"
+                 "x=498, y=2..4"
+                 "x=506, y=1..2"
+                 "x=498, y=10..13"
+                 "x=504, y=10..13"
+                 "y=13, x=498..504"])
+
+(defn create-state
+  {:test (fn []
+           (let [state (create-state test-input)]
+             (is= (get state [495 2]) \#)
+             (is= (get state [501 5]) \#)
+             (is= (get state [499 5]) nil)
+             (is= (:max state) 13)))}
   [input]
-  (->
-    (reduce (fn [result line]
-              (if (= (first line) \x)
-                (let [regex (re-pattern "x=(\\d+), y=(\\d+)\\.\\.(\\d+)")
-                      [_ x-str y1-str y2-str] (re-find regex line)
-                      [x y1 y2] (map read-string [x-str y1-str y2-str])]
-                  (reduce (fn [result y]
-                            (assoc result [x y] \#))
-                          result
-                          (range y1 (inc y2))))
-                (let [regex (re-pattern "y=(\\d+), x=(\\d+)\\.\\.(\\d+)")
-                      [_ y-str x1-str x2-str] (re-find regex line)
-                      [y x1 x2] (map read-string [y-str x1-str x2-str])]
-                  (reduce (fn [result x]
-                            (assoc result [x y] \#))
-                          result
-                          (range x1 (inc x2)))))
-              ) {} input)
-    (assoc [500 0] \+)))
+  (let [state (reduce (fn [result line]
+                        (if (= (first line) \x)
+                          (let [[x y1 y2] (->> (re-seq #"\d+" line)
+                                               (map edn/read-string))]
+                            (reduce (fn [result y] (assoc result [x y] \#))
+                                    result
+                                    (range y1 (inc y2))))
+                          (let [[y x1 x2] (->> (re-seq #"\d+" line)
+                                               (map edn/read-string))]
+                            (reduce (fn [result x] (assoc result [x y] \#))
+                                    result
+                                    (range x1 (inc x2))))))
+                      {}
+                      input)
+        max-y (->> (keys state)
+                   (map second)
+                   (apply max))]
+    (assoc state :max max-y)))
 
-(defn get-max-coordinates
-  [ground]
-  (let [xmax (->> (keys ground)
-                  (map first)
-                  (apply max))
-        xmin (->> (keys ground)
-                  (map first)
-                  (apply min))
-        ymax (->> (keys ground)
-                  (map second)
-                  (apply max))
-        ymin (->> (keys ground)
-                  (map second)
-                  (apply min))]
-    [xmax xmin ymax ymin]))
+(def test-state (create-state test-input))
+(def state (create-state input))
 
-(defn draw-map
-  [ground]
-  (let [[xmax xmin ymax ymin] (get-max-coordinates ground)]
-    (->> (range ymin (inc ymax))
-         (map (fn [y]
-                (->> (range (dec xmin) (+ xmax 2))
-                     (map (fn [x]
-                            (get ground [x y] \.)))
+(defn sand? [state position] (nil? (get state position)))
+;(defn clay? [state position] (= (get state position) \#))
+(defn water? [state position] (= (get state position) \~))
+(defn pouring-water? [state position] (= (get state position) \|))
+
+(defn up [position] (map + position [0 -1]))
+(defn down [position] (map + position [0 1]))
+(defn right [position] (map + position [1 0]))
+(defn left [position] (map + position [-1 0]))
+
+(defn to-string
+  [state]
+  (let [x-values (->> (keys (dissoc state :max))
+                      (map first))
+        min-x (reduce min x-values)
+        max-x (reduce max x-values)
+        max-y (:max state)]
+    (->> (for [y (range (inc max-y))
+               x (range min-x (inc max-x))]
+           [x y])
+         (partition (inc (- max-x min-x)))
+         (map (fn [row]
+                (->> row
+                     (map (fn [p] (str (get state p \.))))
                      (apply str)))))))
 
-(defn get-water-passed
-  [ground]
-  (->
-    (reduce-kv (fn [result pos v]
-                 (if (= v \|)
-                   result
-                   (dissoc result pos))
-                 ) ground ground)
-    (assoc [500 0] \+)))
+(comment
+  (to-string test-state)
+  )
 
-(defn get-element
-  [ground pos]
-  (get ground pos \.))
+(defn log-state
+  [state]
+  (println (join "\n" (to-string state))))
 
+(defn fill-level-in-direction
+  {:test (fn []
+           (let [{water-positions :water-positions} (fill-level-in-direction test-state [500 6] [-1 0])]
+             (is= water-positions [[500 6] [499 6] [498 6] [497 6] [496 6]])))}
+  [state position direction]
+  (loop [position position
+         water-positions []]
+    (if (or (sand? state position) (pouring-water? state position))
+      (if (or (sand? state (down position))
+              (pouring-water? state (down position)))
+        {:pouring-down    position
+         :water-positions water-positions}
+        (recur (map + position direction) (conj water-positions position)))
+      {:water-positions water-positions})))
 
-(defn fill
-  [ground pos element]
-  (assoc ground pos element))
+(defn fill-level
+  {:test (fn []
+           (let [{state :state} (fill-level test-state [500 6])]
+             (is (water? state [500 6]))
+             (is (water? state [499 6]))
+             (is (water? state [496 6]))
+             (is-not (water? state [495 6]))))}
+  [state position]
+  {:pre [position]}
+  (let [{pdl :pouring-down wpl :water-positions} (fill-level-in-direction state position [-1 0])
+        {pdr :pouring-down wpr :water-positions} (fill-level-in-direction state position [1 0])
+        water-positions (concat wpl wpr)
+        pouring-down (->> [pdl pdr] (remove nil?))]
+    {:state        (reduce (fn [state wp] (assoc state wp (if (empty? pouring-down) \~ \|)))
+                           state
+                           water-positions)
+     :pouring-down pouring-down}))
 
-(defn below
-  [ground [x y]]
-  (get-element ground [x (inc y)]))
+(defn pour-down
+  {:test (fn []
+           (let [{state :state pouring-positions :pouring-positions} (pour-down test-state [500 0])]
+             (is (pouring-water? state [500 1]))
+             (is= pouring-positions (list [500 6] [500 5] [500 4] [500 3] [500 2] [500 1] [500 0])))
+           (let [{end :end} (pour-down test-state [10 0])]
+             (is= end true)))}
+  [state position]
+  (loop [state state
+         position position
+         positions (list)]
+    (cond (> (second position) (:max state))
+          {:state state :end true}
 
-
-(defn clay-wall-or-fall-right
-  [ground [x y]]
-  (loop [current-x (inc x)]
-    (cond (= (get-element ground [current-x y]) \#)
-          [:clay current-x]
-
-          (or (= (below ground [current-x y]) \.)
-              (= (below ground [current-x y]) \|))
-          [:fall current-x]
+          (sand? state position)
+          (recur (assoc state position \|)
+                 (down position)
+                 (conj positions position))
 
           :else
-          (recur (inc current-x)))))
+          {:state state :pouring-positions (if (pouring-water? state position)
+                                             (conj positions position)
+                                             positions)})))
 
-(defn clay-wall-or-fall-left
-  [ground [x y]]
-  (loop [current-x (dec x)]
-    (cond (= (get-element ground [current-x y]) \#)
-          [:clay current-x]
-
-          (or (= (below ground [current-x y]) \.)
-              (= (below ground [current-x y]) \|))
-          [:fall current-x]
-
-          :else
-          (recur (dec current-x)))))
-
-
-(defn water-fall
-  [ground [x y]]
-  (loop [current-y (dec y)]
-    (let [element (get-element ground [x current-y])]
-      (if (= element \.)
-        (recur (dec current-y))
-        current-y))))
-
-
-(defn flow-once
-  [ground water-passed-positions]
-  (reduce (fn [result [x y]]
-            (let [below-pos [x (inc y)]
-                  below (get-element result below-pos)]
-              (cond (= below \|)
-                    [result water-passed-positions]
-
-                    (= below \.)
-                    (reduce (fn [result y]
-                              [(fill result [x y] \|) (conj water-passed-positions [x y])])
-                            [result water-passed-positions]
-                            (range y (water-fall ground [x y])))
+(defn pour-water
+  ; 1. down to the bottom with | remembering positions
+  ; 3. fill and move up
+  ; 4. until it spills over then forget the remembered positions and start over
+  {:test (fn []
+           (let [state (pour-water test-state [500 0])]
+             (is (pouring-water? state [500 1]))
+             (is (water? state [500 5]))
+             (is (pouring-water? state [502 5]))
+             (is (water? state [500 12]))))}
+  [state position]
+  (loop [state state
+         queue (conj PersistentQueue/EMPTY position)]
+    (let [position (peek queue)
+          queue (pop queue)]
+      (if-not position
+        state
+        (if (or (water? state position) (pouring-water? state position))
+          (recur state queue)
+          ; 1. down to the bottom with | remembering positions
+          (let [{state :state pouring-positions :pouring-positions end :end} (pour-down state position)]
+            (if end
+              (recur state queue)
+              (let [{state :state pds :pouring-down}
+                    (loop [state state
+                           pouring-position (first pouring-positions)]
+                      (let [; 3. fill and move up
+                            {state :state pds :pouring-down} (fill-level state pouring-position)]
+                        (if (empty? pds)
+                          (recur state (up pouring-position))
+                          {:state state :pouring-down pds})))]
+                (recur state (apply conj queue pds))))))))))
 
 
-                    (or (= below \#) (= below \~))
-                    (let [[element-left x-left] (clay-wall-or-fall-left ground [x y])
-                          [element-right x-right] (clay-wall-or-fall-right ground [x y])]
-                      ;(println y x-left element-left x-right element-right)
-                      (if (= element-left element-right :clay)
-                        (reduce (fn [result x]
-                                  [(fill result [x y] \~) (remove #(= % [x y]) water-passed-positions)])
-                                result
-                                (range (inc x-left) x-right))
-                        (reduce (fn [result x]
-                                  (if (= (get-element result [x y]) \#)
-                                    [result water-passed-positions]
-                                    [(fill result [x y] \|) (conj water-passed-positions [x y])]))
-                                [result water-passed-positions]
-                                (range x-left (inc x-right))))))))
-          ground
-          water-passed-positions))
+(comment
+  (to-string (pour-water test-state [500 0]))
+  (to-string state)
+  )
 
+(defn puzzle-1
+  {:test (fn []
+           (is= (puzzle-1 test-state)
+                57))}
+  [state]
+  (let [water #{\~ \|}
+        state (pour-water state [500 0])
+        clay (->> (dissoc state :max)
+                  (seq)
+                  (filter (fn [[_ c]] (= c \#)))
+                  (map first))
+        min-y (->> (map second clay)
+                   (reduce min))]
+    (->> state
+         (seq)
+         (filter (fn [[_ v]] (contains? water v)))
+         (filter (fn [[[_ y] _]] (>= y min-y)))
+         (count))))
 
-(defn get-first-answer
-  [ground]
-  (let [[xmax xmin global-y-max ymin] (get-max-coordinates ground)]
-    (let [finished
-          (loop [[ground water-passed-positions] [ground (get-water-passed ground)]
-                 tick 0]
-            (when (= 0 (mod tick 1000))
-              (println tick)
-              (clojure.pprint/pprint (draw-map ground)))
-            (let [y-max (->> (keys ground)
-                             (map second)
-                             (apply max))]
-              (if (> y-max global-y-max)
-                ground
-                (recur (time (flow-once ground water-passed-positions)) (inc tick)))))]
-      (clojure.pprint/pprint (draw-map finished))
-      (reduce-kv (fn [result [x y] v]
-                   (if (and
-                         (>= y ymin)
-                         (<= y global-y-max)
-                         (or (= v \~) (= v \|)))
-                     (inc result)
-                     result)) 0 finished))))
+(defn puzzle-2
+  {:test (fn []
+           (is= (puzzle-2 test-state)
+                29))}
+  [state]
+  (let [water #{\~ \|}
+        state (pour-water state [500 0])
+        clay (->> (dissoc state :max)
+                  (seq)
+                  (filter (fn [[_ c]] (= c \#)))
+                  (map first))
+        min-y (->> (map second clay)
+                   (reduce min))]
+    (->> state
+         (seq)
+         (filter (fn [[_ v]] (= v \~)))
+         (filter (fn [[[_ y] _]] (>= y min-y)))
+         (count))))
 
+(comment
+  (puzzle-1 state)
+  ; 40879
 
-
-
-(comment (get-first-answer (get-map (read-input))))
+  (puzzle-2 state)
+  ; 34693
+  )
