@@ -115,27 +115,23 @@
 
 (defn pour-down
   {:test (fn []
-           (let [{state :state pouring-positions :pouring-positions} (pour-down test-state [500 0])]
+           (let [{state :state landing-position :landing-position} (pour-down test-state [500 0])]
              (is (pouring-water? state [500 1]))
-             (is= pouring-positions (list [500 6] [500 5] [500 4] [500 3] [500 2] [500 1] [500 0])))
+             (is= landing-position [500 6]))
            (let [{end :end} (pour-down test-state [10 0])]
              (is= end true)))}
   [state position]
   (loop [state state
-         position position
-         positions (list)]
+         position position]
     (cond (> (second position) (:max state))
           {:state state :end true}
 
           (sand? state position)
           (recur (assoc state position \|)
-                 (down position)
-                 (conj positions position))
+                 (down position))
 
           :else
-          {:state state :pouring-positions (if (pouring-water? state position)
-                                             (conj positions position)
-                                             positions)})))
+          {:state state :landing-position (up position)})))
 
 (defn pour-water
   ; 1. down to the bottom with | remembering positions
@@ -156,17 +152,17 @@
         state
         (if (or (water? state position) (pouring-water? state position))
           (recur state queue)
-          ; 1. down to the bottom with | remembering positions
-          (let [{state :state pouring-positions :pouring-positions end :end} (pour-down state position)]
+          ; 1. down to the bottom
+          (let [{state :state landing-position :landing-position end :end} (pour-down state position)]
             (if end
               (recur state queue)
               (let [{state :state pds :pouring-down}
                     (loop [state state
-                           pouring-position (first pouring-positions)]
+                           position landing-position]
                       (let [; 3. fill and move up
-                            {state :state pds :pouring-down} (fill-level state pouring-position)]
+                            {state :state pds :pouring-down} (fill-level state position)]
                         (if (empty? pds)
-                          (recur state (up pouring-position))
+                          (recur state (up position))
                           {:state state :pouring-down pds})))]
                 (recur state (apply conj queue pds))))))))))
 
@@ -200,8 +196,7 @@
            (is= (puzzle-2 test-state)
                 29))}
   [state]
-  (let [water #{\~ \|}
-        state (pour-water state [500 0])
+  (let [state (pour-water state [500 0])
         clay (->> (dissoc state :max)
                   (seq)
                   (filter (fn [[_ c]] (= c \#)))
