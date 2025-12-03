@@ -2,6 +2,8 @@
   (:require [advent-of-code.test :refer [is= is is-not]]
             [clojure.string :as string]))
 
+; together with Daniel Gullberg
+
 (def input (-> (slurp "src/advent_of_code/dec_2025/day_02_input.txt")
                (string/split #",")))
 
