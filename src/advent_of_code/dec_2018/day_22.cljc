@@ -207,7 +207,8 @@
 
 (comment
   (time (walk-to-target input initial-state))
-  ; too high 997
+  ; "Elapsed time: 6589.068375 msecs"
+  ; => 992
   )
 
 
