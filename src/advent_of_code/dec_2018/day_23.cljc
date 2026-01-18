@@ -89,103 +89,44 @@
 
 (def test-nanobots-2 (parse-nanobots test-input-2))
 
-(defn find-bounding-rectangle
-  {:test (fn []
-           (is= (find-bounding-rectangle test-nanobots-2)
-                [[10 10 10] [50 50 50]])
-           (is= (find-bounding-rectangle test-nanobots)
-                [[0 0 0] [4 5 3]]))}
-  [nanobots]
-  (reduce (fn [a {position :position}]
-            (-> a
-                (update 0 (fn [min-values] (mapv min min-values position)))
-                (update 1 (fn [max-values] (mapv max max-values position)))))
-          [(:position (first nanobots)) (:position (first nanobots))]
-          nanobots))
-
-(defn get-range-step
-  {:test (fn []
-           (is= (get-range-step 10 50 10) 4)
-           (is= (get-range-step 10 14 10) 1))}
-  [start stop max-steps]
-  (let [distance (- stop start)
-        step (quot distance max-steps)]
-    (if (zero? step) 1 step)))
-
 (defn third [[_ _ z]] z)
 
-(defn find-better-rectangle
-  {:test (fn []
-           (is= (find-better-rectangle test-nanobots-2 [[10 10 10] [50 50 50]] 10)
-                [[6 6 6] [14 14 14]])
-           (is= (find-better-rectangle test-nanobots-2 [[8 8 8] [12 12 12]] 10)
-                {:done [12 12 12]}))}
-  [nanobots rectangle max-steps]
-  (let [x-range (mapv first rectangle)
-        y-range (mapv second rectangle)
-        z-range (mapv third rectangle)
-        x-range-step (apply get-range-step (conj x-range max-steps))
-        y-range-step (apply get-range-step (conj y-range max-steps))
-        z-range-step (apply get-range-step (conj z-range max-steps))
-        best-position (->> (for [x (range (first x-range) (inc (second x-range)) x-range-step)
-                                 y (range (first y-range) (inc (second y-range)) y-range-step)
-                                 z (range (first z-range) (inc (second z-range)) z-range-step)]
-                             [x y z])
-                           (reduce (fn [a position]
-                                     (let [number-in-range (->> nanobots
-                                                                (filter (fn [n] (in-range? (:position n) position (:radius n))))
-                                                                (count))]
-                                       (cond (< number-in-range (:number-in-range a)) a
-                                             (> number-in-range (:number-in-range a)) {:number-in-range number-in-range :position position}
-                                             :else (if (< (manhattan-distance [0 0 0] position)
-                                                          (manhattan-distance [0 0 0] (:position a)))
-                                                     {:number-in-range number-in-range :position position}
-                                                     a))))
-                                   {:number-in-range 0
-                                    :position        nil})
-                           (:position))]
-    (if (= x-range-step y-range-step z-range-step 1)
-      {:done best-position}
-      [[(- (first best-position) x-range-step)
-        (- (second best-position) y-range-step)
-        (- (third best-position) z-range-step)]
-       [(+ (first best-position) x-range-step)
-        (+ (second best-position) y-range-step)
-        (+ (third best-position) z-range-step)]])
-    ))
+(defn calculate-nanobots-in-range
+  [nanobots position]
+  (->> nanobots
+       (filter (fn [n] (in-range? (:position n) position (:radius n))))
+       (count)))
 
-(defn find-coordinates-in-range-of-the-largets-number-of-nanobots
-  {:test (fn []
-           (is= (find-coordinates-in-range-of-the-largets-number-of-nanobots test-nanobots-2)
-                36))}
-  ([nanobots]
-   (find-coordinates-in-range-of-the-largets-number-of-nanobots
-     nanobots
-     (find-bounding-rectangle nanobots) 30))
-  ([nanobots initial-rectangle max-steps]
-   (loop [rectangle initial-rectangle]
-     (println rectangle)
-     (if (:done rectangle)
-       (do (println (:done rectangle))
-           (manhattan-distance [0 0 0] (:done rectangle)))
-       (recur (find-better-rectangle nanobots rectangle max-steps))))))
+(defn find-better-position
+  [nanobots position]
+  (loop [distance 6
+         factor 10000000
+         start [position
+                (calculate-nanobots-in-range nanobots position)
+                (manhattan-distance position [0 0 0])]]
+    (let [next (loop [[position nanobots-in-range distance-to-origin :as current] start]
+                 (println "[" factor "] looping with" position distance-to-origin nanobots-in-range)
+                 (let [best (->> (for [x (range (- (first position) (* factor distance)) (+ (first position) (inc (* factor distance))) factor)
+                                       y (range (- (second position) (* factor distance)) (+ (second position) (inc (* factor distance))) factor)
+                                       z (range (- (third position) (* factor distance)) (+ (third position) (inc (* factor distance))) factor)]
+                                   [x y z])
+                                 (reduce (fn [a p] (conj a [p (calculate-nanobots-in-range nanobots p)]))
+                                         [])
+                                 (filter (fn [[_ n]] (>= n nanobots-in-range)))
+                                 (map (fn [[p n]] [p n (manhattan-distance p [0 0 0])]))
+                                 (sort-by (juxt (comp - second) first))
+                                 (first))]
+                   (if (= best current)
+                     best
+                     (recur best))))]
+      (if (= factor 1)
+        next
+        (recur distance (quot factor 10) next)))))
 
 (comment
-  (time (find-coordinates-in-range-of-the-largets-number-of-nanobots nanobots))
-  ; 100592453 [14315582 59365374 26911497]
-  ; 20 -> 100607191 [14306083 59372743 26928365]
-  ; 100038641 [14950629 58303297 26784715]
-
-  (def initial-rectangle (find-bounding-rectangle nanobots))
-  (find-better-rectangle nanobots initial-rectangle 20)
-  (find-better-rectangle nanobots
-                         [[0 0 0] [19492980 62842408 29903069]]
-                         20)
-  (find-coordinates-in-range-of-the-largets-number-of-nanobots
-    nanobots
-    (find-bounding-rectangle nanobots)
-    25)
-
+  (time (find-better-position nanobots [0 0 0]))
+  ; "Elapsed time: 12901.778208 msecs"
+  ; => [[13839482 57977321 25999544] 978 97816347]
   )
 
 
