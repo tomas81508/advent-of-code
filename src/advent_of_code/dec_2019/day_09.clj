@@ -1,13 +1,16 @@
 (ns advent-of-code.dec-2019.day-09
-  (:require [advent-of-code.test :refer [is is-not is=]]
+  (:require [advent-of-code.test :refer [is=]]
             [clojure.test :refer [deftest]]
-            [clojure.math.combinatorics :refer [permutations]]))
+            [clojure.string]))
 
-(def BOOST
-  (as-> (slurp "src/advent_of_code/dec_2019/day_09.txt") $
+(defn parse-program
+  [input]
+  (as-> input $
         (clojure.string/split $ #",")
         (map read-string $)
         (vec $)))
+
+(def program (parse-program (slurp "src/advent_of_code/dec_2019/day_09.txt")))
 
 (defn get-modes
   {:test (fn []
@@ -239,9 +242,9 @@
          (recur program))))))
 
 (deftest puzzle-a
-  (is= (first (:outputs (run BOOST [1])))
+  (is= (first (:outputs (run program [1])))
        2399197539))
 
 (deftest puzzle-b
-  (is= (first (:outputs (run BOOST [2])))
+  (is= (first (:outputs (run program [2])))
        35106))

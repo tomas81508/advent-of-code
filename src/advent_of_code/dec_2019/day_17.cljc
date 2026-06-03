@@ -1,11 +1,12 @@
 (ns advent-of-code.dec-2019.day-17
   (:require [advent-of-code.dec-2019.day-09 :refer [run
-                                                    create-program]]))
+                                                    create-program]]
+            [clojure.edn :as edn]))
 
 (defn get-puzzle-input []
   (as-> (slurp "src/advent_of_code/dec_2019/day_17.txt") $
         (clojure.string/split $ #",")
-        (map read-string $)
+        (map edn/read-string $)
         (into [] $)))
 
 (def int-code (get-puzzle-input))
