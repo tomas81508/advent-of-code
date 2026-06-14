@@ -128,6 +128,7 @@
            (is= (eqrr [3 2 1 1] [2 1 2])
                 [3 2 0 1]))}
   [register [a b c]]
+  (println register a b c)
   (assoc register c (if (= (nth register a) (nth register b)) 1 0)))
 
 (def operations [addr addi mulr muli banr bani borr bori setr seti gtir gtri gtrr eqir eqri eqrr])

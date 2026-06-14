@@ -1,5 +1,6 @@
 (ns advent-of-code.dec-2021.day-21
-  (:require [advent-of-code.test :refer [is=]]))
+  (:require [advent-of-code.test :refer [is=]]
+            [clojure.core.match :refer [occurrences]]))
 
 ; Player 1 starting position: 2
 ; Player 2 starting position: 1
@@ -74,41 +75,58 @@
   ; => 797160
   )
 
-(def quantum-die-outcomes {3 1 4 3 5 6 6 7 7 6 8 3 9 1})
+; 3: 111
+; 4: 112,121,211
+; 5: 221,212,122,311,131,113
+; 6: 123,132,231,321,213,312,222
+; 7: 223,232,322,133,331,313
+; 8: 332,323,233
+; 9: 333
 
-(declare calculate-wins)
+(def outcome {3 1 4 3 5 6 6 7 7 6 8 3 9 1})
 
-(defn calculate-wins-raw
+(defn play-a-quantum-turn
   {:test (fn []
-           (is= (calculate-wins {:position 1 :score 18}) 27))}
+           (is= (play-a-quantum-turn {:player-1 {:position 2 :score 100} :player-2 {} :player-in-turn :player-1})
+                [{:game {:player-1 {:position 5 :score 105} :player-2 {} :player-in-turn :player-2} :occurrences 1}
+                 {:game {:player-1 {:position 6 :score 106} :player-2 {} :player-in-turn :player-2} :occurrences 3}
+                 {:game {:player-1 {:position 7 :score 107} :player-2 {} :player-in-turn :player-2} :occurrences 6}
+                 {:game {:player-1 {:position 8 :score 108} :player-2 {} :player-in-turn :player-2} :occurrences 7}
+                 {:game {:player-1 {:position 9 :score 109} :player-2 {} :player-in-turn :player-2} :occurrences 6}
+                 {:game {:player-1 {:position 10 :score 110} :player-2 {} :player-in-turn :player-2} :occurrences 3}
+                 {:game {:player-1 {:position 1 :score 101} :player-2 {} :player-in-turn :player-2} :occurrences 1}]))}
   [game]
-  (->> quantum-die-outcomes
-       (reduce-kv (fn [a result occurancies]
-                    (let [new-position (let [np (mod (+ (:position game) result) 10)]
-                                         (if (zero? np) 10 np))
-                          new-score (+ (:score game) new-position)]
-                      (+ a (if (>= new-score 21)
-                             occurancies
-                             (* occurancies (calculate-wins game))))))
-                  0)))
+  (let [player-in-turn (:player-in-turn game)
+        new-player-in-turn (other-player player-in-turn)]
+    (->> outcome
+         (map (fn [[rolls-sum occurrences]]
+                {:game        {:player-in-turn    new-player-in-turn
+                               new-player-in-turn (get game new-player-in-turn)
+                               player-in-turn     (let [player (get game player-in-turn)
+                                                        new-position (let [np (mod (+ (:position player) rolls-sum) 10)]
+                                                                       (if (zero? np) 10 np))]
+                                                    {:position new-position
+                                                     :score    (+ (:score player) new-position)})}
+                 :occurrences occurrences})))))
 
-(def calculate-wins (memoize calculate-wins-raw))
+(def play-a-quantum-turn (memoize play-a-quantum-turn))
+
+(defn play
+  [game]
+  (let [new-universes (play-a-quantum-turn game)
+        wins (->> new-universes
+                  (map (fn [{game :game occurrences :occurrences}]
+                         (cond (>= (get-in game [:player-1 :score]) 21) [occurrences 0]
+                               (>= (get-in game [:player-2 :score]) 21) [0 occurrences]
+                               :else (let [[win-1 win-2] (play game)]
+                                       [(* occurrences win-1) (* occurrences win-2)])))))]
+    (->> wins
+         (reduce (fn [a v] (map + a v))
+                 [0 0]))))
+
+(def play (memoize play))
 
 (comment
-  (calculate-wins {:position 2 :score 0})
+  (play {:player-1 {:position 4 :score 0} :player-2 {:position 8 :score 0} :player-in-turn :player-1})
+  ; 27464148626406
   )
-
-
-(defn f-raw
-  [x]
-  (println "Reading")
-  (inc x))
-
-(f-raw 10)
-
-(def f (memoize f-raw))
-
-(f 101)
-
-
-
