@@ -73,3 +73,42 @@
   ; "Elapsed time: 1.304541 msecs"
   ; => 797160
   )
+
+(def quantum-die-outcomes {3 1 4 3 5 6 6 7 7 6 8 3 9 1})
+
+(declare calculate-wins)
+
+(defn calculate-wins-raw
+  {:test (fn []
+           (is= (calculate-wins {:position 1 :score 18}) 27))}
+  [game]
+  (->> quantum-die-outcomes
+       (reduce-kv (fn [a result occurancies]
+                    (let [new-position (let [np (mod (+ (:position game) result) 10)]
+                                         (if (zero? np) 10 np))
+                          new-score (+ (:score game) new-position)]
+                      (+ a (if (>= new-score 21)
+                             occurancies
+                             (* occurancies (calculate-wins game))))))
+                  0)))
+
+(def calculate-wins (memoize calculate-wins-raw))
+
+(comment
+  (calculate-wins {:position 2 :score 0})
+  )
+
+
+(defn f-raw
+  [x]
+  (println "Reading")
+  (inc x))
+
+(f-raw 10)
+
+(def f (memoize f-raw))
+
+(f 101)
+
+
+
