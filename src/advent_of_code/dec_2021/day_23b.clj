@@ -1,4 +1,4 @@
-(ns advent-of-code.dec-2021.day-23
+(ns advent-of-code.dec-2021.day-23b
   (:require [advent-of-code.test :refer [is= is is-not]]
             [clojure.set :refer [union difference intersection]])
   (:import [clojure.lang PersistentQueue]))
@@ -6,19 +6,21 @@
 (def puzzle-input ["#############"
                    "#...........#"
                    "###D#A#D#C###"
+                   "  #D#C#B#A#"
+                   "  #D#B#A#C#"
                    "  #B#C#B#A#"
                    "  #########"])
 
 (def atlas {:spaces                #{[0 0] [1 0]
-                                     [2 0] [2 1] [2 2]
-                                     [3 0] [4 0] [4 1] [4 2]
-                                     [5 0] [6 0] [6 1] [6 2]
-                                     [7 0] [8 0] [8 1] [8 2]
+                                     [2 0] [2 1] [2 2] [2 3] [2 4]
+                                     [3 0] [4 0] [4 1] [4 2] [4 3] [4 4]
+                                     [5 0] [6 0] [6 1] [6 2] [6 3] [6 4]
+                                     [7 0] [8 0] [8 1] [8 2] [8 3] [8 4]
                                      [9 0] [10 0]}
-            :A-cave                #{[2 1] [2 2]}
-            :B-cave                #{[4 1] [4 2]}
-            :C-cave                #{[6 1] [6 2]}
-            :D-cave                #{[8 1] [8 2]}
+            :A-cave                #{[2 1] [2 2] [2 3] [2 4]}
+            :B-cave                #{[4 1] [4 2] [4 3] [4 4]}
+            :C-cave                #{[6 1] [6 2] [6 3] [6 4]}
+            :D-cave                #{[8 1] [8 2] [8 3] [8 4]}
             :forbidden-stop-spaces #{[2 0] [4 0] [6 0] [8 0]}})
 
 (def energy-costs {\A 1 \B 10 \C 100 \D 1000})
@@ -26,10 +28,10 @@
 (defn create-state
   {:test (fn []
            (is= (create-state puzzle-input)
-                {:A #{[4 1] [8 2]}
-                 :B #{[2 2] [6 2]}
-                 :C #{[4 2] [8 1]}
-                 :D #{[6 1] [2 1]}}))}
+                {:A #{[8 4] [6 3] [4 1] [8 2]},
+                 :B #{[4 3] [6 4] [2 4] [6 2]},
+                 :C #{[8 3] [4 2] [8 1] [4 4]},
+                 :D #{[2 2] [2 3] [6 1] [2 1]}}))}
   [input]
   (->> input
        (mapv vec)
@@ -50,7 +52,7 @@
 (defn get-amphipod-positions
   {:test (fn []
            (is= (get-amphipod-positions puzzle-state)
-                #{[4 1] [8 2] [2 2] [6 2] [4 2] [8 1] [6 1] [2 1]}))}
+                #{[4 3] [2 2] [8 4] [2 3] [8 3] [6 3] [4 2] [4 1] [8 2] [6 4] [8 1] [6 1] [2 4] [2 1] [4 4] [6 2]}))}
   [state]
   (->> (vals state)
        (apply union)))
@@ -63,7 +65,7 @@
 (defn get-my-home-raw
   {:test (fn []
            (is= (get-my-home-raw :C)
-                #{[6 1] [6 2]}))}
+                #{[6 3] [6 4] [6 1] [6 2]}))}
   [amphipod]
   (get atlas (keyword (str (name amphipod) "-cave"))))
 (def get-my-home (memoize get-my-home-raw))
@@ -71,7 +73,7 @@
 (defn get-other-homes-raw
   {:test (fn []
            (is= (get-other-homes-raw :B)
-                #{[2 1] [2 2] [6 1] [6 2] [8 1] [8 2]}))}
+                #{[2 2] [8 4] [2 3] [8 3] [6 3] [8 2] [6 4] [8 1] [6 1] [2 4] [2 1] [6 2]}))}
   [amphipod]
   (let [home-key (keyword (str (name amphipod) "-cave"))
         other-keys (disj #{:A-cave :B-cave :C-cave :D-cave} home-key)]
@@ -80,17 +82,9 @@
          (apply union))))
 (def get-other-homes (memoize get-other-homes-raw))
 
-(defn home-alone?
-  [state amphipod position]
-  (let [home (get-my-home amphipod)]
-    (and (contains? home position)
-         (let [others-positions (-> (apply union (vals state))
-                                    (disj position))]
-           (empty? (intersection home others-positions))))))
-
 (defn all-at-home?
   {:test (fn []
-           (is (all-at-home? {:A #{[2 1] [2 2]}} :A))
+           (is (all-at-home? {:A #{[2 1] [2 2] [2 3] [2 4]}} :A))
            (is-not (all-at-home? {:A #{[2 1] [4 2]}} :A)))}
   [state amphipod]
   (let [home (get-my-home amphipod)
@@ -105,6 +99,95 @@
                       (apply union))]
     (not (empty? (intersection home visiters)))))
 
+(defn home-with-friends?
+  {:test (fn []
+           (is (home-with-friends? (create-state ["#############"
+                                                  "#...B.......#"
+                                                  "###A#.#C#D###"
+                                                  "  #D#B#B#A#"
+                                                  "  #D#B#A#C#"
+                                                  "  #A#B#C#D#"
+                                                  "  #########"])
+                                   :B
+                                   [4 2])))}
+  [state amphipod position]
+  (and (contains? (get-my-home amphipod) position)
+       (not (visiters-at-home? state amphipod))))
+
+(defn hallway? [position] (zero? (second position)))
+
+(defn allowed-to-walk?
+  {:test (fn []
+           (is (allowed-to-walk? (create-state ["#############"
+                                                "#...A...D...#"
+                                                "###D#.#.#C###"
+                                                "  #B#C#B#A#"
+                                                "  #D#B#B#C#"
+                                                "  #B#C#C#A#"
+                                                "  #########"])
+                                 #{}
+                                 :C
+                                 [4 1]
+                                 [4 2])))}
+  [state visited amphipod position starting-position]
+  (and
+    ; It should be a new position
+    (not (contains? visited position))
+    ; It should be on the map
+    (contains? (:spaces atlas) position)
+    ; It should be empty
+    (not (contains? (get-amphipod-positions state) position))
+    ; It can't be a home of another kind unless started there
+    (or (hallway? position)
+        (= (first starting-position) (first position))
+        (contains? (get-my-home amphipod) position))))
+
+(defn get-positions-below
+  {:test (fn []
+           (is= (get-positions-below [6 1])
+                [[6 2] [6 3] [6 4]]))}
+  [position]
+  (loop [result []
+         position (map + position [0 1])]
+    (if (contains? (:spaces atlas) position)
+      (recur (conj result position) (map + position [0 1]))
+      result)))
+
+(defn move-position?
+  {:test (fn []
+           (is (move-position? [5 0]
+                               (create-state ["#############"
+                                              "#...A...D...#"
+                                              "###D#.#.#C###"
+                                              "  #B#C#B#A#"
+                                              "  #D#B#B#C#"
+                                              "  #B#C#C#A#"
+                                              "  #########"])
+                               :C
+                               [4 2]))
+           (is-not (move-position? [6 1]
+                                   (create-state ["#############"
+                                                  "#...A...D...#"
+                                                  "###D#.#.#C###"
+                                                  "  #B#C#B#A#"
+                                                  "  #D#B#B#C#"
+                                                  "  #B#C#C#A#"
+                                                  "  #########"])
+                                   :C
+                                   [4 2])))}
+  [position state amphipod starting-position]
+  (and
+    ; Not outside a home
+    (not (contains? (:forbidden-stop-spaces atlas) position))
+    ; Not a hallway -> hallway move
+    (not (and (hallway? starting-position) (hallway? position)))
+    ; Not another's home
+    (not (contains? (get-other-homes amphipod) position))
+    ; If inside our own home all below us must be our kind
+    (or (not (contains? (get-my-home amphipod) position))
+        (->> (get-positions-below position)
+             (every? (fn [p] (contains? (get state amphipod) p)))))))
+
 (defn get-move-positions
   {:test (fn []
            (is= (get-move-positions puzzle-state [4 1])
@@ -113,40 +196,52 @@
                                                    "#...A...D...#"
                                                    "###D#.#.#C###"
                                                    "  #B#C#B#A#"
+                                                   "  #D#B#B#C#"
+                                                   "  #B#C#C#A#"
                                                    "  #########"])
                                     [4 2])
                 #{[5 0]})
            (is= (get-move-positions (create-state ["#############"
                                                    "#...A...D...#"
                                                    "###D#.#.#B###"
+                                                   "  #D#C#.#A#"
+                                                   "  #D#B#.#C#"
                                                    "  #B#C#C#A#"
                                                    "  #########"])
                                     [4 2])
-                #{[6 1]})
+                #{[6 3]})
            (is= (get-move-positions (create-state ["#############"
                                                    "#...A...D.C.#"
                                                    "###D#.#.#B###"
+                                                   "  #D#C#.#A#"
+                                                   "  #D#B#.#C#"
                                                    "  #B#C#.#A#"
                                                    "  #########"])
                                     [4 2])
-                #{[6 2]})
+                #{[6 4]})
+           (is= (get-move-positions (create-state ["#############"
+                                                   "#...........#"
+                                                   "###.#.#.#.###"
+                                                   "  #.#.#.#.#"
+                                                   "  #A#B#.#.#"
+                                                   "  #A#C#.#.#"
+                                                   "  #########"])
+                                    [4 3])
+                #{[0 0] [1 0] [3 0] [5 0] [7 0] [9 0] [10 0]})
            (is= (get-move-positions (create-state ["#############"
                                                    "#...A...D...#"
                                                    "###.#D#.#C###"
+                                                   "  #D#C#B#A#"
+                                                   "  #D#B#A#C#"
                                                    "  #B#C#B#A#"
                                                    "  #########"])
                                     [3 0])
                 #{})
            (is= (get-move-positions (create-state ["#############"
-                                                   "#...A.......#"
-                                                   "###.#B#C#D###"
-                                                   "  #.#B#C#D#"
-                                                   "  #########"])
-                                    [3 0])
-                #{[2 2]})
-           (is= (get-move-positions (create-state ["#############"
                                                    "#...B.......#"
                                                    "###A#.#C#D###"
+                                                   "  #D#B#B#A#"
+                                                   "  #D#B#A#C#"
                                                    "  #A#B#C#D#"
                                                    "  #########"])
                                     [3 0])
@@ -155,12 +250,7 @@
                                                    "#...B.......#"
                                                    "###A#.#C#D###"
                                                    "  #A#B#C#D#"
-                                                   "  #########"])
-                                    [2 1])
-                #{})
-           (is= (get-move-positions (create-state ["#############"
-                                                   "#...B.......#"
-                                                   "###A#.#C#D###"
+                                                   "  #A#B#C#D#"
                                                    "  #A#B#C#D#"
                                                    "  #########"])
                                     [4 2])
@@ -175,7 +265,7 @@
         started-inside-a-home (pos? (second position))]
     (if (or (not amphipod)
             (all-at-home? state amphipod)
-            (home-alone? state amphipod position))
+            (home-with-friends? state amphipod position))
       #{}
       (loop [move-positions #{}
              currents (conj PersistentQueue/EMPTY position)
@@ -183,38 +273,17 @@
         (let [cp (peek currents)
               currents (pop currents)]
           (if-not cp
-            (let [home-positions (->> move-positions
-                                      (filter (fn [p] (pos? (second p))))
-                                      (into #{}))]
-              (if (not (empty? home-positions))
-                #{(apply max-key second home-positions)}
-                (if started-inside-a-home
-                  move-positions
-                  #{})))
+            ; If home is in the allowed moves ignore the other moves
+            (if-let [home-move-position (->> move-positions
+                                             (some (fn [mp] (when (pos? (second mp)) mp))))]
+              #{home-move-position}
+              move-positions)
             (let [new-positions (->> directions
                                      (map (fn [d] (map + d cp)))
-                                     (filter (fn [p]
-                                               (and
-                                                 ; I have not been here before
-                                                 (not (contains? visited p))
-                                                 ; It is contained on the map
-                                                 (contains? (:spaces atlas) p)
-                                                 ; No one else can be there
-                                                 (not (contains? amphipod-positions p))
-                                                 ; It should not be others home unless I am already there
-                                                 (or (not (contains? (get-other-homes amphipod) p))
-                                                     (contains? (get-other-homes amphipod) cp))
-                                                 ; If it's my own home, then other sort of amphipods is not allowed there
-                                                 (or (not (contains? (get-my-home amphipod) p))
-                                                     (not (visiters-at-home? state amphipod)))
-                                                 ; If you didn't start in a home you must enter a home
-                                                 ;(or started-inside-a-home
-                                                 ;    (pos? (second p)))
-                                                 )))
+                                     (filter (fn [p] (allowed-to-walk? state visited amphipod p position)))
                                      (into #{}))
-                  new-move-positions (difference new-positions
-                                                 (:forbidden-stop-spaces atlas)
-                                                 (get-other-homes amphipod))]
+                  new-move-positions (->> new-positions
+                                          (filter (fn [p] (move-position? p state amphipod position))))]
               (recur (apply conj move-positions new-move-positions)
                      (apply conj currents new-positions)
                      (apply conj visited new-positions)))))))))
@@ -236,12 +305,14 @@
                                                      "#...B.......#"
                                                      "###A#.#C#D###"
                                                      "  #A#B#C#D#"
+                                                     "  #A#B#C#D#"
+                                                     "  #A#B#C#D#"
                                                      "  #########"])
                               :energy 10})
-                [{:state  {:A #{[2 2] [2 1]}
-                           :B #{[4 2] [4 1]}
-                           :C #{[6 1] [6 2]}
-                           :D #{[8 2] [8 1]}}
+                [{:state  {:A #{[2 2] [2 3] [2 4] [2 1]},
+                           :B #{[4 3] [4 2] [4 1] [4 4]},
+                           :C #{[6 3] [6 4] [6 1] [6 2]},
+                           :D #{[8 4] [8 3] [8 2] [8 1]}},
                   :energy 30}]))}
   [configuration]
   (->> (vals (:state configuration))
@@ -259,10 +330,10 @@
                                      (update-in [:state amphipod] conj to-p)
                                      (update :energy + energy-cost)))))))))))
 
-(def done-state {:A #{[2 1] [2 2]}
-                 :B #{[4 1] [4 2]}
-                 :C #{[6 1] [6 2]}
-                 :D #{[8 1] [8 2]}})
+(def done-state {:A #{[2 1] [2 2] [2 3] [2 4]}
+                 :B #{[4 1] [4 2] [4 3] [4 4]}
+                 :C #{[6 1] [6 2] [6 3] [6 4]}
+                 :D #{[8 1] [8 2] [8 3] [8 4]}})
 
 (defn cmp-config [a b]
   (let [ea (:energy a)
@@ -278,11 +349,13 @@
                                      "#...B.......#"
                                      "###A#.#C#D###"
                                      "  #A#B#C#D#"
+                                     "  #A#B#C#D#"
+                                     "  #A#B#C#D#"
                                      "  #########"]))
-                #{{:state  {:A #{[2 2] [2 1]}
-                            :B #{[4 2] [4 1]}
-                            :C #{[6 1] [6 2]}
-                            :D #{[8 2] [8 1]}}
+                #{{:state  {:A #{[2 2] [2 3] [2 4] [2 1]},
+                            :B #{[4 3] [4 2] [4 1] [4 4]},
+                            :C #{[6 3] [6 4] [6 1] [6 2]},
+                            :D #{[8 4] [8 3] [8 2] [8 1]}},
                    :energy 20}}))}
   [state]
   (loop [configurations (sorted-set-by cmp-config {:state state :energy 0})
@@ -313,8 +386,8 @@
              (map :energy)
              (sort)
              (first)))
-  ; "Elapsed time: 35167.019167 msecs"
-  ; => 14348
+  ; "Elapsed time: 71132.728 msecs"
+  ; => 40954
   )
 
 
